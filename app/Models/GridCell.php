@@ -8,3 +8,4 @@ class GridCell extends Model
 {
     protected $fillable = ['x_coordinate', 'y_coordinate', 'is_available', 'destination_type'];
 }
+// relatie tussen functie en grid toevoegen
