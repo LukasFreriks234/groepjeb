@@ -3,36 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="functions.js" defer></script>
+    <!-- Voor Dion: het javascript en css staan in public in hun respectieve mapjes-->
+    <script type="text/javascript" src="{{ asset('js/functionTable.js') }}" defer></script>
     <link href="{{ asset('css/styles.css')}}" type="text/css" rel="stylesheet"/>
     <title>Document</title>
 </head>
 <body>
     <div id="functions_table">
-        <!--<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..">
+     <input type="text" id="myInput" placeholder="Search for names.."><br>
 
-        <table id="myTable">
-            <tr class="header">
-                <th>Name</th>
-                <th>Country</th>
-            </tr>
-            <tr>
-                <td>Alfreds Futterkiste</td>
-                <td>Germany</td>
-            </tr>
-            <tr>
-                <td>Berglunds snabbkop</td>
-                <td>Sweden</td>
-            </tr>
-            <tr>
-                <td>Island Trading</td>
-                <td>UK</td>
-            </tr>
-            <tr>
-                <td>Koniglich Essen</td>
-                <td>Germany</td>
-            </tr>
-        </table>-->
+        <input type="checkbox" id="category1" class="function_filter" name="category1" value="Germany">
+        <label for="vcategory1"> Germany</label><br>
+        <input type="checkbox" id="category2" class="function_filter" name="category2" value="Sweden">
+        <label for="category2"> Sweden</label><br>
+        <input type="checkbox" id="category3" class="function_filter" name="category3" value="UK">
+        <label for="category3"> UK</label><br>
+
 
             <ul>
                 
