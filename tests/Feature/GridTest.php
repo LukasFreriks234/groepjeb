@@ -11,7 +11,8 @@ class GridTest extends TestCase
 {
     use RefreshDatabase;
     
-    public function the_city_is_shown_in_a_grid()
+    /** @test */
+    public function test_the_city_is_shown_in_a_grid()
     { 
         $this->seed(GridCellSeeder::class);
         
@@ -25,7 +26,8 @@ class GridTest extends TestCase
         $response->assertSee('metropolis-grid');
     }
 
-    public function availeble_grid_cells()
+    /** @test */
+    public function test_availeble_grid_cells()
     {
         GridCell::create([
             'x_coordinate' => 0, 
@@ -44,9 +46,20 @@ class GridTest extends TestCase
         $response->assertSee('occupied');
     }
 
-    public function grid_cell_stays_a_square()
+    /** @test */
+    public function test_grid_cell_stays_a_square()
     {
+        $this->seed(GridCellSeeder::class);
+
         $response = $this->get('/grid');
         $response->assertSee('grid-cell');
+    }
+
+    public function test_page_is_shown_without_grid_cells()
+    {
+        $response = $this->get('/grid');
+
+        $response->assertStatus(200);
+        $response->assertSee('City area');
     }
 }
