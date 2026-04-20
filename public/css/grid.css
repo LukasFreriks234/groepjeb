@@ -1,0 +1,37 @@
+.simulation-container {
+    display: flex;
+    justify-content: flex-start;
+    padding: 25px;
+}
+
+.city-section {
+    width: 50vw;
+    max-width: 600px;
+}
+
+.metropolis-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 2px solid black;
+    width: 100%;
+}
+
+.grid-cell {
+    aspect-ratio: 1 / 1;
+    border: 1px solid black;
+    background-color: lightblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.grid-cell img,
+.grid-cell svg {
+    width: 80%;
+    height: 80%;
+    object-fit: cover;
+    display: block;
+}
+
