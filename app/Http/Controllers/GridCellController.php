@@ -9,6 +9,6 @@ class GridCellController extends Controller
 {
     public function index() {
         $cells = GridCell::orderBy('y_coordinate')->orderBy('x_coordinate')->get();
-        return view('/', compact('cells'));
+        return view('welcome', compact('cells'));
     }
 }
