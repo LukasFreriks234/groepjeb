@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('x_coordinate');
             $table->integer('y_coordinate');
             $table->boolean('is_available')->default(true);
+            // $table->foreignIdFor(\App\Models\Function::class)->constrained();
             $table->timestamps();
         });
     }
