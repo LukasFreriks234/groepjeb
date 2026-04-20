@@ -20,14 +20,14 @@
         <label for="category3"> UK</label><br>
 
 
-            <ul>
+            <ul id="functions_list">
                 
                 <li><div class="function_image"><img src=
                 "{{url('/images/photo-masthead-375-BoK_p8LG.webp')}}"
                 ></div>
                 <div><p class="function_name">
                 Alfreds Futterkiste
-                </p><p class="function_category">
+                </p><p class="function_category" name="Germany">
                 Germany
                 </p></div></li>
 
@@ -36,7 +36,7 @@
                 ></div>
                 <div><p class="function_name">
                 Berglunds snabbkop
-                </p><p class="function_category">
+                </p><p class="function_category" name="Sweden">
                 Sweden
                 </p></div></li>
 
@@ -45,7 +45,7 @@
                 ></div>
                 <div><p class="function_name">
                 Island Trading
-                </p><p class="function_category">
+                </p><p class="function_category" name="UK">
                 UK
                 </p></div></li>
 
@@ -54,7 +54,7 @@
                 ></div>
                 <div><p class="function_name">
                 Koniglich Essen
-                </p><p class="function_category">
+                </p><p class="function_category" name="Germany">
                 Germany
                 </p></div></li>
 
