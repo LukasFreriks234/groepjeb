@@ -12,14 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('functions', function (Blueprint $table) {
+            $table->id();
             $table->string('name');
             $table->string('image');
             $table->text('effect');
-            $table->string('catagory');
+            $table->unsignedBigInteger('category');
 
-            $table->foreign('catagory')
-                ->references('catagory')
-                ->on('catagories')
+            $table->foreign('category')
+                ->references('id')
+                ->on('categories')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();
         });
