@@ -49,7 +49,7 @@
                     </div>
                     <div>
                         <p class="function_name">Alfreds Futterkiste</p>
-                        <p class="function_category">Germany</p>
+                        <p class="function_category" name="Germany">Germany</p>
                     </div>
                 </li>
 
@@ -59,7 +59,7 @@
                     </div>
                     <div>
                         <p class="function_name">Berglunds snabbkop</p>
-                        <p class="function_category">Sweden</p>
+                        <p class="function_category" name="Sweden">Sweden</p>
                     </div>
                 </li>
 
@@ -69,7 +69,7 @@
                     </div>
                     <div>
                         <p class="function_name">Island Trading</p>
-                        <p class="function_category">UK</p>
+                        <p class="function_category" name="UK">UK</p>
                     </div>
                 </li>
 
@@ -79,7 +79,7 @@
                     </div>
                     <div>
                         <p class="function_name">Koniglich Essen</p>
-                        <p class="function_category">Germany</p>
+                        <p class="function_category" name="Germany">Germany</p>
                     </div>
                 </li>
             </ul>
