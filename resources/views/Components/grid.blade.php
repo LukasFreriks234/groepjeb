@@ -8,11 +8,11 @@
                      role="gridcell"
                      tabindex="0"
                      aria-label="Cel on position {{ $cell->x_coordinate }}, {{ $cell->y_coordinate }}. Status: {{ $cell->is_available ? 'avilable' : 'occupied' }}">
-                    <!-- @if(!$cell->is_available && $cell->cityFunction)
-                        <img src="{{ asset('storage/' . $cell->cityFunction->image_path) }}" 
+                    @if(!$cell->is_available && $cell->cityFunction)
+                        <img src="{{ asset('storage/' . $cell->cityFunction->image) }}" 
                             alt="{{ $cell->cityFunction->name }}" 
                             class="grid-image">
-                    @endif --> 
+                    @endif 
                 </div>
             @endforeach
         </div>
