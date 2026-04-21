@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('image');
             $table->text('effect');
-            $table->unsignedBigInteger('category');
+            $table->unsignedBigInteger('category_id');
 
-            $table->foreign('category')
+            $table->foreign('category_id')
                 ->references('id')
                 ->on('categories')
                 ->cascadeOnUpdate()

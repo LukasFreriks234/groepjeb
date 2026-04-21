@@ -19,6 +19,6 @@ class functions extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category', 'id');
+        return $this->belongsTo(categories::class);
     }
 }
