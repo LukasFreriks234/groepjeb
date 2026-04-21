@@ -10,6 +10,8 @@ class functions extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'name',
         'image',
@@ -19,6 +21,6 @@ class functions extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category', 'id');
+        return $this->belongsTo(categories::class, 'category', 'category');
     }
 }

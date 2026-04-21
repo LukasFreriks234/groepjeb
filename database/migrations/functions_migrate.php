@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('image');
             $table->text('effect');
-            $table->unsignedBigInteger('category');
+            $table->string('category');
 
             $table->foreign('category')
-                ->references('id')
+                ->references('category')
                 ->on('categories')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();

@@ -9,6 +9,8 @@ class categories extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $primaryKey = 'category';
 
     public $incrementing = false;
