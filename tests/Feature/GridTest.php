@@ -16,7 +16,7 @@ class GridTest extends TestCase
     { 
         $this->seed(GridCellSeeder::class);
         
-        $response = $this->get('/grid');
+        $response = $this->get('/');
 
         $response->assertStatus(200);
         $response->assertViewHas('cells', function ($cells) {
@@ -41,7 +41,7 @@ class GridTest extends TestCase
             'is_available' => false
         ]);
 
-        $response = $this->get('/grid');
+        $response = $this->get('/');
         $response->assertSee('available');
         $response->assertSee('occupied');
     }
@@ -51,13 +51,13 @@ class GridTest extends TestCase
     {
         $this->seed(GridCellSeeder::class);
 
-        $response = $this->get('/grid');
+        $response = $this->get('/');
         $response->assertSee('grid-cell');
     }
 
     public function test_page_is_shown_without_grid_cells()
     {
-        $response = $this->get('/grid');
+        $response = $this->get('/');
 
         $response->assertStatus(200);
         $response->assertSee('City area');
