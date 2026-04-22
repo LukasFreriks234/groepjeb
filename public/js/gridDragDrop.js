@@ -1,23 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const functionItems = document.querySelectorAll(".functionItem");
+
+    enableDrag();
+
     const gridCells = document.querySelectorAll(".gridCell");
-    const functionImages = document.querySelectorAll(".functionItem img");
-
-    functionImages.forEach((img) => {
-        img.setAttribute("draggable", "false");
-    });
-
-    functionItems.forEach((item) => {
-        item.addEventListener("dragstart", function (ev) {
-            ev.dataTransfer.setData("text/plain", ev.currentTarget.id);
-        });
-    });
 
     gridCells.forEach((cell) => {
+
+        // drag over toestaan
         cell.addEventListener("dragover", function (ev) {
             ev.preventDefault();
         });
 
+        // drop
         cell.addEventListener("drop", function (ev) {
             ev.preventDefault();
 
@@ -26,28 +20,45 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!originalItem) return;
 
+            // 🔥 oude inhoud verwijderen (image + clone)
             const existingItem = cell.querySelector(".functionItem");
             const existingImage = cell.querySelector(".gridImage");
 
-            if (existingItem) {
-                existingItem.remove();
-            }
+            if (existingItem) existingItem.remove();
+            if (existingImage) existingImage.remove();
 
-            if (existingImage) {
-                existingImage.remove();
-            }
-
+            // 🔥 clone maken
             const clonedItem = originalItem.cloneNode(true);
             clonedItem.removeAttribute("id");
-            clonedItem.draggable = false;
+            clonedItem.setAttribute("draggable", "false");
 
+            // 🔥 in cell zetten
             cell.appendChild(clonedItem);
+
+            // 🔥 styling update
             cell.classList.remove("available");
             cell.classList.add("occupied");
         });
     });
 });
 
+
+// 🔥 DRAG FUNCTIE (BELANGRIJK VOOR DELETE)
+function enableDrag() {
+    const functionItems = document.querySelectorAll(".functionItem");
+
+    functionItems.forEach((item) => {
+
+        item.setAttribute("draggable", "true");
+
+        item.addEventListener("dragstart", function (ev) {
+            ev.dataTransfer.setData("text/plain", ev.currentTarget.id);
+        });
+    });
+}
+
+
+// 🔥 AUTO SCROLL (ongewijzigd maar opgeschoond)
 let scrollInterval;
 
 function stopAutoScroll() {
@@ -56,15 +67,16 @@ function stopAutoScroll() {
 }
 
 function startAutoScroll(direction) {
-    if (scrollInterval) return; 
+    if (scrollInterval) return;
+
     scrollInterval = setInterval(() => {
         window.scrollBy(0, direction);
-    }, 10); 
+    }, 10);
 }
 
 document.addEventListener("dragover", function (ev) {
-    const scrollThreshold = 100; 
-    const scrollSpeed = 15; 
+    const scrollThreshold = 100;
+    const scrollSpeed = 15;
 
     if (ev.clientY < scrollThreshold) {
         startAutoScroll(-scrollSpeed);

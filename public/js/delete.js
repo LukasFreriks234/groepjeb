@@ -2,14 +2,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.body.addEventListener('mouseover', function (e) {
 
-        const cell = e.target.closest('.grid-cell');
+        // ✅ juiste class
+        const cell = e.target.closest('.gridCell');
         if (!cell) return;
 
-        // alleen als er iets in zit
-        if (!cell.querySelector('.function-item') && !cell.querySelector('.grid-image')) {
+        // ✅ check juiste inhoud
+        if (!cell.querySelector('.functionItem') && !cell.querySelector('.gridImage')) {
             return;
         }
 
+        // knop al aanwezig?
         if (cell.querySelector('.delete-btn')) return;
 
         const btn = document.createElement('button');
@@ -34,15 +36,13 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(() => {
 
-                // 🔥 reset cell
+                // 🔥 cel leeg maken
                 cell.innerHTML = '';
                 cell.classList.remove('occupied');
                 cell.classList.add('available');
 
                 // 🔥 drag opnieuw activeren
-                if (typeof enableDrag === "function") {
-                    enableDrag();
-                }
+                enableDrag();
             });
         };
     });

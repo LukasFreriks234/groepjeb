@@ -24,26 +24,41 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    overflow: visible;
+    overflow: hidden;
 }
-.grid-cell .function-item {
+
+.gridCell img,
+.gridCell svg {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    display: block;
+}
+
+.gridCell .functionItem {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding: 0;      
-    margin: 0;         
+    justify-content: center;
+    padding: 5px;
+    margin: 0;
     border: none;
     background: transparent;
     box-sizing: border-box;
 }
-.grid-cell .function-item img {
-    width: 60%;
-    height: 50%;
+
+.gridCell .functionItem img {
+    max-width: 70%;
+    max-height: 70%;
     object-fit: contain;
 }
+
+.gridCell .functionItem p {
+    display: none;
+}
+
 .delete-btn {
     position: absolute;
     top: 6px;
@@ -55,28 +70,24 @@
     background: rgba(0,0,0,0.6);
     color: white;
     font-size: 16px;
+    display: flex;
+    justify-content: center;
     align-items: center;
     cursor: pointer;
     opacity: 0;
     transform: scale(0.8);
+    z-index: 9999;
 }
-.grid-cell:hover .delete-btn {
+
+
+.gridCell:hover .delete-btn {
     opacity: 1;
     transform: scale(1);
 }
 
-/* hover effect */
 .delete-btn:hover {
     background: red;
     transform: scale(1.1);
-}
-
-.gridCell img,
-.gridCell svg {
-    width: 90%;
-    height: 90%;
-    object-fit: contain;
-    display: block;
 }
 
 .functionsSection {
@@ -108,24 +119,4 @@
     width: 60px;
     height: 60px;
     object-fit: cover;
-}
-
-.gridCell .functionItem {
-    width: 90%;
-    height: 90%;
-    margin: 0;
-    border: none;
-    background: transparent;
-    flex-direction: column;
-    justify-content: center;
-    object-fit: contain;
-}
-
-.gridCell .functionItem img {
-    width: 100%;
-    height:100%;
-}
-
-.gridCell .functionItem p {
-    display: none; 
 }
