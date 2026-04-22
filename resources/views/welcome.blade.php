@@ -14,7 +14,7 @@
 <body>
 
 <x-grid :cells="$cells"/>
-<x-functionTable/>
+<x-functionTable :functions="$functions" :categories="$categories"/>
 
 </body>
 </html>

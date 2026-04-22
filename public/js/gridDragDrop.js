@@ -1,11 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
     const functionItems = document.querySelectorAll(".function-item");
     const gridCells = document.querySelectorAll(".grid-cell");
-    const functionsList = document.getElementById("functions_list");
+    const functionImages = document.querySelectorAll(".function-item img");
+
+    functionImages.forEach((img) => {
+        img.setAttribute("draggable", "false");
+    });
 
     functionItems.forEach((item) => {
         item.addEventListener("dragstart", function (ev) {
-            ev.dataTransfer.setData("text", ev.target.id);
+            ev.dataTransfer.setData("text/plain", ev.currentTarget.id);
         });
     });
 
@@ -17,28 +21,29 @@ document.addEventListener("DOMContentLoaded", function () {
         cell.addEventListener("drop", function (ev) {
             ev.preventDefault();
 
-            const itemId = ev.dataTransfer.getData("text");
-            const draggedItem = document.getElementById(itemId);
+            const itemId = ev.dataTransfer.getData("text/plain");
+            const originalItem = document.getElementById(itemId);
 
-            if (!draggedItem) return;
-            if (cell.querySelector(".function-item")) return;
+            if (!originalItem) return;
 
-            cell.appendChild(draggedItem);
+            const existingItem = cell.querySelector(".function-item");
+            const existingImage = cell.querySelector(".grid-image");
+
+            if (existingItem) {
+                existingItem.remove();
+            }
+
+            if (existingImage) {
+                existingImage.remove();
+            }
+
+            const clonedItem = originalItem.cloneNode(true);
+            clonedItem.removeAttribute("id");
+            clonedItem.draggable = false;
+
+            cell.appendChild(clonedItem);
+            cell.classList.remove("available");
+            cell.classList.add("occupied");
         });
-    });
-
-    functionsList.addEventListener("dragover", function (ev) {
-        ev.preventDefault();
-    });
-
-    functionsList.addEventListener("drop", function (ev) {
-        ev.preventDefault();
-
-        const itemId = ev.dataTransfer.getData("text");
-        const draggedItem = document.getElementById(itemId);
-
-        if (!draggedItem) return;
-
-        functionsList.appendChild(draggedItem);
     });
 });

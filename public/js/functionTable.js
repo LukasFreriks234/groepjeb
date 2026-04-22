@@ -7,6 +7,7 @@ function filterFunction() {
   boxes.forEach(elt => catagoryMap.set(elt.value, elt.checked));
   listItem = document.getElementById("functions_list").querySelectorAll("li");
 
+  // filter functie
   if (active.has(true)){
     filterRows = [];
     for (const item1 of listItem){
@@ -23,6 +24,7 @@ function filterFunction() {
   filter = input.value.toUpperCase();
   searchRows = [];
 
+  // zoek functie
   for (const row of filterRows) {
     name = row.querySelector(".function_name").innerText;
     if (name.toUpperCase().indexOf(filter) > -1) {
@@ -30,6 +32,7 @@ function filterFunction() {
       }
     }
 
+  // functie wanneer beide functies worden toegepast
   for (const item2 of listItem) {
     if (searchRows.includes(item2)){
       item2.style.display = "";
