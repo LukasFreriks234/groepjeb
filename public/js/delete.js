@@ -1,49 +1,27 @@
-console.log("DELETE HOVER ACTIVE");
+document.addEventListener('DOMContentLoaded', function () {
 
-// wacht tot grid cells bestaan
-const interval = setInterval(() => {
+    document.body.addEventListener('mouseover', function (e) {
 
-    const cells = document.querySelectorAll('.grid-cell');
+        const cell = e.target.closest('.grid-cell');
+        if (!cell) return;
 
-    if (cells.length === 0) return;
+        // alleen als er iets in zit
+        if (!cell.querySelector('.function-item') && !cell.querySelector('.grid-image')) {
+            return;
+        }
 
-    console.log("cells ready:", cells.length);
+        if (cell.querySelector('.delete-btn')) return;
 
-    clearInterval(interval); // stop zodra gevonden
-
-    cells.forEach(cell => {
-
-        // alleen als er een functie in zit (image)
-        if (!cell.querySelector('img')) return;
-
-        // knop maken
         const btn = document.createElement('button');
-        btn.innerText = '❌';
+        btn.innerHTML = '✕';
         btn.className = 'delete-btn';
 
-        btn.style.position = 'absolute';
-        btn.style.top = '2px';
-        btn.style.right = '2px';
-        btn.style.display = 'none';
-        btn.style.zIndex = '9999';
-        btn.style.cursor = 'pointer';
+        cell.appendChild(btn);
 
-        cell.style.position = 'relative';
+        btn.onclick = function (ev) {
+            ev.stopPropagation();
 
-        // 👉 HOVER LOGIC (dit wilde je)
-        cell.addEventListener('mouseenter', () => {
-            btn.style.display = 'block';
-        });
-
-        cell.addEventListener('mouseleave', () => {
-            btn.style.display = 'none';
-        });
-
-        // 👉 DELETE LOGIC
-        btn.onclick = function (e) {
-            e.stopPropagation();
-
-            const id = cell.getAttribute('data-id');
+            const id = cell.dataset.id;
 
             fetch('/remove-function', {
                 method: 'POST',
@@ -55,11 +33,18 @@ const interval = setInterval(() => {
                 body: JSON.stringify({ id: id })
             })
             .then(() => {
+
+                // 🔥 reset cell
                 cell.innerHTML = '';
+                cell.classList.remove('occupied');
+                cell.classList.add('available');
+
+                // 🔥 drag opnieuw activeren
+                if (typeof enableDrag === "function") {
+                    enableDrag();
+                }
             });
         };
-
-        cell.appendChild(btn);
     });
 
-}, 200);
+});

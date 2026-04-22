@@ -24,7 +24,51 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+}
+.grid-cell .function-item {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;      
+    margin: 0;         
+    border: none;
+    background: transparent;
+    box-sizing: border-box;
+}
+.grid-cell .function-item img {
+    width: 60%;
+    height: 50%;
+    object-fit: contain;
+}
+.delete-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 16px;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+}
+.grid-cell:hover .delete-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* hover effect */
+.delete-btn:hover {
+    background: red;
+    transform: scale(1.1);
 }
 
 .grid-cell img,
