@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const functionItems = document.querySelectorAll(".function-item");
-    const gridCells = document.querySelectorAll(".grid-cell");
-    const functionImages = document.querySelectorAll(".function-item img");
+    const functionItems = document.querySelectorAll(".functionItem");
+    const gridCells = document.querySelectorAll(".gridCell");
+    const functionImages = document.querySelectorAll(".functionItem img");
 
     functionImages.forEach((img) => {
         img.setAttribute("draggable", "false");
@@ -26,8 +26,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!originalItem) return;
 
-            const existingItem = cell.querySelector(".function-item");
-            const existingImage = cell.querySelector(".grid-image");
+            const existingItem = cell.querySelector(".functionItem");
+            const existingImage = cell.querySelector(".gridImage");
 
             if (existingItem) {
                 existingItem.remove();
