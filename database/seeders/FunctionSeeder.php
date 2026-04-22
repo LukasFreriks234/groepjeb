@@ -21,7 +21,7 @@ class FunctionSeeder extends Seeder
             ['name' => 'Shop', 'image' => 'images/Shop.png', 'category' => 'Services'],
             ['name' => 'Hospital', 'image' => 'images/Hospital.png', 'category' => 'Services'],
             ['name' => 'Station', 'image' => 'images/Station.jpg', 'category' => 'Mobility'],
-            ['name' => 'Road', 'image' => 'images/Road.png', 'category' => 'Mobility'],
+            ['name' => 'Road', 'image' => 'images/Road.jpg', 'category' => 'Mobility'],
             ['name' => 'Bicycle Path', 'image' => 'images/BicyclePath.png', 'category' => 'Mobility'],
             ['name' => 'Gas Station', 'image' => 'images/GasStation.png', 'category' => 'Mobility'],
         ];
