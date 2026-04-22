@@ -47,3 +47,33 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+let scrollInterval;
+
+function stopAutoScroll() {
+    clearInterval(scrollInterval);
+    scrollInterval = null;
+}
+
+function startAutoScroll(direction) {
+    if (scrollInterval) return; 
+    scrollInterval = setInterval(() => {
+        window.scrollBy(0, direction);
+    }, 10); 
+}
+
+document.addEventListener("dragover", function (ev) {
+    const scrollThreshold = 100; 
+    const scrollSpeed = 15; 
+
+    if (ev.clientY < scrollThreshold) {
+        startAutoScroll(-scrollSpeed);
+    } else if (window.innerHeight - ev.clientY < scrollThreshold) {
+        startAutoScroll(scrollSpeed);
+    } else {
+        stopAutoScroll();
+    }
+});
+
+document.addEventListener("dragend", stopAutoScroll);
+document.addEventListener("drop", stopAutoScroll);
