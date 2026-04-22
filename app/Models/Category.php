@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class categories extends Model
+class Category extends Model
 {
     use HasFactory;
 
@@ -15,12 +15,14 @@ class categories extends Model
 
     protected $keyType = 'string';
 
+    protected $table = 'categories';
+
     protected $fillable = [
         'category',
     ];
 
     public function functions()
     {
-        return $this->hasMany(functions::class, 'category', 'category');
+        return $this->hasMany(Functions::class, 'category', 'category');
     }
 }
