@@ -7,7 +7,7 @@
                      data-id="{{ $cell->id }}"
                      role="gridcell"
                      tabindex="0"
-                     aria-label="Cel on position {{ $cell->x_coordinate }}, {{ $cell->y_coordinate }}. Status: {{ $cell->is_available ? 'avilable' : 'occupied' }}">
+                     aria-label="Cel on position {{ $cell->x_coordinate }}, {{ $cell->y_coordinate }}. Status: {{ $cell->is_available ? 'available' : 'occupied' }}">
                     @if(!$cell->is_available && $cell->cityFunction)
                         <img src="{{ asset('storage/' . $cell->cityFunction->image) }}" 
                             alt="{{ $cell->cityFunction->name }}" 
