@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
-
     enableDrag();
+    enableMobileDrag();
 
     const gridCells = document.querySelectorAll(".gridCell");
 
@@ -20,22 +20,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!originalItem) return;
 
-            // 🔥 oude inhoud verwijderen (image + clone)
+            // oude inhoud verwijderen
             const existingItem = cell.querySelector(".functionItem");
             const existingImage = cell.querySelector(".gridImage");
 
             if (existingItem) existingItem.remove();
             if (existingImage) existingImage.remove();
 
-            // 🔥 clone maken
+            // clone maken
             const clonedItem = originalItem.cloneNode(true);
             clonedItem.removeAttribute("id");
             clonedItem.setAttribute("draggable", "false");
 
-            // 🔥 in cell zetten
+            // in cell zetten
             cell.appendChild(clonedItem);
 
-            // 🔥 styling update
+            // styling update
             cell.classList.remove("available");
             cell.classList.add("occupied");
         });
@@ -43,12 +43,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-// 🔥 DRAG FUNCTIE (BELANGRIJK VOOR DELETE)
+// DRAG FUNCTIE
 function enableDrag() {
     const functionItems = document.querySelectorAll(".functionItem");
 
     functionItems.forEach((item) => {
-
         item.setAttribute("draggable", "true");
 
         item.addEventListener("dragstart", function (ev) {
@@ -58,7 +57,55 @@ function enableDrag() {
 }
 
 
-// 🔥 AUTO SCROLL (ongewijzigd maar opgeschoond)
+// MOBIEL TOEGEVOEGD
+function enableMobileDrag() {
+    const functionItems = document.querySelectorAll(".functionItem");
+
+    let activeItem = null;
+
+    functionItems.forEach((item) => {
+        item.addEventListener("touchstart", function (ev) {
+            activeItem = item;
+            ev.preventDefault();
+        }, { passive: false });
+    });
+
+    document.addEventListener("touchmove", function (ev) {
+        if (activeItem) {
+            ev.preventDefault();
+        }
+    }, { passive: false });
+
+    document.addEventListener("touchend", function (ev) {
+        if (!activeItem) return;
+
+        const touch = ev.changedTouches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const cell = element ? element.closest(".gridCell") : null;
+
+        if (cell) {
+            const existingItem = cell.querySelector(".functionItem");
+            const existingImage = cell.querySelector(".gridImage");
+
+            if (existingItem) existingItem.remove();
+            if (existingImage) existingImage.remove();
+
+            const clonedItem = activeItem.cloneNode(true);
+            clonedItem.removeAttribute("id");
+            clonedItem.setAttribute("draggable", "false");
+
+            cell.appendChild(clonedItem);
+
+            cell.classList.remove("available");
+            cell.classList.add("occupied");
+        }
+
+        activeItem = null;
+    }, { passive: false });
+}
+
+
+// AUTO SCROLL
 let scrollInterval;
 
 function stopAutoScroll() {
