@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('image');
-            $table->text('effect');
+            // $table->text('effect');
             $table->string('category');
 
             $table->foreign('category')
