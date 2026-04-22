@@ -25,13 +25,25 @@ document.addEventListener("DOMContentLoaded", function () {
             const originalItem = document.getElementById(itemId);
 
             if (!originalItem) return;
-            if (cell.classList.contains("occupied") || cell.querySelector(".function-item")) return;
+
+            const existingItem = cell.querySelector(".function-item");
+            const existingImage = cell.querySelector(".grid-image");
+
+            if (existingItem) {
+                existingItem.remove();
+            }
+
+            if (existingImage) {
+                existingImage.remove();
+            }
 
             const clonedItem = originalItem.cloneNode(true);
             clonedItem.removeAttribute("id");
             clonedItem.draggable = false;
 
             cell.appendChild(clonedItem);
+            cell.classList.remove("available");
+            cell.classList.add("occupied");
         });
     });
 });
