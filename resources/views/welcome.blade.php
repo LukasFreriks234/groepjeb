@@ -7,14 +7,15 @@
     <script type="text/javascript" src="{{ asset('js/functionTable.js') }}" defer></script>
     <script src="{{ asset('js/gridDragDrop.js') }}" defer></script>
     <script src="{{ asset('js/delete.js') }}" defer></script>
-    <link href="{{ asset('css/functionTableStyle.css')}}" type="text/css" rel="stylesheet"/>
-    <link href="{{ asset('css/gridStyle.css')}}" type="text/css" rel="stylesheet"/>
+    <link href="{{ asset('css/functionTablestyle.css')}}" type="text/css" rel="stylesheet"/>
+    <link href="{{ asset('css/gridstyle.css')}}" type="text/css" rel="stylesheet"/>
     <title>Metropolis</title>
 </head>
 <body>
 
+<div class="container">
 <x-grid :cells="$cells"/>
 <x-functionTable :functions="$functions" :categories="$categories"/>
-
+</div>
 </body>
 </html>
