@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Effects as EffectsModel;
 
-class Effects extends Seeder
+class EffectsSeeder extends Seeder
 {
     public function run(): void
     {
