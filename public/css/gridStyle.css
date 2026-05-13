@@ -3,7 +3,7 @@
 }
 
 .citySection {
-   width: 100%; 
+   width: 100%;
     max-width: 100%;
     box-sizing: border-box;
 }
@@ -81,7 +81,6 @@
     z-index: 9999;
 }
 
-
 .gridCell:hover .delete-btn {
     opacity: 1;
     transform: scale(1);
@@ -92,3 +91,22 @@
     transform: scale(1.1);
 }
 
+.functionTooltip {
+    position: fixed;
+    width: 220px;
+    background: white;
+    border: 2px solid black;
+    padding: 12px;
+    z-index: 99999;
+    pointer-events: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.functionTooltip.hidden {
+    display: none;
+}
+
+.functionTooltip h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}

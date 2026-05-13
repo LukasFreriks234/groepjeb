@@ -2,11 +2,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.body.addEventListener('mouseover', function (e) {
 
-        // ✅ juiste class
+        // juiste class
         const cell = e.target.closest('.gridCell');
         if (!cell) return;
 
-        // ✅ check juiste inhoud
+        // check juiste inhoud
         if (!cell.querySelector('.functionItem') && !cell.querySelector('.gridImage')) {
             return;
         }
@@ -36,12 +36,12 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(() => {
 
-                // 🔥 cel leeg maken
+                // cel leeg maken
                 cell.innerHTML = '';
                 cell.classList.remove('occupied');
                 cell.classList.add('available');
 
-                // 🔥 drag opnieuw activeren
+                // drag opnieuw activeren
                 enableDrag();
             });
         };

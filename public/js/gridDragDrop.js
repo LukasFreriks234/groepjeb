@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     enableDrag();
     enableMobileDrag();
+    enableTooltip();
 
     const gridCells = document.querySelectorAll(".gridCell");
 
@@ -45,13 +46,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // DRAG FUNCTIE
 function enableDrag() {
-    const functionItems = document.querySelectorAll(".functionItem");
+
+    const functionItems =
+        document.querySelectorAll(".functionItem");
 
     functionItems.forEach((item) => {
         item.setAttribute("draggable", "true");
 
         item.addEventListener("dragstart", function (ev) {
-            ev.dataTransfer.setData("text/plain", ev.currentTarget.id);
+
+            ev.dataTransfer.setData(
+                "text/plain",
+                ev.currentTarget.id
+            );
+
         });
     });
 }
@@ -59,7 +67,9 @@ function enableDrag() {
 
 // MOBIEL TOEGEVOEGD
 function enableMobileDrag() {
-    const functionItems = document.querySelectorAll(".functionItem");
+
+    const functionItems =
+        document.querySelectorAll(".functionItem");
 
     let activeItem = null;
 
@@ -79,18 +89,34 @@ function enableMobileDrag() {
     document.addEventListener("touchend", function (ev) {
         if (!activeItem) return;
 
-        const touch = ev.changedTouches[0];
-        const element = document.elementFromPoint(touch.clientX, touch.clientY);
-        const cell = element ? element.closest(".gridCell") : null;
+        const touch =
+            ev.changedTouches[0];
+
+        const element =
+            document.elementFromPoint(
+                touch.clientX,
+                touch.clientY
+            );
+
+        const cell =
+            element
+                ? element.closest(".gridCell")
+                : null;
 
         if (cell) {
-            const existingItem = cell.querySelector(".functionItem");
-            const existingImage = cell.querySelector(".gridImage");
+
+            const existingItem =
+                cell.querySelector(".functionItem");
+
+            const existingImage =
+                cell.querySelector(".gridImage");
 
             if (existingItem) existingItem.remove();
             if (existingImage) existingImage.remove();
 
-            const clonedItem = activeItem.cloneNode(true);
+            const clonedItem =
+                activeItem.cloneNode(true);
+
             clonedItem.removeAttribute("id");
             clonedItem.setAttribute("draggable", "false");
 
@@ -104,8 +130,46 @@ function enableMobileDrag() {
     }, { passive: false });
 }
 
+// TOOLTIP
+function enableTooltip() {
+    const tooltip = document.getElementById("functionTooltip");
+    const tooltipTitle = document.getElementById("tooltipTitle");
+    const tooltipEffects = document.getElementById("tooltipEffects");
+    const tooltipQuality = document.getElementById("tooltipQuality");
+    const gridCells = document.querySelectorAll(".gridCell");
 
-// AUTO SCROLL 
+    gridCells.forEach((cell) => {
+        cell.addEventListener("mousemove", function (ev) {
+            const image = cell.querySelector("img");
+
+            // lege cell
+            if (!image) {
+                tooltip.classList.add("hidden");
+                return;
+            }
+
+            // naam uit alt halen
+            tooltipTitle.textContent = image.alt;
+
+            // tijdelijke info
+            tooltipEffects.textContent = "Effects on surrounding areas";
+            tooltipQuality.textContent = "Quality of life impact";
+
+            // positie naast cursor
+            tooltip.style.left = (ev.clientX + 15) + "px";
+            tooltip.style.top = (ev.clientY + 15) + "px";
+
+            // tonen
+            tooltip.classList.remove("hidden");
+        })
+        cell.addEventListener("mouseleave", function () {
+            tooltip.classList.add("hidden");
+        });
+    });
+}
+
+
+// AUTO SCROLL
 let scrollInterval;
 
 function stopAutoScroll() {
@@ -125,14 +189,16 @@ function checkScroll(clientY) {
     const scrollSpeed = 10;
 
     if (clientY < scrollThreshold) {
-        startAutoScroll(-scrollSpeed); 
-    } else if (window.innerHeight - clientY < scrollThreshold) {
-        startAutoScroll(scrollSpeed); 
+        startAutoScroll(-scrollSpeed);
+    } else if (
+        window.innerHeight - clientY < scrollThreshold
+    ) {
+        startAutoScroll(scrollSpeed);
+
     } else {
         stopAutoScroll();
     }
 }
-
 
 document.addEventListener("dragover", function (ev) {
     checkScroll(ev.clientY);
@@ -140,10 +206,11 @@ document.addEventListener("dragover", function (ev) {
 
 document.addEventListener("touchmove", function (ev) {
     const touchY = ev.touches[0].clientY;
-    
-    const activeItem = document.querySelector('.functionItem[style*="opacity"]'); 
+    const activeItem =
+        document.querySelector(
+            '.functionItem[style*="opacity"]'
+        );
     checkScroll(touchY);
-    
 }, { passive: false });
 document.addEventListener("dragend", stopAutoScroll);
 document.addEventListener("drop", stopAutoScroll);
