@@ -19,7 +19,7 @@
         array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC,$arrFunctions);?>
         <ul id="functionsList">
             @foreach($arrFunctions as $function)
-            <li id="function{{ $function['id'] }}" class="functionItem" draggable="true">
+            <li id="function{{ $function['id'] }}" class="functionItem" draggable="true" data-category="{{ $function['category'] }}">
                 <div class="functionImage">
                     <img src="{{ $function['image'] }}">
                 </div>

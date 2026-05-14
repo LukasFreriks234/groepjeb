@@ -30,8 +30,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // clone maken
             const clonedItem = originalItem.cloneNode(true);
+
+            // category opslaan op cell
+            cell.dataset.category = originalItem.dataset.category;
             clonedItem.removeAttribute("id");
-            clonedItem.setAttribute("draggable", "false");
+            clonedItem.setAttribute( "draggable", "false");
+
+            // dataset kopiëren
+            const originalImage = originalItem.querySelector("img");
+            const clonedImage = clonedItem.querySelector("img");
+            if (originalImage && clonedImage) { 
+                clonedImage.dataset.category = originalImage.dataset.category;
+            }
 
             // in cell zetten
             cell.appendChild(clonedItem);
@@ -89,36 +99,20 @@ function enableMobileDrag() {
     document.addEventListener("touchend", function (ev) {
         if (!activeItem) return;
 
-        const touch =
-            ev.changedTouches[0];
-
-        const element =
-            document.elementFromPoint(
-                touch.clientX,
-                touch.clientY
-            );
-
-        const cell =
-            element
-                ? element.closest(".gridCell")
-                : null;
+        const touch = ev.changedTouches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const cell = element ? element.closest(".gridCell") : null;
 
         if (cell) {
-
-            const existingItem =
-                cell.querySelector(".functionItem");
-
-            const existingImage =
-                cell.querySelector(".gridImage");
+            const existingItem = cell.querySelector(".functionItem");
+            const existingImage = cell.querySelector(".gridImage");
 
             if (existingItem) existingItem.remove();
             if (existingImage) existingImage.remove();
 
-            const clonedItem =
-                activeItem.cloneNode(true);
-
+            const clonedItem = activeItem.cloneNode(true);
             clonedItem.removeAttribute("id");
-            clonedItem.setAttribute("draggable", "false");
+            clonedItem.setAttribute( "draggable", "false" );
 
             cell.appendChild(clonedItem);
 
@@ -148,12 +142,11 @@ function enableTooltip() {
                 return;
             }
 
-            // naam uit alt halen
-            tooltipTitle.textContent = image.alt;
+            // naam tonen
+            tooltipTitle.textContent = image.src.split('/').pop().split('.')[0];
 
-            // tijdelijke info
-            tooltipEffects.textContent = "Effects on surrounding areas";
-            tooltipQuality.textContent = "Quality of life impact";
+            // effect tonen
+            tooltipEffects.textContent = "Effect: " + cell.dataset.category;
 
             // positie naast cursor
             tooltip.style.left = (ev.clientX + 15) + "px";
@@ -161,7 +154,7 @@ function enableTooltip() {
 
             // tonen
             tooltip.classList.remove("hidden");
-        })
+        });
         cell.addEventListener("mouseleave", function () {
             tooltip.classList.add("hidden");
         });
@@ -205,11 +198,8 @@ document.addEventListener("dragover", function (ev) {
 });
 
 document.addEventListener("touchmove", function (ev) {
-    const touchY = ev.touches[0].clientY;
-    const activeItem =
-        document.querySelector(
-            '.functionItem[style*="opacity"]'
-        );
+    const touchY =
+        ev.touches[0].clientY;
     checkScroll(touchY);
 }, { passive: false });
 document.addEventListener("dragend", stopAutoScroll);

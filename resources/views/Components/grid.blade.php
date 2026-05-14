@@ -10,8 +10,10 @@
                      aria-label="Cel on position {{ $cell->x_coordinate }}, {{ $cell->y_coordinate }}. Status: {{ $cell->is_available ? 'available' : 'occupied' }}">
                     @if(!$cell->is_available && $cell->cityFunction)
                         <img src="{{ asset('storage/' . $cell->cityFunction->image) }}"
-                             alt="{{ $cell->cityFunction->name }}"
-                             class="gridImage">
+                            alt="{{ $cell->cityFunction->name }}"
+                            class="gridImage"
+                            data-category="{{ $cell->cityFunction->getAttribute('category') }}">
+
                     @endif
                 </div>
             @endforeach
@@ -19,6 +21,7 @@
     </main>
 </div>
 
+<!-- TOOLTIP -->
 <div id="functionTooltip"
      class="functionTooltip hidden">
     <h3 id="tooltipTitle"></h3>
