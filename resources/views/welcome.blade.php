@@ -21,7 +21,7 @@
 
     <div class="sidebar">
         <div class="effectsSection">
-            <x-effectTable />
+            <x-effectTable :categories="$categories"/>
         </div>
 
         <div class="functionsSection">
