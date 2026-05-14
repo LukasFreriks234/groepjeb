@@ -8,11 +8,11 @@ class Effects extends Model
 {
     protected $fillable = [
         'id',
-        'Veiligheid',
-        'Recreatie',
-        'Milieukwaliteit',
-        'Voorzieningen',
-        'Mobiliteit',
+        'Safety',
+        'Recreation',
+        'Environment',
+        'Facilities',
+        'Mobility',
     ];
     
     public $timestamps = false;
