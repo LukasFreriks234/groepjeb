@@ -38,6 +38,9 @@ document.addEventListener("DOMContentLoaded", function () {
             // styling update
             cell.classList.remove("available");
             cell.classList.add("occupied");
+
+            // NIEUW: opslaan + effect table updaten
+            saveFunctionInGrid(cell, originalItem);
         });
     });
 });
@@ -98,11 +101,61 @@ function enableMobileDrag() {
 
             cell.classList.remove("available");
             cell.classList.add("occupied");
+
+            // NIEUW: opslaan + effect table updaten
+            saveFunctionInGrid(cell, activeItem);
         }
 
         activeItem = null;
     }, { passive: false });
 }
+
+
+// FUNCTIE OPSLAAN IN MYSQL
+function saveFunctionInGrid(cell, originalItem) {
+    const cellId = cell.dataset.id;
+    const functionId = originalItem.dataset.functionId;
+
+    if (!cellId || !functionId) {
+        console.error("cell_id of function_id ontbreekt");
+        return;
+    }
+
+    fetch('/grid/assign-function', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            cell_id: cellId,
+            function_id: functionId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Saved:", data);
+
+        if (data.success && data.effectTotals) {
+            updateEffectTable(data.effectTotals);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+
+
+// EFFECT TABLE DIRECT UPDATEN
+window.updateEffectTable = function (effectTotals) {
+    Object.keys(effectTotals).forEach(function (category) {
+        const element = document.querySelector(`[data-effect-category="${category}"]`);
+
+        if (element) {
+            element.textContent = effectTotals[category];
+        }
+    });
+};
 
 
 // AUTO SCROLL 
@@ -145,6 +198,7 @@ document.addEventListener("touchmove", function (ev) {
     checkScroll(touchY);
     
 }, { passive: false });
+
 document.addEventListener("dragend", stopAutoScroll);
 document.addEventListener("drop", stopAutoScroll);
 document.addEventListener("touchend", stopAutoScroll);

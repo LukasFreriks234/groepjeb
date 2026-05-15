@@ -21,7 +21,8 @@
 
     <div class="sidebar">
         <div class="effectsSection">
-            <x-effectTable :categories="$categories"/>
+            <x-effectTable :categories="$categories"
+            :effect-totals="$effectTotals"/>
         </div>
 
         <div class="functionsSection">

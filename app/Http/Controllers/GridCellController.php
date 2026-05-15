@@ -6,15 +6,52 @@ use Illuminate\Http\Request;
 use App\Models\GridCell;
 use App\Models\Functions;
 use App\Models\Category;
+use App\Models\Effects;
 
 class GridCellController extends Controller
 {
     public function index() {
-        $cells = GridCell::orderBy('y_coordinate')->orderBy('x_coordinate')->get();
+        $cells = GridCell::with('cityFunction')
+            ->orderBy('y_coordinate')
+            ->orderBy('x_coordinate')
+            ->get();
+
         $functions = Functions::all();
         $categories = Category::all();
 
-        return view('welcome', compact('cells', 'functions', 'categories'));
+        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+
+        return view('welcome', compact(
+            'cells',
+            'functions',
+            'categories',
+            'effectTotals'
+        ));
+    }
+
+    public function assignFunction(Request $request)
+    {
+        $cell = GridCell::find($request->cell_id);
+
+        if (!$cell) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cell not found',
+            ], 404);
+        }
+
+        $cell->destination_type = $request->function_id;
+        $cell->is_available = false;
+        $cell->save();
+
+        $cells = GridCell::with('cityFunction')->get();
+        $categories = Category::all();
+        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+
+        return response()->json([
+            'success' => true,
+            'effectTotals' => $effectTotals,
+        ]);
     }
 
     public function removeFunction(Request $request)
@@ -27,6 +64,13 @@ class GridCellController extends Controller
             $cell->save();
         }
 
-        return response()->json(['success' => true]);
+        $cells = GridCell::with('cityFunction')->get();
+        $categories = Category::all();
+        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+
+        return response()->json([
+            'success' => true,
+            'effectTotals' => $effectTotals,
+        ]);
     }
 }
