@@ -127,37 +127,57 @@ function enableMobileDrag() {
 // TOOLTIP
 function enableTooltip() {
     const tooltip = document.getElementById("functionTooltip");
-    const tooltipTitle = document.getElementById("tooltipTitle");
-    const tooltipEffects = document.getElementById("tooltipEffects");
-    const tooltipQuality = document.getElementById("tooltipQuality");
     const gridCells = document.querySelectorAll(".gridCell");
 
     gridCells.forEach((cell) => {
         cell.addEventListener("mousemove", function (ev) {
-            const image = cell.querySelector("img");
+            loadNeighborEffects(cell);
 
-            // lege cell
-            if (!image) {
-                tooltip.classList.add("hidden");
-                return;
-            }
-
-            // naam tonen
-            tooltipTitle.textContent = image.src.split('/').pop().split('.')[0];
-
-            // effect tonen
-            tooltipEffects.textContent = "Effect: " + cell.dataset.category;
-
-            // positie naast cursor
             tooltip.style.left = (ev.clientX + 15) + "px";
             tooltip.style.top = (ev.clientY + 15) + "px";
 
-            // tonen
             tooltip.classList.remove("hidden");
         });
+
         cell.addEventListener("mouseleave", function () {
             tooltip.classList.add("hidden");
         });
+    });
+}
+
+function loadNeighborEffects(cell) {
+    const cellId = cell.dataset.id;
+
+    if (!cellId) return;
+
+    fetch('/grid/neighbor-effects', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            cell_id: cellId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.effectTotals) {
+            updateTooltipEffects(data.effectTotals);
+        }
+    })
+    .catch(error => {
+        console.error("Neighbor effects error:", error);
+    });
+}
+
+function updateTooltipEffects(effectTotals) {
+    Object.keys(effectTotals).forEach(function (category) {
+        const element = document.querySelector(`[data-tooltip-effect-category="${category}"]`);
+
+        if (element) {
+            element.textContent = effectTotals[category];
+        }
     });
 }
 

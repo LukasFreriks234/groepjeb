@@ -16,7 +16,7 @@
 <body>
 
 <div class="container"> <div class="gridSection">
-        <x-grid :cells="$cells" />
+        <x-grid :cells="$cells" :categories="$categories" />
     </div>
 
     <div class="sidebar">

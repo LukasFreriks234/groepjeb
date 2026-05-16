@@ -1,3 +1,4 @@
+@props(['cells', 'categories'])
 <div class="simulationContainer">
     <main class="citySection">
         <h2>City area</h2>
@@ -22,9 +23,13 @@
 </div>
 
 <!-- TOOLTIP -->
-<div id="functionTooltip"
-     class="functionTooltip hidden">
-    <h3 id="tooltipTitle"></h3>
-    <p id="tooltipEffects"></p>
-    <p id="tooltipQuality"></p>
+<div id="functionTooltip" class="functionTooltip hidden">
+    <ul id="tooltipEffectsList">
+        @foreach($categories as $category)
+            <li>
+                {{ $category->category }}:
+                <span data-tooltip-effect-category="{{ $category->category }}">0</span>
+            </li>
+        @endforeach
+    </ul>
 </div>
