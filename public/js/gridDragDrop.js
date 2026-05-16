@@ -234,13 +234,24 @@ function loadNeighborEffects(cell) {
 
 // TOOLTIP EFFECTS UPDATEN
 function updateTooltipEffects(effectTotals) {
+    let qualityOfLife = 0;
+
     Object.keys(effectTotals).forEach(function (category) {
+        const value = Number(effectTotals[category]);
+        qualityOfLife += value;
+
         const element = document.querySelector(`[data-tooltip-effect-category="${category}"]`);
 
         if (element) {
-            element.textContent = effectTotals[category];
+            element.textContent = value;
         }
     });
+
+    const qualityElement = document.getElementById("tooltipQualityOfLife");
+
+    if (qualityElement) {
+        qualityElement.textContent = qualityOfLife;
+    }
 }
 
 

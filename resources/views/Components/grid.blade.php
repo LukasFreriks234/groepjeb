@@ -36,5 +36,10 @@
                 <span data-tooltip-effect-category="{{ $category->category }}">0</span>
             </li>
         @endforeach
+
+        <li>
+            Quality of Life:
+            <span id="tooltipQualityOfLife">0</span>
+        </li>
     </ul>
 </div>
