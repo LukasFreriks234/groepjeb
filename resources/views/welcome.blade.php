@@ -9,13 +9,26 @@
     <script src="{{ asset('js/delete.js') }}" defer></script>
     <link href="{{ asset('css/functionTableStyle.css')}}" type="text/css" rel="stylesheet"/>
     <link href="{{ asset('css/gridStyle.css')}}" type="text/css" rel="stylesheet"/>
+    <link href="{{ asset('css/effectTableStyle.css')}}" type="text/css" rel="stylesheet"/>
+    <link href="{{ asset('css/layout.css')}}" type="text/css" rel="stylesheet"/>
     <title>Metropolis</title>
 </head>
 <body>
 
-<div class="container">
-<x-grid :cells="$cells"/>
-<x-functionTable :functions="$functions" :categories="$categories"/>
+<div class="container"> <div class="gridSection">
+        <x-grid :cells="$cells" />
+    </div>
+
+    <div class="sidebar">
+        <div class="effectsSection">
+            <x-effectTable :categories="$categories"/>
+        </div>
+
+        <div class="functionsSection">
+            <x-functionTable :functions="$functions" :categories="$categories" />
+        </div>
+    </div>
+
 </div>
 </body>
 </html>

@@ -105,7 +105,7 @@ function enableMobileDrag() {
 }
 
 
-// AUTO SCROLL
+// AUTO SCROLL 
 let scrollInterval;
 
 function stopAutoScroll() {
@@ -115,24 +115,36 @@ function stopAutoScroll() {
 
 function startAutoScroll(direction) {
     if (scrollInterval) return;
-
     scrollInterval = setInterval(() => {
         window.scrollBy(0, direction);
     }, 10);
 }
 
-document.addEventListener("dragover", function (ev) {
+function checkScroll(clientY) {
     const scrollThreshold = 100;
-    const scrollSpeed = 15;
+    const scrollSpeed = 10;
 
-    if (ev.clientY < scrollThreshold) {
-        startAutoScroll(-scrollSpeed);
-    } else if (window.innerHeight - ev.clientY < scrollThreshold) {
-        startAutoScroll(scrollSpeed);
+    if (clientY < scrollThreshold) {
+        startAutoScroll(-scrollSpeed); 
+    } else if (window.innerHeight - clientY < scrollThreshold) {
+        startAutoScroll(scrollSpeed); 
     } else {
         stopAutoScroll();
     }
+}
+
+
+document.addEventListener("dragover", function (ev) {
+    checkScroll(ev.clientY);
 });
 
+document.addEventListener("touchmove", function (ev) {
+    const touchY = ev.touches[0].clientY;
+    
+    const activeItem = document.querySelector('.functionItem[style*="opacity"]'); 
+    checkScroll(touchY);
+    
+}, { passive: false });
 document.addEventListener("dragend", stopAutoScroll);
 document.addEventListener("drop", stopAutoScroll);
+document.addEventListener("touchend", stopAutoScroll);
