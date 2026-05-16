@@ -1,4 +1,6 @@
 <div id="functionsTable">
+    <h2>Function List</h2>
+    <p>Search and Filter Functions</p><br>
     <input type="text" id="myInput" placeholder="Search for names.."><br>
 
     <?php 
