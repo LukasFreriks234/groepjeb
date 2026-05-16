@@ -62,3 +62,15 @@
     touch-action: none;
     user-select: none;
 }
+
+.filterDropdown summary{
+    cursor: pointer;
+    border: solid 1px grey;
+    border-radius: 2px;
+    width: 20%;
+    margin-top: 2px;
+}
+
+.filterDropdown summary:hover{
+    background-color: lightgrey;
+}

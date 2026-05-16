@@ -10,6 +10,9 @@
     $i = 1;
     ?>
 
+    <details class="filterDropdown">
+        <summary>Filters</summary>
+
     @foreach($arrCategories as $category)
         <input 
             type="checkbox" 
@@ -21,6 +24,9 @@
         <label for="category{{ $i }}">{{ $category['category'] }}</label><br>
         <?php $i++; ?>
     @endforeach
+
+    </details>
+    <br>
 
     <?php 
     $arrFunctions = $functions->toArray();
