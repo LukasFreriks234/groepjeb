@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cell.classList.remove("available");
             cell.classList.add("occupied");
 
-            // NIEUW: opslaan + effect table updaten
+            // opslaan + effect table updaten
             saveFunctionInGrid(cell, originalItem);
         });
     });
@@ -102,7 +102,7 @@ function enableMobileDrag() {
             cell.classList.remove("available");
             cell.classList.add("occupied");
 
-            // NIEUW: opslaan + effect table updaten
+            // opslaan + effect table updaten
             saveFunctionInGrid(cell, activeItem);
         }
 
@@ -137,7 +137,7 @@ function saveFunctionInGrid(cell, originalItem) {
         console.log("Saved:", data);
 
         if (data.success && data.effectTotals) {
-            updateEffectTable(data.effectTotals);
+            updateEffectTable(data.effectTotals, data.qualityOfLife);
         }
     })
     .catch(error => {
@@ -147,7 +147,7 @@ function saveFunctionInGrid(cell, originalItem) {
 
 
 // EFFECT TABLE DIRECT UPDATEN
-window.updateEffectTable = function (effectTotals) {
+window.updateEffectTable = function (effectTotals, qualityOfLife) {
     Object.keys(effectTotals).forEach(function (category) {
         const element = document.querySelector(`[data-effect-category="${category}"]`);
 
@@ -155,6 +155,12 @@ window.updateEffectTable = function (effectTotals) {
             element.textContent = effectTotals[category];
         }
     });
+
+    const qualityElement = document.getElementById("qualityOfLifeValue");
+
+    if (qualityElement) {
+        qualityElement.textContent = qualityOfLife;
+    }
 };
 
 

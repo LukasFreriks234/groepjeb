@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 cell.classList.remove('occupied');
                 cell.classList.add('available');
 
-                // Update de effect table direct met de nieuwe totalen
+                // Update de effect table en Quality of Life direct met de nieuwe totalen
                 if (data.success && data.effectTotals) {
-                    updateEffectTable(data.effectTotals);
+                    updateEffectTable(data.effectTotals, data.qualityOfLife);
                 }
 
                 // Activeer drag opnieuw voor function items

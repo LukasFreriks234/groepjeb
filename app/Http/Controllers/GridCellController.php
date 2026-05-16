@@ -20,12 +20,14 @@ class GridCellController extends Controller
         $categories = Category::all();
 
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+        $qualityOfLife = Effects::calculateQualityOfLife($cells, $categories);
 
         return view('welcome', compact(
             'cells',
             'functions',
             'categories',
-            'effectTotals'
+            'effectTotals',
+            'qualityOfLife'
         ));
     }
 
@@ -46,11 +48,14 @@ class GridCellController extends Controller
 
         $cells = GridCell::with('cityFunction')->get();
         $categories = Category::all();
+
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+        $qualityOfLife = Effects::calculateQualityOfLife($cells, $categories);
 
         return response()->json([
             'success' => true,
             'effectTotals' => $effectTotals,
+            'qualityOfLife' => $qualityOfLife,
         ]);
     }
 
@@ -66,11 +71,14 @@ class GridCellController extends Controller
 
         $cells = GridCell::with('cityFunction')->get();
         $categories = Category::all();
+
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+        $qualityOfLife = Effects::calculateQualityOfLife($cells, $categories);
 
         return response()->json([
             'success' => true,
             'effectTotals' => $effectTotals,
+            'qualityOfLife' => $qualityOfLife,
         ]);
     }
 }

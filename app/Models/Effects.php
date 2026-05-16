@@ -62,4 +62,11 @@ class Effects extends Model
 
         return $effectTotals;
     }
+
+    public static function calculateQualityOfLife($cells, $categories)
+    {
+        $effectTotals = self::calculateEffectTotals($cells, $categories);
+
+        return array_sum($effectTotals);
+    }
 }

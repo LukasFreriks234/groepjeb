@@ -1,4 +1,4 @@
-@props(['categories', 'effectTotals' => []])
+@props(['categories', 'effectTotals' => [], 'qualityOfLife' => 0])
 
 <div>
     <h2>Effects</h2>
@@ -12,5 +12,10 @@
                 </span>
             </li>
         @endforeach
+
+        <li>
+                Quality of Life:
+                <span id="qualityOfLifeValue">{{ $qualityOfLife }}</span>
+        </li>
     </ul>
 </div>
