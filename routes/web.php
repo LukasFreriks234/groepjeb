@@ -8,3 +8,5 @@ Route::get('/', [GridCellController::class, 'index']);
 Route::post('/grid/assign-function', [GridCellController::class, 'assignFunction']);
 
 Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
+
+Route::post('/grid/neighbor-effects', [GridCellController::class, 'neighborEffects']);

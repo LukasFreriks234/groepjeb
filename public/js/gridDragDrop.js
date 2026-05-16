@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     enableDrag();
     enableMobileDrag();
+    enableTooltip();
 
     const gridCells = document.querySelectorAll(".gridCell");
 
@@ -29,8 +30,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // clone maken
             const clonedItem = originalItem.cloneNode(true);
+
+            // category opslaan op cell
+            cell.dataset.category = originalItem.dataset.category;
+
             clonedItem.removeAttribute("id");
             clonedItem.setAttribute("draggable", "false");
+
+            // dataset kopiëren
+            const originalImage = originalItem.querySelector("img");
+            const clonedImage = clonedItem.querySelector("img");
+
+            if (originalImage && clonedImage) { 
+                clonedImage.dataset.category = originalImage.dataset.category;
+            }
 
             // in cell zetten
             cell.appendChild(clonedItem);
@@ -54,7 +67,10 @@ function enableDrag() {
         item.setAttribute("draggable", "true");
 
         item.addEventListener("dragstart", function (ev) {
-            ev.dataTransfer.setData("text/plain", ev.currentTarget.id);
+            ev.dataTransfer.setData(
+                "text/plain",
+                ev.currentTarget.id
+            );
         });
     });
 }
@@ -97,6 +113,8 @@ function enableMobileDrag() {
             clonedItem.removeAttribute("id");
             clonedItem.setAttribute("draggable", "false");
 
+            cell.dataset.category = activeItem.dataset.category;
+
             cell.appendChild(clonedItem);
 
             cell.classList.remove("available");
@@ -108,6 +126,28 @@ function enableMobileDrag() {
 
         activeItem = null;
     }, { passive: false });
+}
+
+
+// TOOLTIP
+function enableTooltip() {
+    const tooltip = document.getElementById("functionTooltip");
+    const gridCells = document.querySelectorAll(".gridCell");
+
+    gridCells.forEach((cell) => {
+        cell.addEventListener("mousemove", function (ev) {
+            loadNeighborEffects(cell);
+
+            tooltip.style.left = (ev.clientX + 15) + "px";
+            tooltip.style.top = (ev.clientY + 15) + "px";
+
+            tooltip.classList.remove("hidden");
+        });
+
+        cell.addEventListener("mouseleave", function () {
+            tooltip.classList.add("hidden");
+        });
+    });
 }
 
 
@@ -141,7 +181,7 @@ function saveFunctionInGrid(cell, originalItem) {
         }
     })
     .catch(error => {
-        console.error("Error:", error);
+        console.error("Save error:", error);
     });
 }
 
@@ -164,7 +204,47 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
 };
 
 
-// AUTO SCROLL 
+// EFFECTS VAN BOVEN/LINKS/RECHTS/ONDER LADEN VOOR TOOLTIP
+function loadNeighborEffects(cell) {
+    const cellId = cell.dataset.id;
+
+    if (!cellId) return;
+
+    fetch('/grid/neighbor-effects', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            cell_id: cellId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.effectTotals) {
+            updateTooltipEffects(data.effectTotals);
+        }
+    })
+    .catch(error => {
+        console.error("Neighbor effects error:", error);
+    });
+}
+
+
+// TOOLTIP EFFECTS UPDATEN
+function updateTooltipEffects(effectTotals) {
+    Object.keys(effectTotals).forEach(function (category) {
+        const element = document.querySelector(`[data-tooltip-effect-category="${category}"]`);
+
+        if (element) {
+            element.textContent = effectTotals[category];
+        }
+    });
+}
+
+
+// AUTO SCROLL
 let scrollInterval;
 
 function stopAutoScroll() {
@@ -174,6 +254,7 @@ function stopAutoScroll() {
 
 function startAutoScroll(direction) {
     if (scrollInterval) return;
+
     scrollInterval = setInterval(() => {
         window.scrollBy(0, direction);
     }, 10);
@@ -184,14 +265,13 @@ function checkScroll(clientY) {
     const scrollSpeed = 10;
 
     if (clientY < scrollThreshold) {
-        startAutoScroll(-scrollSpeed); 
+        startAutoScroll(-scrollSpeed);
     } else if (window.innerHeight - clientY < scrollThreshold) {
-        startAutoScroll(scrollSpeed); 
+        startAutoScroll(scrollSpeed);
     } else {
         stopAutoScroll();
     }
 }
-
 
 document.addEventListener("dragover", function (ev) {
     checkScroll(ev.clientY);
@@ -199,10 +279,7 @@ document.addEventListener("dragover", function (ev) {
 
 document.addEventListener("touchmove", function (ev) {
     const touchY = ev.touches[0].clientY;
-    
-    const activeItem = document.querySelector('.functionItem[style*="opacity"]'); 
     checkScroll(touchY);
-    
 }, { passive: false });
 
 document.addEventListener("dragend", stopAutoScroll);
