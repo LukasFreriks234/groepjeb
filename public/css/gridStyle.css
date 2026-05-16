@@ -101,6 +101,7 @@
 .functionTooltip {
     position: fixed;
     width: 220px;
+    max-width: calc(100vw - 20px);
     background: white;
     color: black;
     border: 2px solid black;
@@ -110,6 +111,7 @@
     font-size: 16px;
     font-weight: bold;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-sizing: border-box;
 }
 
 .functionTooltip.hidden {

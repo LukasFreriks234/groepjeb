@@ -128,7 +128,6 @@ function enableMobileDrag() {
     }, { passive: false });
 }
 
-
 // TOOLTIP
 function enableTooltip() {
     const tooltip = document.getElementById("functionTooltip");
@@ -138,10 +137,37 @@ function enableTooltip() {
         cell.addEventListener("mousemove", function (ev) {
             loadNeighborEffects(cell);
 
-            tooltip.style.left = (ev.clientX + 15) + "px";
-            tooltip.style.top = (ev.clientY + 15) + "px";
-
             tooltip.classList.remove("hidden");
+
+            const padding = 10;
+            const tooltipWidth = tooltip.offsetWidth;
+            const tooltipHeight = tooltip.offsetHeight;
+
+            let left = ev.clientX + 15;
+            let top = ev.clientY + 15;
+
+            // Als tooltip rechts buiten het scherm valt, zet hem links van de cursor
+            if (left + tooltipWidth > window.innerWidth - padding) {
+                left = ev.clientX - tooltipWidth - 15;
+            }
+
+            // Als tooltip onder buiten het scherm valt, zet hem boven de cursor
+            if (top + tooltipHeight > window.innerHeight - padding) {
+                top = ev.clientY - tooltipHeight - 15;
+            }
+
+            // Niet links buiten het scherm
+            if (left < padding) {
+                left = padding;
+            }
+
+            // Niet boven buiten het scherm
+            if (top < padding) {
+                top = padding;
+            }
+
+            tooltip.style.left = left + "px";
+            tooltip.style.top = top + "px";
         });
 
         cell.addEventListener("mouseleave", function () {
