@@ -1,17 +1,21 @@
 <div id="functionsTable">
-    <input type="text" id="myInput" placeholder="Search for names.."><br>
+    <div class="filters">
+        <div>
+            <input type="text" id="myInput" placeholder="Search for names.."><br>
 
-    <?php 
-    $arrCategories = $categories->toArray();
-    $arrCategorie = array_column($arrCategories, 'category');
-    array_multisort($arrCategorie, SORT_ASC, $arrCategories);
-    $i=1;?>
-    @foreach($arrCategories as $category)
-        <input type="checkbox" id="category{{ $i }}" class="functionFilter" name="category{{ $i }}" value="{{ $category['category'] }}">
-        <label for="category{{ $i }}">{{ $category['category'] }}</label><br>
-        <?php $i++;?>
-    @endforeach
-
+            <?php 
+            $arrCategories = $categories->toArray();
+            $arrCategorie = array_column($arrCategories, 'category');
+            array_multisort($arrCategorie, SORT_ASC, $arrCategories);
+            $i=1;?>
+            @foreach($arrCategories as $category)
+                <input type="checkbox" id="category{{ $i }}" class="functionFilter" name="category{{ $i }}" value="{{ $category['category'] }}">
+                <label for="category{{ $i }}">{{ $category['category'] }}</label><br>
+                <?php $i++;?>
+            @endforeach
+        </div>
+    <a href="/overview"><button class="overviewButton">Overview</button></a>
+    </div>
         <?php 
         $arrFunctions = $functions->toArray();
         $arrFunctionName = array_column($arrFunctions, 'name');

@@ -6,9 +6,26 @@
         padding-right: 25px;
     }
 
+
+
     .container {
         display: flex;
     }
+}
+
+@media (max-width: 768px) {
+    .category {
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .categoryFilterContainer {
+        flex-direction: column;
+    }
+}
+
+body {
+    margin: 20px 50px;
 }
 
 .functionName {
@@ -34,6 +51,15 @@
     display: flex;
     align-items: center;
     margin-bottom: 0em;
+}
+
+.functionNameImage {
+    display: flex;
+}
+
+.functionItem {
+    display:flex; 
+    justify-content: space-between;
 }
 
 .functionImage {
@@ -64,4 +90,42 @@
     display: flex;
     margin: 20px 0;
     justify-content: space-between;
+}
+
+.categoryFilterContainer {
+    display: flex;
+    width: 650px;
+    justify-content: space-around;
+}
+
+.categoryFilter {
+    display: flex;
+    margin: 5px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.createButton, .backButton, .editButton{
+    border: none;
+    border-radius: 8px;
+    width: 180px;
+    height: 40px;
+    background: rgb(103, 143, 156);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.editButton {
+    width: 70px;
+    height: 30px;
+    margin: 20px;
+    font-size: 14px;
+}
+
+.backButton {
+    margin: 10px;
 }
