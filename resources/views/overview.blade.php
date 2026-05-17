@@ -13,7 +13,7 @@
     <div class="topbar">
         <h1>All functions:</h1>
         <!-- Link for new page -->
-        <a href="#"><button class="createButton">Create new function</button></a>
+        <a href="#"><button class="createButton hidden">Create new function</button></a>
     </div>
     <div class="category">
         <input type="text" id="myInput" placeholder="Search for names.."><br>
@@ -53,7 +53,7 @@ array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arr
                     </div>
                 </div>
                 <!-- Link for edit page -->
-                <a href="#"><button class="editButton">Edit</button></a>
+                <a href="#"><button class="editButton hidden">Edit</button></a>
             </li>
         @endforeach
     </ul>
