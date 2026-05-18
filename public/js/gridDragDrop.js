@@ -81,24 +81,55 @@ function enableMobileDrag() {
     const functionItems = document.querySelectorAll(".functionItem");
 
     let activeItem = null;
+    let touchTimeout = null;
+
+    let lastTouchX = 0;
+    let lastTouchY = 0;
 
     functionItems.forEach((item) => {
         item.addEventListener("touchstart", function (ev) {
             activeItem = item;
-            ev.preventDefault();
-        }, { passive: false });
+
+            const touch = ev.touches[0];
+            lastTouchX = touch.clientX;
+            lastTouchY = touch.clientY;
+            
+            touchTimeout = setTimeout(() => {
+                if (activeItem) {
+                    activeItem.style.opacity = "0.5"; 
+                }
+            }, 200);
+
+        }, { passive: true });
     });
 
     document.addEventListener("touchmove", function (ev) {
-        if (activeItem) {
-        }
+        const touch = ev.touches[0];
+        lastTouchX = touch.clientX;
+        lastTouchY = touch.clientY;
+
+        if (touchTimeout && activeItem && activeItem.style.opacity !== "0.5") {
+                clearTimeout(touchTimeout);
+                activeItem = null;
+            }
+            if (activeItem && activeItem.style.opacity === "0.5") {
+                ev.preventDefault();
+            }
     }, { passive: false });
 
     document.addEventListener("touchend", function (ev) {
-        if (!activeItem) return;
+        clearTimeout(touchTimeout);
+
+        if (!activeItem || activeItem.style.opacity !== "0.5") {
+                if (activeItem) activeItem.style.opacity = "1";
+                activeItem = null;
+                return;
+            }
+
+        activeItem.style.opacity = "1";
 
         const touch = ev.changedTouches[0];
-        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const element = document.elementFromPoint(lastTouchX, lastTouchY);
         const cell = element ? element.closest(".gridCell") : null;
 
         if (cell) {
@@ -111,6 +142,7 @@ function enableMobileDrag() {
             const clonedItem = activeItem.cloneNode(true);
             clonedItem.removeAttribute("id");
             clonedItem.setAttribute("draggable", "false");
+            clonedItem.style.opacity = "1";
 
             cell.dataset.category = activeItem.dataset.category;
 
