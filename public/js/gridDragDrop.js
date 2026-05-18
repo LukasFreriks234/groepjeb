@@ -91,7 +91,6 @@ function enableMobileDrag() {
 
     document.addEventListener("touchmove", function (ev) {
         if (activeItem) {
-            ev.preventDefault();
         }
     }, { passive: false });
 
