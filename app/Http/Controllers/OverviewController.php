@@ -13,6 +13,14 @@ class OverviewController extends Controller
         $functions = Functions::all();
         $categories = Category::all();
 
-        return view('overview', compact('functions', 'categories'));
+        return view('index', compact('functions', 'categories'));
+    }
+
+    public function show($id) {
+        $function = Functions::findorFail($id);
+        return view('show', [
+            'function' -> $function
+        ]);
+
     }
 }

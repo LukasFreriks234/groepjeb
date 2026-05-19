@@ -19,9 +19,9 @@
         <input type="text" id="myInput" placeholder="Search for names.."><br>
         <?php 
         $arrCategories = $categories->toArray();
-        $arrCategorie = array_column($arrCategories, 'category');
-        array_multisort($arrCategorie, SORT_ASC, $arrCategories);
-        $i = 1;?>
+$arrCategorie = array_column($arrCategories, 'category');
+array_multisort($arrCategorie, SORT_ASC, $arrCategories);
+$i = 1;?>
         <div class="categoryFilterContainer">
             @foreach($arrCategories as $category)
                 <div class="categoryFilter">
@@ -36,25 +36,26 @@
 
     <?php 
         $arrFunctions = $functions->toArray();
-$arrFunctionName = array_column($arrFunctions, 'name');
-$arrFunctionCategory = array_column($arrFunctions, 'category');
-array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arrFunctions);
+        $arrFunctionName = array_column($arrFunctions, 'name');
+        $arrFunctionCategory = array_column($arrFunctions, 'category');
+        array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arrFunctions);
     ?>
+
     <ul id="functionsList">
         @foreach($arrFunctions as $function)
-            <li id="function{{ $function['id'] }}" class="functionItem" draggable="true">
-                <div class="functionNameImage">
-                    <div class="functionImage">
-                        <img src="{{ $function['image'] }}">
+            <a href="/overview/{{ $function['id'] }}">
+                <li id="function{{ $function['id'] }}" class="functionItem" draggable="true">
+                    <div class="functionNameImage">
+                        <div class="functionImage">
+                            <img src="{{ $function['image'] }}">
+                        </div>
+                        <div>
+                            <p class="functionName">{{ $function['name'] }}</p>
+                            <p class="functionCategory" name="{{ $function['category'] }}">{{ $function['category'] }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="functionName">{{ $function['name'] }}</p>
-                        <p class="functionCategory" name="{{ $function['category'] }}">{{ $function['category'] }}</p>
-                    </div>
-                </div>
-                <!-- Link for edit page -->
-                <a href="#"><button class="editButton hidden">Edit</button></a>
-            </li>
+                </li>
+            </a>
         @endforeach
     </ul>
 
