@@ -27,11 +27,14 @@
                 <div class="functionImage">
                     <img src="{{ $function['image'] }}">
                 </div>
+
                 <div>
                     <p class="functionName">{{ $function['name'] }}</p>
-                    <p class="functionCategory" name="{{ $function['category'] }}">{{ $function['category'] }}</p>
+                    <p class="functionCategory" name="{{ $function['category'] }}">
+                        {{ $function['category'] }}
+                    </p>
                 </div>
             </li>
-            @endforeach
-        </ul>
+        @endforeach
+    </ul>
 </div>
