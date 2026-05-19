@@ -12,4 +12,6 @@ Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
 
 Route::post('/grid/neighbor-effects', [GridCellController::class, 'neighborEffects']);
 
-Route::get('/edit', [FunctionController::class, 'edit']);
+Route::get('/functions/{id}/edit', [FunctionController::class, 'edit']);
+
+Route::post('/functions/{id}/update', [FunctionController::class, 'update']);

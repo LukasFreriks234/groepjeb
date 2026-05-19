@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit</title>
+    <title>Edit Function</title>
 </head>
 <body>
 
-@foreach($functions as $function)
+    <h1>Edit Function</h1>
 
-<form method="POST"
-      action="{{ route('functions.update', $function->id) }}">
+    <form method="POST"
+          action="{{ route('functions.update', $function->id) }}">
 
-    @csrf
-
-    <div class="card">
-
-        <img src="{{ $function->image }}" width="100">
+        @csrf
 
         <div>
             <label>Name</label>
@@ -26,6 +22,8 @@
                    value="{{ $function->name }}">
         </div>
 
+        <br>
+
         <div>
             <label>Category</label>
 
@@ -34,59 +32,65 @@
                    value="{{ $function->category }}">
         </div>
 
-        <hr>
+        <br>
+
+        <h2>Effects</h2>
 
         <div>
-            <label>Veiligheid</label>
+            <label>Safety</label>
 
             <input type="number"
-                   name="Veiligheid"
-                   value="{{ $function->effects->Veiligheid ?? 0 }}">
+                   name="Safety"
+                   value="{{ $function->effects->Safety }}">
         </div>
+
+        <br>
 
         <div>
-            <label>Recreatie</label>
+            <label>Recreation</label>
 
             <input type="number"
-                   name="Recreatie"
-                   value="{{ $function->effects->Recreatie ?? 0 }}">
+                   name="Recreation"
+                   value="{{ $function->effects->Recreation }}">
         </div>
+
+        <br>
 
         <div>
-            <label>Milieukwaliteit</label>
+            <label>Environmental Quality</label>
 
             <input type="number"
-                   name="Milieukwaliteit"
-                   value="{{ $function->effects->Milieukwaliteit ?? 0 }}">
+                   name="Environmental Quality"
+                   value="{{ $function->effects->Environmental Quality }}">
         </div>
+
+        <br>
 
         <div>
-            <label>Voorzieningen</label>
+            <label>Services</label>
 
             <input type="number"
-                   name="Voorzieningen"
-                   value="{{ $function->effects->Voorzieningen ?? 0 }}">
+                   name="Services"
+                   value="{{ $function->effects->Services }}">
         </div>
+
+        <br>
 
         <div>
-            <label>Mobiliteit</label>
+            <label>Mobility</label>
 
             <input type="number"
-                   name="Mobiliteit"
-                   value="{{ $function->effects->Mobiliteit ?? 0 }}">
+                   name="Mobility"
+                   value="{{ $function->effects->Mobility }}">
         </div>
+
+        <br>
 
         <button type="submit">
             Opslaan
         </button>
 
-    </div>
-
-</form>
-
-<hr>
-
-@endforeach
+    </form>
 
 </body>
 </html>
