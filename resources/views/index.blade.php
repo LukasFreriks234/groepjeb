@@ -13,15 +13,15 @@
     <div class="topbar">
         <h1>All functions:</h1>
         <!-- Link for new page -->
-        <a href="#"><button class="createButton hidden">Create new function</button></a>
+        <a href="#"><button class="createButton">Create new function</button></a>
     </div>
     <div class="category">
         <input type="text" id="myInput" placeholder="Search for names.."><br>
         <?php 
         $arrCategories = $categories->toArray();
-$arrCategorie = array_column($arrCategories, 'category');
-array_multisort($arrCategorie, SORT_ASC, $arrCategories);
-$i = 1;?>
+        $arrCategorie = array_column($arrCategories, 'category');
+        array_multisort($arrCategorie, SORT_ASC, $arrCategories);
+        $i = 1;?>
         <div class="categoryFilterContainer">
             @foreach($arrCategories as $category)
                 <div class="categoryFilter">
@@ -36,9 +36,9 @@ $i = 1;?>
 
     <?php 
         $arrFunctions = $functions->toArray();
-        $arrFunctionName = array_column($arrFunctions, 'name');
-        $arrFunctionCategory = array_column($arrFunctions, 'category');
-        array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arrFunctions);
+$arrFunctionName = array_column($arrFunctions, 'name');
+$arrFunctionCategory = array_column($arrFunctions, 'category');
+array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arrFunctions);
     ?>
 
     <ul id="functionsList">

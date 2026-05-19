@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Effects;
 use App\Models\Functions;
 use Illuminate\Http\Request;
 
@@ -17,9 +18,11 @@ class OverviewController extends Controller
     }
 
     public function show($id) {
-        $function = Functions::findorFail($id);
+        $function = Functions::with('Effects')->findorFail($id);
+        $effect = Effects::findOrFail($id);
         return view('show', [
-            'function' -> $function
+            'function' => $function,
+            'effect' => $effect
         ]);
 
     }
