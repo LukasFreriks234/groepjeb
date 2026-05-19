@@ -61,7 +61,7 @@
 
             <input type="number"
                    name="Environmental Quality"
-                   value="{{ $function->effects->Environmental Quality }}">
+                   value="{{ $function->effects->{'Environmental Quality'} }}">
         </div>
 
         <br>

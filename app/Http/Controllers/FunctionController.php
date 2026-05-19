@@ -27,7 +27,7 @@ class FunctionController extends Controller
         $function->effects->update([
             'Safety' => $request->Safety,
             'Recreation' => $request->Recreation,
-            'Environmental Quality' => $request->Environmental Quality,
+            'Environmental Quality' => $request->input('Environmental Quality'),
             'Services' => $request->Services,
             'Mobility' => $request->Mobility,
         ]);
