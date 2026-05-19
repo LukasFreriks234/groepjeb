@@ -20,6 +20,10 @@
             {{ $function->effects->first()?->Veiligheid }}
         </p>
 
+        <p><strong>Recreatie:</strong>
+            {{ $function->effects->first()?->Recreatie }}
+        </p>
+
         <p><strong>Milieukwaliteit:</strong>
             {{ $function->effects->first()?->Milieukwaliteit }}
         </p>
