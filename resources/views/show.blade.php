@@ -37,7 +37,9 @@
         </p>
     </div>
 
-    <a href
+    <a href="{{ route('functions.edit', $function->id) }}">
+    Edit
+</a>
 </body>
 
 </html>

@@ -9,10 +9,11 @@ use App\Models\Effects;
 
 class FunctionController extends Controller
 {
-    public function edit(){
-        $functions = Functions::with('effects')->findOrFail($id);
+    public function edit($id)
+    {
+        $function = Functions::with('effects')->findOrFail($id);
 
-        return view('Functions.edit', compact('functions'));
+        return view('Functions.edit', compact('function'));
     }
 
     public function update(Request $request, $id)
