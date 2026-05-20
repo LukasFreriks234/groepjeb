@@ -23,4 +23,9 @@ class Functions extends Model
     {
         return $this->belongsTo(Category::class, 'category', 'category');
     }
+
+    public function effects()
+    {
+        return $this->hasMany(Effects::class, 'id', 'id');
+    }
 }

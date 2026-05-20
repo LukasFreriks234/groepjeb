@@ -11,6 +11,9 @@ Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
 Route::get('/overview', [OverviewController::class, 'index']);
 Route::get('/overview/{id}', [OverviewController::class, 'show']);
 
+Route::get('/functions/{id}/edit', [FunctionController::class, 'edit']);
+Route::post('/functions/{id}/update', [FunctionController::class, 'update']);
+
 Route::post('/grid/assign-function', [GridCellController::class, 'assignFunction']);
 
 Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
