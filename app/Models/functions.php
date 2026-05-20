@@ -26,6 +26,6 @@ class Functions extends Model
 
     public function effects()
     {
-        return $this->hasMany(Effects::class, 'id', 'id');
+        return $this->hasOne(Effects::class, 'id', 'id');
     }
 }
