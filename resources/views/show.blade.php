@@ -17,23 +17,23 @@
         <p><strong>Name:</strong>{{ $function->name }}</p>
         <p><strong>Category:</strong>{{ $function->category }}</p>
         <p><strong>Veiligheid:</strong>
-            {{ $function->effects->first()?->Veiligheid }}
+            {{ $function->effects->Veiligheid }}
         </p>
 
         <p><strong>Recreatie:</strong>
-            {{ $function->effects->first()?->Recreatie }}
+            {{ $function->effects->Recreatie }}
         </p>
 
         <p><strong>Milieukwaliteit:</strong>
-            {{ $function->effects->first()?->Milieukwaliteit }}
+            {{ $function->effects->Milieukwaliteit }}
         </p>
 
         <p><strong>Voorzieningen:</strong>
-            {{ $function->effects->first()?->Voorzieningen }}
+            {{ $function->effects->Voorzieningen }}
         </p>
 
         <p><strong>Mobiliteit:</strong>
-            {{ $function->effects->first()?->Mobiliteit }}
+            {{ $function->effects->Mobiliteit }}
         </p>
     </div>
 
