@@ -1,17 +1,16 @@
 function filterFunction() {
   var boxes, active, catagoryMap, filterRows, buildings, input, filter, name, i, category, searchRows;
-  boxes = document.querySelectorAll(".functionFilter");
+  boxes = document.querySelectorAll(".function_filter");
   active = new Set([])
   boxes.forEach(elt => active.add(elt.checked));
   catagoryMap = new Map();
   boxes.forEach(elt => catagoryMap.set(elt.value, elt.checked));
-  listItem = document.getElementById("functionsList").querySelectorAll("li");
+  listItem = document.getElementById("functions_list").querySelectorAll("li");
 
-  // filter functie
   if (active.has(true)){
     filterRows = [];
     for (const item1 of listItem){
-      category = item1.querySelector(".functionCategory").getAttribute('name');
+      category = item1.querySelector(".function_category").getAttribute('name');
       if (catagoryMap.get(category)){
           filterRows.push(item1);
       }
@@ -24,15 +23,13 @@ function filterFunction() {
   filter = input.value.toUpperCase();
   searchRows = [];
 
-  // zoek functie
   for (const row of filterRows) {
-    name = row.querySelector(".functionName").innerText;
+    name = row.querySelector(".function_name").innerText;
     if (name.toUpperCase().indexOf(filter) > -1) {
       searchRows.push(row);
       }
     }
 
-  // functie wanneer beide functies worden toegepast
   for (const item2 of listItem) {
     if (searchRows.includes(item2)){
       item2.style.display = "";
@@ -44,4 +41,4 @@ function filterFunction() {
 
 window.addEventListener("load", filterFunction);
 document.getElementById("myInput").addEventListener("keyup", filterFunction);
-document.querySelectorAll(".functionFilter").forEach(elt => elt.addEventListener("click", filterFunction));
+document.querySelectorAll(".function_filter").forEach(elt => elt.addEventListener("click", filterFunction));

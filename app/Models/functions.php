@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
-class Functions extends Model
+class functions extends Model
 {
     use HasFactory;
 
@@ -15,12 +15,12 @@ class Functions extends Model
     protected $fillable = [
         'name',
         'image',
-        // 'effect',
+        'effect',
         'category',
     ];
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category', 'category');
+        return $this->belongsTo(categories::class, 'category', 'category');
     }
 }
