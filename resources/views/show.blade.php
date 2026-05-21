@@ -16,26 +16,30 @@
         </div>
         <p><strong>Name:</strong>{{ $function->name }}</p>
         <p><strong>Category:</strong>{{ $function->category }}</p>
-        <p><strong>Safety:</strong>
-            {{ $function->effects->first()?->Veiligheid }}
+        <p><strong>Veiligheid:</strong>
+            {{ $function->effects->Veiligheid }}
         </p>
 
-        <p><strong>Recreation:</strong>
-            {{ $function->effects->first()?->Recreatie }}
+        <p><strong>Recreatie:</strong>
+            {{ $function->effects->Recreatie }}
         </p>
 
-        <p><strong>Environmental Quality:</strong>
-            {{ $function->effects->first()?->Milieukwaliteit }}
+        <p><strong>Milieukwaliteit:</strong>
+            {{ $function->effects->Milieukwaliteit }}
         </p>
 
-        <p><strong>Services:</strong>
-            {{ $function->effects->first()?->Voorzieningen }}
+        <p><strong>Voorzieningen:</strong>
+            {{ $function->effects->Voorzieningen }}
         </p>
 
-        <p><strong>Mobility:</strong>
-            {{ $function->effects->first()?->Mobiliteit }}
+        <p><strong>Mobiliteit:</strong>
+            {{ $function->effects->Mobiliteit }}
         </p>
     </div>
+
+    <a href="{{ route('functions.edit', $function->id) }}">
+    Edit
+</a>
 </body>
 
 </html>
