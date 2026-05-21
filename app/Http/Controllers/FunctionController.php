@@ -28,11 +28,11 @@ class FunctionController extends Controller
         ]);
 
         $request->validate([
-            'Safety' => 'nullable|numeric',
-            'Recreation' => 'nullable|numeric',
-            'Environmental Quality' => 'nullable|numeric',
-            'Services' => 'nullable|numeric',
-            'Mobility' => 'nullable|numeric',
+            'Safety' => 'required|numeric',
+            'Recreation' => 'required|numeric',
+            'Environmental Quality' => 'required|numeric',
+            'Services' => 'required|numeric',
+            'Mobility' => 'required|numeric',
         ]);
 
         $function->effects->update([
