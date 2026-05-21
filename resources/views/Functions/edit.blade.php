@@ -17,8 +17,7 @@
     <div class="form-section">
 
         <form method="POST" action="{{ route('functions.update', $function->id) }}">
-            @csrf
-
+              @csrf
 
             <label for="name">Name</label>
             <input id="name" type="text" name="name" value="{{ $function->name }}">

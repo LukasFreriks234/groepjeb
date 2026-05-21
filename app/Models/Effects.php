@@ -12,8 +12,8 @@ class Effects extends Model
         'id',
         'Safety',
         'Recreation',
-        'Environment',
-        'Facilities',
+        'Environmental Quality',
+        'Services',
         'Mobility',
     ];
     

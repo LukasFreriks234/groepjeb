@@ -19,31 +19,28 @@ class FunctionController extends Controller
 
     public function update(Request $request, $id)
     {
-
         $function = Functions::with('effects')->findOrFail($id);
-
+        
         $function->update([
             'name' => $request->name,
             'category' => $request->category,
         ]);
 
         $request->validate([
-            'Safety' => 'required|numeric',
-            'Recreation' => 'required|numeric',
-            'Environmental Quality' => 'required|numeric',
-            'Services' => 'required|numeric',
-            'Mobility' => 'required|numeric',
+            'Safety'                => 'required|numeric',
+            'Recreation'            => 'required|numeric',
+            'Environmental_Quality' => 'required|numeric', 
+            'Services'              => 'required|numeric',
+            'Mobility'              => 'required|numeric',
         ]);
 
         $function->effects->update([
-            'Safety' => $request->Safety,
-            'Recreation' => $request->Recreation,
-            'Environmental Quality' => $request->input('Environmental Quality'),
-            'Services' => $request->Services,
-            'Mobility' => $request->Mobility,
+            'Safety'                 => $request->Safety,
+            'Recreation'             => $request->Recreation,
+            'Environmental Quality'  => $request->Environmental_Quality, 
+            'Services'               => $request->Services,
+            'Mobility'               => $request->Mobility,
         ]);
-
-
 
         return redirect()->route('functions.show', $function->id);
     }
