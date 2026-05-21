@@ -34,7 +34,7 @@ class FunctionController extends Controller
             'Mobility'              => 'required|numeric',
         ]);
 
-        $function->effects->update([
+        $function->effects()->update([
             'Safety'                 => $request->Safety,
             'Recreation'             => $request->Recreation,
             'Environmental Quality'  => $request->Environmental_Quality, 

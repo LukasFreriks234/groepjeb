@@ -12,7 +12,7 @@ Route::get('/overview', [OverviewController::class, 'index']);
 Route::get('/overview/{id}', [OverviewController::class, 'show'])->name('functions.show');
 
 Route::get('/functions/{id}/edit', [FunctionController::class, 'edit'])->name('functions.edit');
-Route::post('/functions/{id}/update', [FunctionController::class, 'update'])->name('functions.update');
+Route::patch('/functions/{id}/update', [FunctionController::class, 'update'])->name('functions.update');
 
 Route::post('/grid/assign-function', [GridCellController::class, 'assignFunction']);
 
