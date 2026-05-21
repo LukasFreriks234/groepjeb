@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('x_coordinate');
             $table->integer('y_coordinate');
             $table->boolean('is_available')->default(true);
-            $table->foreignIdFor(\App\Models\functions::class, 'destination_type')
+            $table->foreignIdFor(\App\Models\Functions::class, 'destination_type')
                 ->nullable()
                 ->constrained('functions')
                 ->onUpdate('cascade')
