@@ -20,10 +20,10 @@
             @csrf
 
 
-            <label for="name">Naam</label>
+            <label for="name">Name</label>
             <input id="name" type="text" name="name" value="{{ $function->name }}">
 
-            <label for="category">Categorie</label>
+            <label for="category">Category</label>
             <input id="category" type="text" name="category" value="{{ $function->category }}">
 
             <h2>Effects</h2>
@@ -49,7 +49,7 @@
             <input id="Mobility" type="number" name="Mobility"
                    value="{{ $function->effects->Mobility }}">
 
-            <button type="submit">Safe changes</button>
+            <button type="submit">Save changes</button>
         </form>
 
     </div>
