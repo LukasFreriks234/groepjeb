@@ -23,7 +23,16 @@
             <label for="name">Name</label>
             <input id="name" type="text" name="name" value="{{ $function->name }}">
               
-
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              @foreach($categories as $category)
+                     <option value="{{ $category->category }}"
+                     {{ $function->category == $category->category ? 'selected' : '' }}>
+                     {{ $category->category }}
+                     </option>
+              @endforeach
+              </select>
+              
             <h2>Effects</h2>
 
             <label for="Safety">Safety</label>

@@ -14,7 +14,7 @@ class FunctionController extends Controller
         $function = Functions::with('effects')->findOrFail($id);
         $categories = Category::all();
 
-        return view('Functions.edit', compact('function'));
+        return view('Functions.edit', compact('function', 'categories'));
     }
 
     public function update(Request $request, $id)
