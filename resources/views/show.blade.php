@@ -25,7 +25,7 @@
         </p>
 
         <p><strong>Environmental Quality:</strong>
-            {{ data_get($function->effects->first(), 'Environmental Quality') }}
+            {{ data_get($function->effects, 'Environmental Quality') }}
         </p>
 
         <p><strong>Services:</strong>
