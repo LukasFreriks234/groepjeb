@@ -22,9 +22,7 @@
 
             <label for="name">Name</label>
             <input id="name" type="text" name="name" value="{{ $function->name }}">
-
-            <label for="category">Category</label>
-            <input id="category" type="text" name="category" value="{{ $function->category }}">
+              
 
             <h2>Effects</h2>
 
