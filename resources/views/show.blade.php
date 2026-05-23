@@ -16,24 +16,24 @@
         </div>
         <p><strong>Name:</strong>{{ $function->name }}</p>
         <p><strong>Category:</strong>{{ $function->category }}</p>
-        <p><strong>Veiligheid:</strong>
-            {{ $function->effects->Veiligheid }}
+        <p><strong>Safety:</strong>
+            {{ $function->effects->Safety }}
         </p>
 
-        <p><strong>Recreatie:</strong>
-            {{ $function->effects->Recreatie }}
+        <p><strong>Recreation:</strong>
+            {{ $function->effects->Recreation }}
         </p>
 
-        <p><strong>Milieukwaliteit:</strong>
-            {{ $function->effects->Milieukwaliteit }}
+        <p><strong>Environmental Quality:</strong>
+            {{ data_get($function->effects, 'Environmental Quality') }}
         </p>
 
-        <p><strong>Voorzieningen:</strong>
-            {{ $function->effects->Voorzieningen }}
+        <p><strong>Services:</strong>
+            {{ $function->effects->Services }}
         </p>
 
-        <p><strong>Mobiliteit:</strong>
-            {{ $function->effects->Mobiliteit }}
+        <p><strong>Mobility:</strong>
+            {{ $function->effects->Mobility }}
         </p>
     </div>
 

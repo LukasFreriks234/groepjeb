@@ -6,8 +6,6 @@
         padding-right: 25px;
     }
 
-
-
     .container {
         display: flex;
     }
@@ -58,7 +56,7 @@ body {
 }
 
 .functionItem {
-    display:flex; 
+    display: flex;
     justify-content: space-between;
 }
 
@@ -109,7 +107,9 @@ body {
     align-items: center;
 }
 
-.createButton, .backButton, .editButton{
+.createButton,
+.backButton,
+.editButton {
     border: none;
     border-radius: 8px;
     width: 180px;
@@ -132,4 +132,9 @@ body {
 
 .hidden {
     display: none;
+}
+
+.noStyle {
+    color: inherit;
+    text-decoration: none;
 }
