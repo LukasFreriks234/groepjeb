@@ -26,10 +26,16 @@
 
         <div>
             <label>Category</label>
-
-            <input type="text"
-                   name="category"
-                   value="{{ $function->category }}">
+            <select name="category">
+                @foreach($categories as $category)
+                    <option value="{{ $category->category }}"
+                        @if($function->category == $category->category)
+                            selected
+                        @endif>
+                        {{ $category->category }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
         <br>

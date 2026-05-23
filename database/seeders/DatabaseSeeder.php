@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             GridCellSeeder::class,
             FunctionSeeder::class,
             EffectsSeeder::class,
+            UserSeeder::class
         ]);
     }
 
