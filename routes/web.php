@@ -1,15 +1,15 @@
 <?php
 
 use App\Http\Controllers\GridCellController;
-use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\FunctionController;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\CssSelector\Node\FunctionNode;
 
 Route::get('/', [GridCellController::class, 'index']);
 Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
 
-Route::get('/overview', [OverviewController::class, 'index']);
-Route::get('/overview/{id}', [OverviewController::class, 'show'])->name('functions.show');
+Route::get('/overview', [FunctionController::class, 'index']);
+Route::get('/overview/{id}', [FunctionController::class, 'show'])->name('functions.show');
 
 Route::get('/functions/{id}/edit', [FunctionController::class, 'edit'])->name('functions.edit');
 Route::post('/functions/{id}/update', [FunctionController::class, 'update'])->name('functions.update');
