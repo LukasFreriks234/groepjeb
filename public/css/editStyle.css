@@ -1,0 +1,123 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f6f8;
+    margin: 0;
+    padding: 20px;
+    color: #1a1a1a;
+}
+
+h1 {
+    max-width: 1000px;
+    margin: 0 auto 20px auto;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.form-section,
+.image-section {
+    flex: 1;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid #d0d5dd;
+
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label {
+    font-weight: 600;
+}
+
+input {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    border: 1px solid #98a2b3;
+    border-radius: 6px;
+    font-size: 16px;
+
+    box-sizing: border-box; 
+}
+
+select {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    border: 1px solid #98a2b3;
+    border-radius: 6px;
+    font-size: 16px;
+
+    box-sizing: border-box; 
+}
+
+input:focus {
+    outline: 3px solid #2e90fa;
+    border-color: #2e90fa;
+}
+
+button {
+    margin-top: 20px;
+    background: #1d4ed8;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    width: fit-content;
+}
+
+button:hover {
+    background: #1e40af;
+}
+
+button:focus {
+    outline: 3px solid #93c5fd;
+}
+
+img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #d0d5dd;
+}
+
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-section,
+    .image-section {
+        width: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+    body {
+        padding: 12px;
+    }
+
+    .form-section,
+    .image-section {
+        padding: 16px;
+    }
+
+    button {
+        width: 100%;
+    }
+}

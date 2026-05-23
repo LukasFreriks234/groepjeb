@@ -4,25 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Function</title>
+    <link rel="stylesheet" href="{{ asset('css/editStyle.css') }}">
 </head>
+
 <body>
 
-    <h1>Edit Function</h1>
+<h1>Edit Function</h1>
 
-    <form method="POST"
-          action="{{ route('functions.update', $function->id) }}">
+<div class="container">
 
-        @csrf
+    <div class="form-section">
 
-        <div>
-            <label>Name</label>
+        <form method="POST" action="{{ route('functions.update', $function->id) }}">
+            @csrf
+            @method('PATCH')
 
-            <input type="text"
-                   name="name"
-                   value="{{ $function->name }}">
-        </div>
+            <x-formInput
+                name="name"
+                label="Name"
+                :value="$function->name"
+            />
 
-        <br>
+            <label for="category">Category</label>
+            <select id="category" name="category">
+                @foreach($categories as $category)
+                    <option value="{{ $category->category }}"
+                        {{ $function->category == $category->category ? 'selected' : '' }}>
+                        {{ $category->category }}
+                    </option>
+                @endforeach
+            </select>
 
         <div>
             <label>Category</label>
@@ -37,66 +48,55 @@
                 @endforeach
             </select>
         </div>
+            <h2>Effects</h2>
 
-        <br>
+            <x-formInput
+                name="Safety"
+                label="Safety"
+                type="number"
+                :value="$function->effects->Safety"
+            />
 
-        <h2>Effects</h2>
+            <x-formInput
+                name="Recreation"
+                label="Recreation"
+                type="number"
+                :value="$function->effects->Recreation"
+            />
 
-        <div>
-            <label>Safety</label>
+            <x-formInput
+                name="Environmental_Quality"
+                label="Environmental Quality"
+                type="number"
+                :value="$function->effects->{'Environmental Quality'}"
+            />
 
-            <input type="number"
-                   name="Safety"
-                   value="{{ $function->effects->Safety }}">
-        </div>
+            <x-formInput
+                name="Services"
+                label="Services"
+                type="number"
+                :value="$function->effects->Services"
+            />
 
-        <br>
+            <x-formInput
+                name="Mobility"
+                label="Mobility"
+                type="number"
+                :value="$function->effects->Mobility"
+            />
 
-        <div>
-            <label>Recreation</label>
+            <button type="submit">Save changes</button>
 
-            <input type="number"
-                   name="Recreation"
-                   value="{{ $function->effects->Recreation }}">
-        </div>
+        </form>
 
-        <br>
+    </div>
 
-        <div>
-            <label>Environmental Quality</label>
+    <div class="image-section">
+        <img src="{{ asset($function->image) }}"
+             alt="Afbeelding van {{ $function->name }}">
+    </div>
 
-            <input type="number"
-                   name="Environmental Quality"
-                   value="{{ $function->effects->{'Environmental Quality'} }}">
-        </div>
-
-        <br>
-
-        <div>
-            <label>Services</label>
-
-            <input type="number"
-                   name="Services"
-                   value="{{ $function->effects->Services }}">
-        </div>
-
-        <br>
-
-        <div>
-            <label>Mobility</label>
-
-            <input type="number"
-                   name="Mobility"
-                   value="{{ $function->effects->Mobility }}">
-        </div>
-
-        <br>
-
-        <button type="submit">
-            Opslaan
-        </button>
-
-    </form>
+</div>
 
 </body>
 </html>

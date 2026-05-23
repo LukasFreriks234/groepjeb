@@ -13,10 +13,12 @@
     <link href="{{ asset('css/gridStyle.css')}}" type="text/css" rel="stylesheet"/>
     <link href="{{ asset('css/effectTableStyle.css')}}" type="text/css" rel="stylesheet"/>
     <link href="{{ asset('css/layout.css')}}" type="text/css" rel="stylesheet"/>
+    <link href="{{ asset('css/navbarStyle.css')}}" type="text/css" rel="stylesheet"/>
 
     <title>Metropolis</title>
 </head>
 <body>
+<x-navbar />
 
     @auth
     <div>
