@@ -28,7 +28,7 @@ class Effects extends Model
     {
         $effects = self::all()->keyBy('id');
 
-        $categoryMap = [
+       $categoryMap = [
             'Environmental Quality' => 'Environmental Quality',
             'Mobility' => 'Mobility',
             'Recreation' => 'Recreation',
