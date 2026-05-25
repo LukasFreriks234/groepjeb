@@ -25,66 +25,116 @@
                 :value="$function->name"
             />
 
-            <label for="category">Category</label>
-            <select id="category" name="category">
-                @foreach($categories as $category)
-                    <option value="{{ $category->category }}"
-                        {{ $function->category == $category->category ? 'selected' : '' }}>
-                        {{ $category->category }}
+            <div>
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    @foreach($categories as $category)
+                        <option
+                            value="{{ $category->category }}"
+                            {{ $function->category == $category->category ? 'selected' : '' }}>
+                            {{ $category->category }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label>Add relationship</label>
+                <select name="new_category">
+                    <option value=""
+                        {{ session('relationship_' . $function->id) == '' ? 'selected' : '' }}>
+                        -- No relationship --
                     </option>
-                @endforeach
-            </select>
-
-        <div>
-            <label>Category</label>
-            <select name="category">
-                @foreach($categories as $category)
-                    <option value="{{ $category->category }}"
-                        @if($function->category == $category->category)
-                            selected
-                        @endif>
-                        {{ $category->category }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+                    @foreach($categories as $category)
+                        <option
+                            value="{{ $category->category }}"
+                            {{ session('relationship_' . $function->id) == $category->category ? 'selected' : '' }}>
+                            {{ $category->category }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
             <h2>Effects</h2>
 
-            <x-formInput
-                name="Safety"
-                label="Safety"
-                type="number"
-                :value="$function->effects->Safety"
-            />
-
-            <x-formInput
-                name="Recreation"
-                label="Recreation"
-                type="number"
-                :value="$function->effects->Recreation"
-            />
-
-            <x-formInput
-                name="Environmental_Quality"
-                label="Environmental Quality"
-                type="number"
-                :value="$function->effects->{'Environmental Quality'}"
-            />
-
-            <x-formInput
-                name="Services"
-                label="Services"
-                type="number"
-                :value="$function->effects->Services"
-            />
-
-            <x-formInput
-                name="Mobility"
-                label="Mobility"
-                type="number"
-                :value="$function->effects->Mobility"
-            />
-
+            <div>
+                <label>Safety</label>
+                <input
+                    type="number"
+                    name="Safety"
+                    value="{{ $function->effects->Safety }}"
+                    class="
+                    @if($function->effects->Safety > 0)
+                        positiveEffect
+                    @elseif($function->effects->Safety < 0)
+                        negativeEffect
+                    @else
+                        neutralEffect
+                    @endif
+                    ">
+            </div>
+            <div>
+                <label>Recreation</label>
+                <input
+                    type="number"
+                    name="Recreation"
+                    value="{{ $function->effects->Recreation }}"
+                    class="
+                    @if($function->effects->Recreation > 0)
+                        positiveEffect
+                    @elseif($function->effects->Recreation < 0)
+                        negativeEffect
+                    @else
+                        neutralEffect
+                    @endif
+                    ">
+            </div>
+            <div>
+                <label>Environmental Quality</label>
+                <input
+                    type="number"
+                    name="Environmental_Quality"
+                    value="{{ $function->effects->{'Environmental Quality'} }}"
+                    class="
+                    @if($function->effects->{'Environmental Quality'} > 0)
+                        positiveEffect
+                    @elseif($function->effects->{'Environmental Quality'} < 0)
+                        negativeEffect
+                    @else
+                        neutralEffect
+                    @endif
+                    ">
+            </div>
+            <div>
+                <label>Services</label>
+                <input
+                    type="number"
+                    name="Services"
+                    value="{{ $function->effects->Services }}"
+                    class="
+                    @if($function->effects->Services > 0)
+                        positiveEffect
+                    @elseif($function->effects->Services < 0)
+                        negativeEffect
+                    @else
+                        neutralEffect
+                    @endif
+                    ">
+            </div>
+            <div>
+                <label>Mobility</label>
+                <input
+                    type="number"
+                    name="Mobility"
+                    value="{{ $function->effects->Mobility }}"
+                    class="
+                    @if($function->effects->Mobility > 0)
+                        positiveEffect
+                    @elseif($function->effects->Mobility < 0)
+                        negativeEffect
+                    @else
+                        neutralEffect
+                    @endif
+                    ">
+            </div>
             <button type="submit">Save changes</button>
 
         </form>

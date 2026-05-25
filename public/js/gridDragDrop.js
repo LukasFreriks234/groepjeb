@@ -81,6 +81,7 @@ function enableMobileDrag() {
     const functionItems = document.querySelectorAll(".functionItem");
 
     let activeItem = null;
+    let activeCell = null;
     let touchTimeout = null;
 
     let lastTouchX = 0;
@@ -89,17 +90,16 @@ function enableMobileDrag() {
     functionItems.forEach((item) => {
         item.addEventListener("touchstart", function (ev) {
             activeItem = item;
-
             const touch = ev.touches[0];
             lastTouchX = touch.clientX;
             lastTouchY = touch.clientY;
-            
             touchTimeout = setTimeout(() => {
                 if (activeItem) {
-                    activeItem.style.opacity = "0.5"; 
+                    activeItem.classList.add(
+                        "selectedMobileCell"
+                    );
                 }
             }, 200);
-
         }, { passive: true });
     });
 
@@ -108,53 +108,61 @@ function enableMobileDrag() {
         lastTouchX = touch.clientX;
         lastTouchY = touch.clientY;
 
-        if (touchTimeout && activeItem && activeItem.style.opacity !== "0.5") {
-                clearTimeout(touchTimeout);
-                activeItem = null;
-            }
-            if (activeItem && activeItem.style.opacity === "0.5") {
-                ev.preventDefault();
-            }
+        if (activeItem) {
+            ev.preventDefault();
+        }
     }, { passive: false });
 
     document.addEventListener("touchend", function (ev) {
         clearTimeout(touchTimeout);
+        if (!activeItem) {
+            return;
+        }
+        activeItem.classList.remove(
+            "selectedMobileCell"
+        );
 
-        if (!activeItem || activeItem.style.opacity !== "0.5") {
-                if (activeItem) activeItem.style.opacity = "1";
-                activeItem = null;
-                return;
-            }
+        const element =
+            document.elementFromPoint(
+                lastTouchX,
+                lastTouchY
+            );
 
-        activeItem.style.opacity = "1";
-
-        const touch = ev.changedTouches[0];
-        const element = document.elementFromPoint(lastTouchX, lastTouchY);
-        const cell = element ? element.closest(".gridCell") : null;
+        const cell =
+            element
+                ? element.closest(".gridCell")
+                : null;
 
         if (cell) {
+            activeCell = cell;
+            activeCell.classList.add(
+                "selectedCell"
+            );
             const existingItem = cell.querySelector(".functionItem");
             const existingImage = cell.querySelector(".gridImage");
-
             if (existingItem) existingItem.remove();
             if (existingImage) existingImage.remove();
-
             const clonedItem = activeItem.cloneNode(true);
             clonedItem.removeAttribute("id");
-            clonedItem.setAttribute("draggable", "false");
-            clonedItem.style.opacity = "1";
+            clonedItem.setAttribute(
+                "draggable",
+                "false"
+            );
 
             cell.dataset.category = activeItem.dataset.category;
-
             cell.appendChild(clonedItem);
-
             cell.classList.remove("available");
             cell.classList.add("occupied");
-
-            // opslaan + effect table updaten
-            saveFunctionInGrid(cell, activeItem);
+            saveFunctionInGrid(
+                cell,
+                activeItem
+            );
+            setTimeout(() => {
+                activeCell.classList.remove(
+                    "selectedCell"
+                );
+            }, 1000);
         }
-
         activeItem = null;
     }, { passive: false });
 }
@@ -246,15 +254,37 @@ function saveFunctionInGrid(cell, originalItem) {
 // EFFECT TABLE DIRECT UPDATEN
 window.updateEffectTable = function (effectTotals, qualityOfLife) {
     Object.keys(effectTotals).forEach(function (category) {
-        const element = document.querySelector(`[data-effect-category="${category}"]`);
-
+        const element =
+            document.querySelector(
+                `[data-effect-category="${category}"]`
+            );
         if (element) {
-            element.textContent = effectTotals[category];
+            const value = Number(effectTotals[category]);
+            element.textContent = value;
+            element.classList.remove(
+                "positiveEffect",
+                "negativeEffect",
+                "neutralEffect"
+            );
+            if (value > 0) {
+                element.classList.add(
+                    "positiveEffect"
+                );
+            } else if (value < 0) {
+                element.classList.add(
+                    "negativeEffect"
+                );
+            } else {
+                element.classList.add(
+                    "neutralEffect"
+                );
+            }
         }
     });
-
-    const qualityElement = document.getElementById("qualityOfLifeValue");
-
+    const qualityElement =
+        document.getElementById(
+            "qualityOfLifeValue"
+        );
     if (qualityElement) {
         qualityElement.textContent = qualityOfLife;
     }
@@ -280,7 +310,7 @@ function loadNeighborEffects(cell) {
     .then(response => response.json())
     .then(data => {
         if (data.success && data.effectTotals) {
-            updateTooltipEffects(data.effectTotals);
+            updateTooltipEffects(data.effectTotals, data.qualityOfLife);
         }
     })
     .catch(error => {
@@ -290,24 +320,45 @@ function loadNeighborEffects(cell) {
 
 
 // TOOLTIP EFFECTS UPDATEN
-function updateTooltipEffects(effectTotals) {
-    let qualityOfLife = 0;
-
+function updateTooltipEffects(effectTotals, qualityOfLife = null) {
+    let calculatedQualityOfLife = 0;
     Object.keys(effectTotals).forEach(function (category) {
         const value = Number(effectTotals[category]);
-        qualityOfLife += value;
-
-        const element = document.querySelector(`[data-tooltip-effect-category="${category}"]`);
-
+        calculatedQualityOfLife += value;
+        const element =
+            document.querySelector(
+                `[data-tooltip-effect-category="${category}"]`
+            );
         if (element) {
             element.textContent = value;
+            element.classList.remove(
+                "positiveEffect",
+                "negativeEffect",
+                "neutralEffect"
+            );
+            if (value > 0) {
+                element.classList.add(
+                    "positiveEffect"
+                );
+            } else if (value < 0) {
+                element.classList.add(
+                    "negativeEffect"
+                );
+            } else {
+                element.classList.add(
+                    "neutralEffect"
+                );
+            }
         }
     });
-
-    const qualityElement = document.getElementById("tooltipQualityOfLife");
-
+    const qualityElement =
+        document.getElementById(
+            "tooltipQualityOfLife"
+        );
     if (qualityElement) {
-        qualityElement.textContent = qualityOfLife;
+
+        qualityElement.textContent =
+            qualityOfLife ?? calculatedQualityOfLife;
     }
 }
 

@@ -129,3 +129,21 @@
     margin: 5px 0;
     color: black;
 }
+
+.positiveEffect {
+    color: green;
+    font-weight: bold;
+}
+
+.negativeEffect {
+    color: red;
+    font-weight: bold;
+}
+
+.neutralEffect {
+    color: black;
+}
+
+.selectedMobileCell {
+    background-color: yellow !important;
+}

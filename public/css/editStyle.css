@@ -95,6 +95,20 @@ img {
     border: 1px solid #d0d5dd;
 }
 
+input.positiveEffect {
+    color: green !important;
+    font-weight: bold;
+}
+
+input.negativeEffect {
+    color: red !important;
+    font-weight: bold;
+}
+
+input.neutralEffect {
+    color: black !important;
+}
+
 @media (max-width: 900px) {
     .container {
         flex-direction: column;
