@@ -44,7 +44,7 @@ array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arr
 
     <ul id="functionsList">
         @foreach($arrFunctions as $function)
-            <a href="/overview/{{ $function['id'] }}">
+            <a href="/overview/{{ $function['id'] }}" class="noStyle">
                 <li id="function{{ $function['id'] }}" class="functionItem" draggable="true">
                     <div class="functionNameImage">
                         <div class="functionImage">
