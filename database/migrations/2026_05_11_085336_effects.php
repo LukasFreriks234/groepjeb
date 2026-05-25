@@ -16,11 +16,11 @@ return new class extends Migration
                 ->primary()
                 ->constrained('functions')
                 ->cascadeOnDelete();
-            $table->integer("Veiligheid");
-            $table->integer("Recreatie");
-            $table->integer("Milieukwaliteit");
-            $table->integer("Voorzieningen");
-            $table->integer("Mobiliteit");
+            $table->integer("Safety");
+            $table->integer("Recreation");
+            $table->integer("Environmental Quality");
+            $table->integer("Services");
+            $table->integer("Mobility");
         });
     }
     /**
