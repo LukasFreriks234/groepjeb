@@ -15,21 +15,29 @@
 
     <div class="form-section">
 
-        <form method="POST" action="{{ route('functions.update', $function->id) }}">
+        <form method="POST" action="{{ route('functions.update', $function->id) }}" enctype="multipart/form-data">
             @csrf
             @method('PATCH')
 
             <x-formInput
                 name="name"
                 label="Name"
-                :value="$function->name"
+                :value="old('name', $function->name)"
             />
+
+            <label for="image">Change image</label>
+            <input 
+                type="file" 
+                id="image" 
+                name="image" 
+                accept="image/*"
+            >
 
             <label for="category">Category</label>
             <select id="category" name="category">
                 @foreach($categories as $category)
                     <option value="{{ $category->category }}"
-                        {{ $function->category == $category->category ? 'selected' : '' }}>
+                        {{ old('category', $function->category) == $category->category ? 'selected' : '' }}>
                         {{ $category->category }}
                     </option>
                 @endforeach
@@ -41,35 +49,35 @@
                 name="Safety"
                 label="Safety"
                 type="number"
-                :value="$function->effects->Safety"
+                :value="old('Safety', $function->effects->Safety)"
             />
 
             <x-formInput
                 name="Recreation"
                 label="Recreation"
                 type="number"
-                :value="$function->effects->Recreation"
+                :value="old('Recreation', $function->effects->Recreation)"
             />
 
             <x-formInput
                 name="Environmental_Quality"
                 label="Environmental Quality"
                 type="number"
-                :value="$function->effects->{'Environmental Quality'}"
+                :value="old('Environmental_Quality', $function->effects->{'Environmental Quality'})"
             />
 
             <x-formInput
                 name="Services"
                 label="Services"
                 type="number"
-                :value="$function->effects->Services"
+                :value="old('Services', $function->effects->Services)"
             />
 
             <x-formInput
                 name="Mobility"
                 label="Mobility"
                 type="number"
-                :value="$function->effects->Mobility"
+                :value="old('Mobility', $function->effects->Mobility)"
             />
 
             <button type="submit">Save changes</button>
@@ -79,6 +87,7 @@
     </div>
 
     <div class="image-section">
+        <p>Current image:</p>
         <img src="{{ asset($function->image) }}"
              alt="Afbeelding van {{ $function->name }}">
     </div>

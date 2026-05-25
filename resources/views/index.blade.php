@@ -13,7 +13,8 @@
     <div class="topbar">
         <h1>All functions:</h1>
         <!-- Link for new page -->
-        <a href="#"><button class="createButton">Create new function</button></a>
+        <a href="{{ route('functions.create') }}">
+    <button class="createButton">Create new function</button></a>
     </div>
     <div class="category">
         <input type="text" id="myInput" placeholder="Search for names.."><br>
