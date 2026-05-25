@@ -20,10 +20,20 @@ class FunctionController extends Controller
     public function update(Request $request, $id)
     {
         $function = Functions::with('effects')->findOrFail($id);
+
+        if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+
+        $file->move(public_path('images'), $filename);
+
+        $function->image = 'images/' . $filename;
+    }
         
         $function->update([
             'name' => $request->name,
             'category' => $request->category,
+            'image' => $function->image,
         ]);
 
         $request->validate([

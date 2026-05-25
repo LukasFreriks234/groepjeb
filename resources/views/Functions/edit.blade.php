@@ -15,7 +15,7 @@
 
     <div class="form-section">
 
-        <form method="POST" action="{{ route('functions.update', $function->id) }}">
+        <form method="POST" action="{{ route('functions.update', $function->id) }}" enctype="multipart/form-data">
             @csrf
             @method('PATCH')
 
@@ -34,6 +34,14 @@
                     </option>
                 @endforeach
             </select>
+
+            <label for="image">Change image</label>
+            <input 
+                type="file" 
+                id="image" 
+                name="image" 
+                accept="image/*"
+            >
 
             <h2>Effects</h2>
 
