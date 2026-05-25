@@ -1,14 +1,13 @@
 <?php
 
 use App\Http\Controllers\GridCellController;
-use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\FunctionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [GridCellController::class, 'index']);
 
-Route::get('/overview', [OverviewController::class, 'index'])->name('functions.index');
-Route::get('/overview/{id}', [OverviewController::class, 'show'])->name('functions.show');
+Route::get('/overview', [FunctionController::class, 'index'])->name('functions.index');
+Route::get('/overview/{id}', [FunctionController::class, 'show'])->name('functions.show');
 
 Route::get('/functions/create', [FunctionController::class, 'create'])->name('functions.create');
 Route::post('/functions/store', [FunctionController::class, 'store'])->name('functions.store');

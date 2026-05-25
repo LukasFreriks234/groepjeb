@@ -9,6 +9,22 @@ use App\Models\Effects;
 
 class FunctionController extends Controller
 {
+    public function index()
+    {
+        $functions = Functions::all();
+        $categories = Category::all();
+
+        return view('Functions.index', compact('functions', 'categories'));
+    }
+
+    public function show($id)
+    {
+        $function = Functions::with('effects')->findOrFail($id);
+        $effect = Effects::find($id);
+
+        return view('Functions.show', compact('function', 'effect'));
+    }
+
     public function create()
     {
         $categories = Category::all();
@@ -30,7 +46,6 @@ class FunctionController extends Controller
         ]);
 
         $imageName = $request->file('image')->hashName();
-
         $imageFolder = public_path('images/functions');
 
         if (!is_dir($imageFolder)) {
@@ -89,7 +104,6 @@ class FunctionController extends Controller
 
         if ($request->hasFile('image')) {
             $imageName = $request->file('image')->hashName();
-
             $imageFolder = public_path('images/functions');
 
             if (!is_dir($imageFolder)) {

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $function->name }}</title>
-    <link href="{{ asset('css/overviewFunctionStyle.css')}}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('css/overviewFunctionStyle.css') }}" type="text/css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/editStyle.css') }}">
 </head>
 
@@ -17,40 +17,49 @@
 
         <div class="form-section">
 
-            <p><strong>Name:</strong>{{ $function->name }}</p>
+            <p><strong>Name:</strong> {{ $function->name }}</p>
 
-            <p><strong>Category:</strong>{{ $function->category }}</p>
+            <p><strong>Category:</strong> {{ $function->category }}</p>
 
             <h2>Effects</h2>
 
             <p><strong>Safety:</strong>
-                {{ $function->effects->Safety }}
+                {{ data_get($function->effects, 'Safety', 0) }}
             </p>
 
             <p><strong>Recreation:</strong>
-                {{ $function->effects->Recreation }}
+                {{ data_get($function->effects, 'Recreation', 0) }}
             </p>
 
             <p><strong>Environmental Quality:</strong>
-                {{ data_get($function->effects, 'Environmental Quality') }}
+                {{ data_get($function->effects, 'Environmental Quality', 0) }}
             </p>
 
             <p><strong>Services:</strong>
-                {{ $function->effects->Services }}
+                {{ data_get($function->effects, 'Services', 0) }}
             </p>
 
             <p><strong>Mobility:</strong>
-                {{ $function->effects->Mobility }}
+                {{ data_get($function->effects, 'Mobility', 0) }}
             </p>
 
-            <a href="/overview"><button>Back</button></a>
-            <a href="{{ route('functions.edit', $function->id) }}"><button>Edit</button></a>
-            <a><button class="delete">Delete</button></a>
+            <a href="{{ route('functions.index') }}">
+                <button type="button">Back</button>
+            </a>
+
+            <a href="{{ route('functions.edit', $function->id) }}">
+                <button type="button">Edit</button>
+            </a>
+
+            <button type="button" class="delete">Delete</button>
 
         </div>
 
         <div class="image-section">
-            <img src="{{ asset($function->image) }}" alt="Image from {{ $function->name }}">
+            <img 
+                src="{{ asset($function->image) }}" 
+                alt="Image from {{ $function->name }}"
+            >
         </div>
 
     </div>
