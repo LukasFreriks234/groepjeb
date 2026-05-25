@@ -42,6 +42,8 @@
                 label="Safety"
                 type="number"
                 :value="$function->effects->Safety"
+                min="-10"
+                max="10"
             />
 
             <x-formInput
@@ -49,6 +51,8 @@
                 label="Recreation"
                 type="number"
                 :value="$function->effects->Recreation"
+                min="-10"
+                max="10"
             />
 
             <x-formInput
@@ -56,6 +60,8 @@
                 label="Environmental Quality"
                 type="number"
                 :value="$function->effects->{'Environmental Quality'}"
+                min="-10"
+                max="10"
             />
 
             <x-formInput
@@ -63,6 +69,8 @@
                 label="Services"
                 type="number"
                 :value="$function->effects->Services"
+                min="-10"
+                max="10"
             />
 
             <x-formInput
@@ -70,6 +78,8 @@
                 label="Mobility"
                 type="number"
                 :value="$function->effects->Mobility"
+                min="-10"
+                max="10"
             />
 
             <button type="submit">Save changes</button>

@@ -1,4 +1,4 @@
-@props(['name', 'label', 'type' => 'text', 'value' => ''])
+@props(['name', 'label', 'type' => 'text', 'value' => '', 'min' => null, 'max' => null])
 
 <label for="{{ $name }}">{{ $label }}</label>
 
@@ -7,6 +7,8 @@
     name="{{ $name }}"
     type="{{ $type }}"
     value="{{ old($name, $value ?? '') }}"
+    min="{{ $min }}"
+    max="{{ $max }}"
     required
     aria-describedby="{{ $name }}-error"
 />
