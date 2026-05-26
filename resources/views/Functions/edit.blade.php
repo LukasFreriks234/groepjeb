@@ -31,6 +31,7 @@
                 id="image" 
                 name="image" 
                 accept="image/*"
+                alt="Upload a new image for {{ $function->name }}"
             >
 
             <label for="category">Category</label>

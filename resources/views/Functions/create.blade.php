@@ -28,6 +28,7 @@
                     id="image" 
                     name="image" 
                     accept="image/*"
+                    alt="Upload an image for the new function"
                 >
 
                 <label for="category">Category</label>
