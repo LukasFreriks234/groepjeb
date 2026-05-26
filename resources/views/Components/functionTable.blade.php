@@ -22,10 +22,6 @@
                 <?php $i++; ?>
             @endforeach
         </div>
-
-        <a href="/overview">
-            <button class="overviewButton">Overview</button>
-        </a>
     </div>
 
     <?php 
