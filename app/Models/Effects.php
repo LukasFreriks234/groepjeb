@@ -16,7 +16,7 @@ class Effects extends Model
         'Services',
         'Mobility',
     ];
-    
+
     public $timestamps = false;
 
     public function cityFunction()
@@ -27,14 +27,6 @@ class Effects extends Model
     public static function calculateEffectTotals($cells, $categories)
     {
         $effects = self::all()->keyBy('id');
-
-        $categoryMap = [
-            'Environmental Quality' => 'Environmental Quality',
-            'Mobility' => 'Mobility',
-            'Recreation' => 'Recreation',
-            'Safety' => 'Safety',
-            'Services' => 'Services',
-        ];
 
         $effectTotals = [];
 
@@ -49,12 +41,9 @@ class Effects extends Model
 
                 if ($effect) {
                     foreach ($categories as $category) {
-                        $englishCategory = $category->category;
-                        $databaseColumn = $categoryMap[$englishCategory] ?? null;
+                        $columnName = $category->category;
 
-                        if ($databaseColumn) {
-                            $effectTotals[$englishCategory] += (int) ($effect->getAttribute($databaseColumn) ?? 0);
-                        }
+                        $effectTotals[$columnName] += (int) ($effect->getAttribute($columnName) ?? 0);
                     }
                 }
             }

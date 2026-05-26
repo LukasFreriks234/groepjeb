@@ -1,32 +1,32 @@
 <div id="functionsTable">
-    <h2>Function List</h2>
-    <p>Search and Filter Functions</p><br>
-    <input type="text" id="myInput" placeholder="Search for names.."><br>
+    <div class="filters">
+        <div>
+            <input type="text" id="myInput" placeholder="Search for names.."><br>
 
-    <?php 
-    $arrCategories = $categories->toArray();
-    $arrCategorie = array_column($arrCategories, 'category');
-    array_multisort($arrCategorie, SORT_ASC, $arrCategories);
-    $i = 1;
-    ?>
+            <?php 
+            $arrCategories = $categories->toArray();
+            $arrCategorie = array_column($arrCategories, 'category');
+            array_multisort($arrCategorie, SORT_ASC, $arrCategories);
+            $i = 1;
+            ?>
 
-    <details class="filterDropdown">
-        <summary>Filters</summary>
+            @foreach($arrCategories as $category)
+                <input 
+                    type="checkbox" 
+                    id="category{{ $i }}" 
+                    class="functionFilter" 
+                    name="category{{ $i }}" 
+                    value="{{ $category['category'] }}"
+                >
+                <label for="category{{ $i }}">{{ $category['category'] }}</label><br>
+                <?php $i++; ?>
+            @endforeach
+        </div>
 
-    @foreach($arrCategories as $category)
-        <input 
-            type="checkbox" 
-            id="category{{ $i }}" 
-            class="functionFilter" 
-            name="category{{ $i }}" 
-            value="{{ $category['category'] }}"
-        >
-        <label for="category{{ $i }}">{{ $category['category'] }}</label><br>
-        <?php $i++; ?>
-    @endforeach
-
-    </details>
-    <br>
+        <a href="/overview">
+            <button class="overviewButton">Overview</button>
+        </a>
+    </div>
 
     <?php 
     $arrFunctions = $functions->toArray();
@@ -39,13 +39,16 @@
         @foreach($arrFunctions as $function)
             <li 
                 id="function{{ $function['id'] }}" 
-                class="functionItem" 
-                draggable="true"
+                class="functionItem"
                 data-function-id="{{ $function['id'] }}"
                 data-category="{{ $function['category'] }}"
             >
                 <div class="functionImage">
-                    <img src="{{ $function['image'] }}">
+                    <img 
+                        src="{{ asset($function['image']) }}" 
+                        alt="{{ $function['name'] }}"
+                        data-category="{{ $function['category'] }}"
+                    >
                 </div>
 
                 <div>

@@ -65,6 +65,20 @@
     user-select: none;
 }
 
+.filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.overviewButton {
+    border: none;
+    border-radius: 8px;
+    width: 70px;
+    height: 30px;
+    background: rgb(103, 143, 156);
+    cursor: pointer;
+}
 .filterDropdown summary{
     cursor: pointer;
     border: solid 1px grey;

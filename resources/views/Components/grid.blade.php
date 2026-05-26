@@ -14,10 +14,13 @@
                     aria-label="Cel on position {{ $cell->x_coordinate }}, {{ $cell->y_coordinate }}. Status: {{ $cell->is_available ? 'available' : 'occupied' }}"
                 >
                     @if(!$cell->is_available && $cell->cityFunction)
-                        <img 
+                        <img
                             src="{{ asset($cell->cityFunction->image) }}"
                             alt="{{ $cell->cityFunction->name }}"
-                            class="gridImage"
+                            class="gridImage draggableGridFunction"
+                            draggable="true"
+                            data-function-id="{{ $cell->cityFunction->id }}"
+                            data-from-cell-id="{{ $cell->id }}"
                             data-category="{{ $cell->cityFunction->category }}"
                         >
                     @endif
