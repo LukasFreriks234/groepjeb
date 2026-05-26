@@ -79,12 +79,15 @@ class GridCellController extends Controller
             ]);
         }
 
-        $toCell->destination_type = $request->function_id;
+        $fromFunctionId = $fromCell->destination_type;
+        $toFunctionId = $toCell->destination_type;
+
+        $toCell->destination_type = $fromFunctionId;
         $toCell->is_available = false;
         $toCell->save();
 
-        $fromCell->destination_type = null;
-        $fromCell->is_available = true;
+        $fromCell->destination_type = $toFunctionId;
+        $fromCell->is_available = $toFunctionId ? false : true;
         $fromCell->save();
 
         $cells = GridCell::with('cityFunction')->get();

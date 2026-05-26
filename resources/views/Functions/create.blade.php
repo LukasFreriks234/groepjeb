@@ -47,6 +47,8 @@
                     label="Safety"
                     type="number"
                     :value="old('Safety', 0)"
+                    min="-10"
+                    max="10"
                 />
 
                 <x-formInput
@@ -54,6 +56,8 @@
                     label="Recreation"
                     type="number"
                     :value="old('Recreation', 0)"
+                    min="-10"
+                    max="10"
                 />
 
                 <x-formInput
@@ -61,6 +65,8 @@
                     label="Environmental Quality"
                     type="number"
                     :value="old('Environmental_Quality', 0)"
+                    min="-10"
+                    max="10"
                 />
 
                 <x-formInput
@@ -68,6 +74,8 @@
                     label="Services"
                     type="number"
                     :value="old('Services', 0)"
+                    min="-10"
+                    max="10"
                 />
 
                 <x-formInput
@@ -75,6 +83,8 @@
                     label="Mobility"
                     type="number"
                     :value="old('Mobility', 0)"
+                    min="-10"
+                    max="10"
                 />
 
                 <button type="submit">Create function</button>

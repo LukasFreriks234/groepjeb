@@ -26,10 +26,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!originalItem) return;
 
-                // oude inhoud verwijderen uit target cell
                 clearCell(cell);
 
-                // nieuwe image maken voor in de grid
                 const newImage = createGridImage({
                     functionId: originalItem.dataset.functionId,
                     category: originalItem.dataset.category,
@@ -40,14 +38,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 cell.appendChild(newImage);
 
-                // styling update
                 markCellOccupied(cell, originalItem.dataset.category);
 
-                // opslaan + effect table updaten
                 saveFunctionInGrid(cell, originalItem);
 
-                // nieuwe grid image ook draggable maken
                 enableDrag();
+                enableMobileDrag();
             }
 
             // FUNCTIE VAN GRID CELL NAAR ANDERE GRID CELL
@@ -56,16 +52,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!fromCell) return;
 
-                // Als je naar dezelfde cell sleept, niks doen
                 if (fromCell.dataset.id === cell.dataset.id) {
                     return;
                 }
 
-                // oude inhoud verwijderen uit target cell
+                const targetImage = cell.querySelector(".gridImage");
+
+                let targetData = null;
+
+                if (targetImage) {
+                    targetData = {
+                        functionId: targetImage.dataset.functionId,
+                        category: targetImage.dataset.category,
+                        imageSrc: targetImage.src,
+                        imageAlt: targetImage.alt
+                    };
+                }
+
                 clearCell(cell);
 
-                // image opnieuw maken in de target cell
-                const newImage = createGridImage({
+                const draggedImage = createGridImage({
                     functionId: dragData.functionId,
                     category: dragData.category,
                     imageSrc: dragData.imageSrc,
@@ -73,24 +79,34 @@ document.addEventListener("DOMContentLoaded", function () {
                     targetCellId: cell.dataset.id
                 });
 
-                cell.appendChild(newImage);
-
-                // target cell bezet maken
+                cell.appendChild(draggedImage);
                 markCellOccupied(cell, dragData.category);
 
-                // oude cell leegmaken
                 clearCell(fromCell);
-                markCellAvailable(fromCell);
 
-                // opslaan + effect table updaten
+                if (targetData) {
+                    const swappedImage = createGridImage({
+                        functionId: targetData.functionId,
+                        category: targetData.category,
+                        imageSrc: targetData.imageSrc,
+                        imageAlt: targetData.imageAlt,
+                        targetCellId: fromCell.dataset.id
+                    });
+
+                    fromCell.appendChild(swappedImage);
+                    markCellOccupied(fromCell, targetData.category);
+                } else {
+                    markCellAvailable(fromCell);
+                }
+
                 moveFunctionInGrid(
                     dragData.fromCellId,
                     cell.dataset.id,
                     dragData.functionId
                 );
 
-                // nieuwe grid image ook draggable maken
                 enableDrag();
+                enableMobileDrag();
             }
         });
     });
@@ -106,7 +122,6 @@ function getDragData(ev) {
     try {
         return JSON.parse(rawData);
     } catch (error) {
-        // fallback voor oude code: alleen item id
         return {
             source: "library",
             itemId: rawData
@@ -169,7 +184,6 @@ function enableDrag() {
     functionItems.forEach((item) => {
         item.setAttribute("draggable", "true");
 
-        // voorkomt dubbele event listeners
         if (item.dataset.dragEnabled === "true") return;
         item.dataset.dragEnabled = "true";
 
@@ -195,7 +209,6 @@ function enableDrag() {
     gridImages.forEach((image) => {
         image.setAttribute("draggable", "true");
 
-        // voorkomt dubbele event listeners
         if (image.dataset.dragEnabled === "true") return;
         image.dataset.dragEnabled = "true";
 
@@ -217,17 +230,20 @@ function enableDrag() {
 
 
 // MOBIEL TOEGEVOEGD
+let mobileDragDocumentListenersAdded = false;
+let activeItem = null;
+let activeDragData = null;
+let touchTimeout = null;
+let lastTouchX = 0;
+let lastTouchY = 0;
+
 function enableMobileDrag() {
     const draggableItems = document.querySelectorAll(".functionItem, .draggableGridFunction");
 
-    let activeItem = null;
-    let activeDragData = null;
-    let touchTimeout = null;
-
-    let lastTouchX = 0;
-    let lastTouchY = 0;
-
     draggableItems.forEach((item) => {
+        if (item.dataset.mobileDragEnabled === "true") return;
+        item.dataset.mobileDragEnabled = "true";
+
         item.addEventListener("touchstart", function (ev) {
             activeItem = item;
 
@@ -235,7 +251,6 @@ function enableMobileDrag() {
             lastTouchX = touch.clientX;
             lastTouchY = touch.clientY;
 
-            // check of het item uit de library of uit de grid komt
             if (item.classList.contains("draggableGridFunction")) {
                 activeDragData = {
                     source: "grid",
@@ -266,6 +281,9 @@ function enableMobileDrag() {
 
         }, { passive: true });
     });
+
+    if (mobileDragDocumentListenersAdded) return;
+    mobileDragDocumentListenersAdded = true;
 
     document.addEventListener("touchmove", function (ev) {
         const touch = ev.touches[0];
@@ -319,6 +337,7 @@ function enableMobileDrag() {
                 saveFunctionInGrid(cell, activeItem);
 
                 enableDrag();
+                enableMobileDrag();
             }
 
             // MOBIEL: GRID NAAR GRID
@@ -326,9 +345,22 @@ function enableMobileDrag() {
                 const fromCell = document.querySelector(`.gridCell[data-id="${activeDragData.fromCellId}"]`);
 
                 if (fromCell && fromCell.dataset.id !== cell.dataset.id) {
+                    const targetImage = cell.querySelector(".gridImage");
+
+                    let targetData = null;
+
+                    if (targetImage) {
+                        targetData = {
+                            functionId: targetImage.dataset.functionId,
+                            category: targetImage.dataset.category,
+                            imageSrc: targetImage.src,
+                            imageAlt: targetImage.alt
+                        };
+                    }
+
                     clearCell(cell);
 
-                    const newImage = createGridImage({
+                    const draggedImage = createGridImage({
                         functionId: activeDragData.functionId,
                         category: activeDragData.category,
                         imageSrc: activeDragData.imageSrc,
@@ -336,12 +368,25 @@ function enableMobileDrag() {
                         targetCellId: cell.dataset.id
                     });
 
-                    cell.appendChild(newImage);
-
+                    cell.appendChild(draggedImage);
                     markCellOccupied(cell, activeDragData.category);
 
                     clearCell(fromCell);
-                    markCellAvailable(fromCell);
+
+                    if (targetData) {
+                        const swappedImage = createGridImage({
+                            functionId: targetData.functionId,
+                            category: targetData.category,
+                            imageSrc: targetData.imageSrc,
+                            imageAlt: targetData.imageAlt,
+                            targetCellId: fromCell.dataset.id
+                        });
+
+                        fromCell.appendChild(swappedImage);
+                        markCellOccupied(fromCell, targetData.category);
+                    } else {
+                        markCellAvailable(fromCell);
+                    }
 
                     moveFunctionInGrid(
                         activeDragData.fromCellId,
@@ -350,6 +395,7 @@ function enableMobileDrag() {
                     );
 
                     enableDrag();
+                    enableMobileDrag();
                 }
             }
         }
@@ -378,22 +424,18 @@ function enableTooltip() {
             let left = ev.clientX + 15;
             let top = ev.clientY + 15;
 
-            // Als tooltip rechts buiten het scherm valt, zet hem links van de cursor
             if (left + tooltipWidth > window.innerWidth - padding) {
                 left = ev.clientX - tooltipWidth - 15;
             }
 
-            // Als tooltip onder buiten het scherm valt, zet hem boven de cursor
             if (top + tooltipHeight > window.innerHeight - padding) {
                 top = ev.clientY - tooltipHeight - 15;
             }
 
-            // Niet links buiten het scherm
             if (left < padding) {
                 left = padding;
             }
 
-            // Niet boven buiten het scherm
             if (top < padding) {
                 top = padding;
             }
