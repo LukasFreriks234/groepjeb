@@ -27,7 +27,7 @@ class EffectsSeeder extends Seeder
 
         ];
 
-        foreach ($effects as $effect){
+        foreach ($effects as $effect) {
             EffectsModel::create($effect);
         }
     }

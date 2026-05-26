@@ -29,11 +29,11 @@ class Effects extends Model
         $effects = self::all()->keyBy('id');
 
         $categoryMap = [
-            'Environmental Quality' => 'Milieukwaliteit',
-            'Mobility' => 'Mobiliteit',
-            'Recreation' => 'Recreatie',
-            'Safety' => 'Veiligheid',
-            'Services' => 'Voorzieningen',
+            'Environmental Quality' => 'Environmental Quality',
+            'Mobility' => 'Mobility',
+            'Recreation' => 'Recreation',
+            'Safety' => 'Safety',
+            'Services' => 'Services',
         ];
 
         $effectTotals = [];
@@ -50,10 +50,10 @@ class Effects extends Model
                 if ($effect) {
                     foreach ($categories as $category) {
                         $englishCategory = $category->category;
-                        $dutchColumn = $categoryMap[$englishCategory] ?? null;
+                        $databaseColumn = $categoryMap[$englishCategory] ?? null;
 
-                        if ($dutchColumn) {
-                            $effectTotals[$englishCategory] += (int) ($effect->getAttribute($dutchColumn) ?? 0);
+                        if ($databaseColumn) {
+                            $effectTotals[$englishCategory] += (int) ($effect->getAttribute($databaseColumn) ?? 0);
                         }
                     }
                 }
