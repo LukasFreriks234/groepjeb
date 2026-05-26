@@ -14,11 +14,14 @@
 <body>
 
 <h1>Edit Function</h1>
+
 <div class="container">
 
     <div class="form-section">
+
         <form method="POST"
-              action="{{ route('functions.update', $function->id) }}">
+              action="{{ route('functions.update', $function->id) }}"
+              enctype="multipart/form-data">
             @csrf
             @method('PATCH')
 
@@ -26,25 +29,24 @@
             <x-formInput
                 name="name"
                 label="Name"
-                :value="$function->name"
+                :value="old('name', $function->name)"
             />
 
-            <!-- CATEGORY -->
-            <label for="category">
-                Category
-            </label>
-            <select id="category"
-                    name="category">
-                @foreach($categories as $category)
-                    <option
-                        value="{{ $category->category }}"
+            <!-- IMAGE -->
+            <label for="image">Change image</label>
+            <input 
+                type="file" 
+                id="image" 
+                name="image" 
+                accept="image/*"
+            >
 
-                        @if(
-                            $function->category
-                            == $category->category
-                        )
-                            selected
-                        @endif>
+            <!-- CATEGORY -->
+            <label for="category">Category</label>
+            <select id="category" name="category">
+                @foreach($categories as $category)
+                    <option value="{{ $category->category }}"
+                        {{ old('category', $function->category) == $category->category ? 'selected' : '' }}>
                         {{ $category->category }}
                     </option>
                 @endforeach
@@ -52,26 +54,15 @@
 
             <!-- ADD RELATIONSHIP -->
             <h2>Add Relationship</h2>
-            <label>
-                Select Function
-            </label>
-            <select name="related_function">
-                <option value="">
-                    -- Select Function --
-                </option>
+
+            <label for="related_function">Select Function</label>
+            <select id="related_function" name="related_function">
+                <option value="">-- Select Function --</option>
+
                 @foreach($functions as $relatedFunction)
-                    @if(
-                        $relatedFunction->id
-                        != $function->id
-                    )
-                        <option
-                            value="{{ $relatedFunction->id }}"
-                            @if(
-                                $function->related_function_id
-                                == $relatedFunction->id
-                            )
-                                selected
-                            @endif>
+                    @if($relatedFunction->id != $function->id)
+                        <option value="{{ $relatedFunction->id }}"
+                            {{ old('related_function', $function->related_function_id) == $relatedFunction->id ? 'selected' : '' }}>
                             {{ $relatedFunction->name }}
                         </option>
                     @endif
@@ -80,168 +71,119 @@
 
             <!-- RELATIONSHIP EFFECTS -->
             <h2>Relationship Effects</h2>
-            <label>Safety</label>
+
+            <label for="relationship_safety">Safety</label>
             <input
                 type="number"
+                id="relationship_safety"
                 name="relationship_safety"
                 min="-10"
                 max="10"
-                value="{{ $function->relationship_safety ?? 0 }}"
-                class="
-                    @if(($function->relationship_safety ?? 0) > 0)
-                        positiveEffect
-                    @elseif(($function->relationship_safety ?? 0) < 0)
-                        negativeEffect
-                    @else
-                        neutralEffect
-                    @endif
-                ">
+                value="{{ old('relationship_safety', $function->relationship_safety ?? 0) }}"
+                class="{{ (old('relationship_safety', $function->relationship_safety ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_safety', $function->relationship_safety ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+            >
 
-
-            <label>Recreation</label>
+            <label for="relationship_recreation">Recreation</label>
             <input
                 type="number"
+                id="relationship_recreation"
                 name="relationship_recreation"
                 min="-10"
                 max="10"
-                value="{{ $function->relationship_recreation ?? 0 }}"
-                class="
-                    @if(($function->relationship_recreation ?? 0) > 0)
-                        positiveEffect
-                    @elseif(($function->relationship_recreation ?? 0) < 0)
-                        negativeEffect
-                    @else
-                        neutralEffect
-                    @endif
-                ">
+                value="{{ old('relationship_recreation', $function->relationship_recreation ?? 0) }}"
+                class="{{ (old('relationship_recreation', $function->relationship_recreation ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_recreation', $function->relationship_recreation ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+            >
 
-            <label>Environmental Quality</label>
+            <label for="relationship_environmental">Environmental Quality</label>
             <input
                 type="number"
+                id="relationship_environmental"
                 name="relationship_environmental"
                 min="-10"
                 max="10"
-                value="{{ $function->relationship_environmental ?? 0 }}"
-                class="
-                    @if(($function->relationship_environmental ?? 0) > 0)
-                        positiveEffect
-                    @elseif(($function->relationship_environmental ?? 0) < 0)
-                        negativeEffect
-                    @else
-                        neutralEffect
-                    @endif
-                ">
+                value="{{ old('relationship_environmental', $function->relationship_environmental ?? 0) }}"
+                class="{{ (old('relationship_environmental', $function->relationship_environmental ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_environmental', $function->relationship_environmental ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+            >
 
-            <label>Services</label>
+            <label for="relationship_services">Services</label>
             <input
                 type="number"
+                id="relationship_services"
                 name="relationship_services"
                 min="-10"
                 max="10"
-                value="{{ $function->relationship_services ?? 0 }}"
-                class="
-                    @if(($function->relationship_services ?? 0) > 0)
-                        positiveEffect
-                    @elseif(($function->relationship_services ?? 0) < 0)
-                        negativeEffect
-                    @else
-                        neutralEffect
-                    @endif
-                ">
+                value="{{ old('relationship_services', $function->relationship_services ?? 0) }}"
+                class="{{ (old('relationship_services', $function->relationship_services ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_services', $function->relationship_services ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+            >
 
-            <label>Mobility</label>
+            <label for="relationship_mobility">Mobility</label>
             <input
                 type="number"
+                id="relationship_mobility"
                 name="relationship_mobility"
                 min="-10"
                 max="10"
-                value="{{ $function->relationship_mobility ?? 0 }}"
-                class="
-                    @if(($function->relationship_mobility ?? 0) > 0)
-                        positiveEffect
-                    @elseif(($function->relationship_mobility ?? 0) < 0)
-                        negativeEffect
-                    @else
-                        neutralEffect
-                    @endif
-                ">
+                value="{{ old('relationship_mobility', $function->relationship_mobility ?? 0) }}"
+                class="{{ (old('relationship_mobility', $function->relationship_mobility ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_mobility', $function->relationship_mobility ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+            >
 
             <!-- EFFECTS -->
             <h2>Effects</h2>
-            <label>Safety</label>
+
+            <label for="Safety">Safety</label>
             <input
                 type="number"
+                id="Safety"
                 name="Safety"
-                value="{{ $function->effects->Safety }}"
-                class="
-                    @if($function->effects->Safety > 0)
-                        positiveEffect
-                    @elseif($function->effects->Safety < 0)
-                        negativeEffect
-                    @else
-                        neutralEffect
-                    @endif
-                ">
+                min="-10"
+                max="10"
+                value="{{ old('Safety', data_get($function->effects, 'Safety', 0)) }}"
+                class="{{ (old('Safety', data_get($function->effects, 'Safety', 0)) > 0) ? 'positiveEffect' : ((old('Safety', data_get($function->effects, 'Safety', 0)) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+            >
 
-            <label>Recreation</label>
+            <label for="Recreation">Recreation</label>
             <input
                 type="number"
+                id="Recreation"
                 name="Recreation"
-                value="{{ $function->effects->Recreation }}"
-                class="
-                    @if($function->effects->Recreation > 0)
-                        positiveEffect
-                    @elseif($function->effects->Recreation < 0)
-                        negativeEffect
-                    @else
-                        neutralEffect
-                    @endif
-                ">
+                min="-10"
+                max="10"
+                value="{{ old('Recreation', data_get($function->effects, 'Recreation', 0)) }}"
+                class="{{ (old('Recreation', data_get($function->effects, 'Recreation', 0)) > 0) ? 'positiveEffect' : ((old('Recreation', data_get($function->effects, 'Recreation', 0)) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+            >
 
-            <label>Environmental Quality</label>
+            <label for="Environmental_Quality">Environmental Quality</label>
             <input
                 type="number"
+                id="Environmental_Quality"
                 name="Environmental_Quality"
-                value="{{ $function->effects->{'Environmental Quality'} }}"
-                class="
-                    @if($function->effects->{'Environmental Quality'} > 0)
-                        positiveEffect
-                    @elseif($function->effects->{'Environmental Quality'} < 0)
-                        negativeEffect
-                    @else
-                        neutralEffect
-                    @endif
-                ">
+                min="-10"
+                max="10"
+                value="{{ old('Environmental_Quality', data_get($function->effects, 'Environmental Quality', 0)) }}"
+                class="{{ (old('Environmental_Quality', data_get($function->effects, 'Environmental Quality', 0)) > 0) ? 'positiveEffect' : ((old('Environmental_Quality', data_get($function->effects, 'Environmental Quality', 0)) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+            >
 
-            <label>Services</label>
+            <label for="Services">Services</label>
             <input
                 type="number"
+                id="Services"
                 name="Services"
-                value="{{ $function->effects->Services }}"
-                class="
-                    @if($function->effects->Services > 0)
-                        positiveEffect
-                    @elseif($function->effects->Services < 0)
-                        negativeEffect
-                    @else
-                        neutralEffect
-                    @endif
-                ">
+                min="-10"
+                max="10"
+                value="{{ old('Services', data_get($function->effects, 'Services', 0)) }}"
+                class="{{ (old('Services', data_get($function->effects, 'Services', 0)) > 0) ? 'positiveEffect' : ((old('Services', data_get($function->effects, 'Services', 0)) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+            >
 
-            <label>Mobility</label>
+            <label for="Mobility">Mobility</label>
             <input
                 type="number"
+                id="Mobility"
                 name="Mobility"
-                value="{{ $function->effects->Mobility }}"
-                class="
-                    @if($function->effects->Mobility > 0)
-                        positiveEffect
-                    @elseif($function->effects->Mobility < 0)
-                        negativeEffect
-                    @else
-                        neutralEffect
-                    @endif
-                ">
+                min="-10"
+                max="10"
+                value="{{ old('Mobility', data_get($function->effects, 'Mobility', 0)) }}"
+                class="{{ (old('Mobility', data_get($function->effects, 'Mobility', 0)) > 0) ? 'positiveEffect' : ((old('Mobility', data_get($function->effects, 'Mobility', 0)) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+            >
 
             <!-- SAVE -->
             <button type="submit">
@@ -252,6 +194,7 @@
 
     <!-- IMAGE -->
     <div class="image-section">
+        <p>Current image:</p>
         <img src="{{ asset($function->image) }}"
              alt="Afbeelding van {{ $function->name }}">
     </div>

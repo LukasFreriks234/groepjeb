@@ -6,74 +6,150 @@ use Illuminate\Http\Request;
 use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
+use Illuminate\Support\Facades\Auth;
 
 class FunctionController extends Controller
 {
-    public function edit($id)
+    public function index()
     {
-        $function =
-            Functions::with('effects')
-            ->findOrFail($id);
+        $functions = Functions::all();
+        $categories = Category::all();
+
+        return view('Functions.index', compact('functions', 'categories'));
+    }
+
+    public function show($id)
+    {
+        $function = Functions::with('effects')->findOrFail($id);
+        $effect = Effects::find($id);
+
+        return view('Functions.show', compact('function', 'effect'));
+    }
+
+    public function create()
+    {
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
 
         $categories = Category::all();
 
-        // alle functies ophalen
-        $functions = Functions::all();
+        return view('Functions.create', compact('categories'));
+    }
 
-        return view(
-            'Functions.edit',
+    public function store(Request $request)
+    {
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
 
-            compact(
-                'function',
-                'categories',
-                'functions'
-            )
-        );
+        $request->validate([
+            'name' => 'required|string|max:255|unique:functions,name',
+            'category' => 'required|exists:categories,category',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'Safety' => 'required|numeric|between:-10,10',
+            'Recreation' => 'required|numeric|between:-10,10',
+            'Environmental_Quality' => 'required|numeric|between:-10,10',
+            'Services' => 'required|numeric|between:-10,10',
+            'Mobility' => 'required|numeric|between:-10,10',
+        ]);
+
+        $imageName = $request->file('image')->hashName();
+        $imageFolder = public_path('images/functions');
+
+        if (!is_dir($imageFolder)) {
+            mkdir($imageFolder, 0755, true);
+        }
+
+        $request->file('image')->move($imageFolder, $imageName);
+
+        $imagePath = 'images/functions/' . $imageName;
+
+        $function = Functions::create([
+            'name' => $request->name,
+            'category' => $request->category,
+            'image' => $imagePath,
+        ]);
+
+        Effects::create([
+            'id' => $function->id,
+            'Safety' => $request->Safety,
+            'Recreation' => $request->Recreation,
+            'Environmental Quality' => $request->Environmental_Quality,
+            'Services' => $request->Services,
+            'Mobility' => $request->Mobility,
+        ]);
+
+        return redirect()->route('functions.index');
+    }
+
+    public function edit($id)
+    {
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $function = Functions::with('effects')->findOrFail($id);
+        $categories = Category::all();
+        $functions = Functions::where('id', '!=', $id)->get();
+
+        return view('Functions.edit', compact('function', 'categories', 'functions'));
     }
 
     public function update(Request $request, $id)
     {
-        $function =
-            Functions::with('effects')
-            ->findOrFail($id);
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
 
-        // VALIDATIE
+        $function = Functions::with('effects')->findOrFail($id);
+
         $request->validate([
-            'name' => 'required',
-            'category' => 'required',
-            'Safety' => 'required|numeric',
+            'name' => 'required|string|max:255|unique:functions,name,' . $id,
+            'category' => 'required|exists:categories,category',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
 
-            'Recreation' => 'required|numeric',
-            'Environmental_Quality' => 'required|numeric',
-            'Services' => 'required|numeric',
-            'Mobility' => 'required|numeric',
+            'Safety' => 'required|numeric|between:-10,10',
+            'Recreation' => 'required|numeric|between:-10,10',
+            'Environmental_Quality' => 'required|numeric|between:-10,10',
+            'Services' => 'required|numeric|between:-10,10',
+            'Mobility' => 'required|numeric|between:-10,10',
 
-            // RELATIONSHIP EFFECTS
-            'relationship_safety' => 'required|integer|min:-10|max:10',
-            'relationship_recreation' => 'required|integer|min:-10|max:10',
-            'relationship_environmental' => 'required|integer|min:-10|max:10',
-            'relationship_services' => 'required|integer|min:-10|max:10',
-            'relationship_mobility' => 'required|integer|min:-10|max:10',
+            'related_function' => 'nullable|exists:functions,id',
+            'relationship_safety' => 'required|integer|between:-10,10',
+            'relationship_recreation' => 'required|integer|between:-10,10',
+            'relationship_environmental' => 'required|integer|between:-10,10',
+            'relationship_services' => 'required|integer|between:-10,10',
+            'relationship_mobility' => 'required|integer|between:-10,10',
         ]);
 
-        // FUNCTION OPSLAAN
-        $function->update([
+        $functionData = [
             'name' => $request->name,
             'category' => $request->category,
 
-            // RELATIONSHIP
             'related_function_id' => $request->related_function,
-
-            // RELATIONSHIP EFFECTS
             'relationship_safety' => $request->relationship_safety,
             'relationship_recreation' => $request->relationship_recreation,
             'relationship_environmental' => $request->relationship_environmental,
             'relationship_services' => $request->relationship_services,
             'relationship_mobility' => $request->relationship_mobility,
-        ]);
+        ];
 
+        if ($request->hasFile('image')) {
+            $imageName = $request->file('image')->hashName();
+            $imageFolder = public_path('images/functions');
 
-        // EFFECTS OPSLAAN
+            if (!is_dir($imageFolder)) {
+                mkdir($imageFolder, 0755, true);
+            }
+
+            $request->file('image')->move($imageFolder, $imageName);
+
+            $functionData['image'] = 'images/functions/' . $imageName;
+        }
+
+        $function->update($functionData);
+
         $function->effects()->update([
             'Safety' => $request->Safety,
             'Recreation' => $request->Recreation,
@@ -82,8 +158,6 @@ class FunctionController extends Controller
             'Mobility' => $request->Mobility,
         ]);
 
-        return redirect(
-            '/overview/' . $function->id
-        );
+        return redirect()->route('functions.show', $function->id);
     }
 }
