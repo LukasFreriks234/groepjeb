@@ -18,6 +18,16 @@
 </head>
 <body>
 
+    @auth
+    <div>
+        <form method="POST" action="/logout">
+            @csrf
+            <button>Log Out</button>
+        </form>
+    </div>
+    @endauth
+
+
 <div class="container">
     <div class="gridSection">
         <x-grid :cells="$cells" :categories="$categories" />
