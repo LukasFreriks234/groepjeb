@@ -82,7 +82,7 @@
         @endforeach
     </ul>
 
-    <a href="/">
+    <a href="/grid">
         <button class="backButton">Back</button>
     </a>
 </body>
