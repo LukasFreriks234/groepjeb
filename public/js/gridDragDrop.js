@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // clone maken
             const clonedItem = originalItem.cloneNode(true);
+            clonedItem.classList.remove("selectedMobileCell");
 
             // category opslaan op cell
             cell.dataset.category = originalItem.dataset.category;
@@ -75,96 +76,161 @@ function enableDrag() {
     });
 }
 
-
 // MOBIEL TOEGEVOEGD
 function enableMobileDrag() {
-    const functionItems = document.querySelectorAll(".functionItem");
 
-    let activeItem = null;
-    let activeCell = null;
-    let touchTimeout = null;
+    // ALLEEN MOBIEL
+    if (window.innerWidth > 768) {
+        return;
+    }
 
-    let lastTouchX = 0;
-    let lastTouchY = 0;
-
-    functionItems.forEach((item) => {
-        item.addEventListener("touchstart", function (ev) {
-            activeItem = item;
-            const touch = ev.touches[0];
-            lastTouchX = touch.clientX;
-            lastTouchY = touch.clientY;
-            touchTimeout = setTimeout(() => {
-                if (activeItem) {
-                    activeItem.classList.add(
-                        "selectedMobileCell"
-                    );
-                }
-            }, 200);
-        }, { passive: true });
-    });
-
-    document.addEventListener("touchmove", function (ev) {
-        const touch = ev.touches[0];
-        lastTouchX = touch.clientX;
-        lastTouchY = touch.clientY;
-
-        if (activeItem) {
-            ev.preventDefault();
-        }
-    }, { passive: false });
-
-    document.addEventListener("touchend", function (ev) {
-        clearTimeout(touchTimeout);
-        if (!activeItem) {
-            return;
-        }
-        activeItem.classList.remove(
-            "selectedMobileCell"
+    const functionItems =
+        document.querySelectorAll(
+            ".functionItem"
         );
 
-        const element =
-            document.elementFromPoint(
-                lastTouchX,
-                lastTouchY
-            );
+    const gridCells =
+        document.querySelectorAll(
+            ".gridCell"
+        );
 
-        const cell =
-            element
-                ? element.closest(".gridCell")
-                : null;
+    let selectedItem = null;
 
-        if (cell) {
-            activeCell = cell;
-            activeCell.classList.add(
-                "selectedCell"
-            );
-            const existingItem = cell.querySelector(".functionItem");
-            const existingImage = cell.querySelector(".gridImage");
-            if (existingItem) existingItem.remove();
-            if (existingImage) existingImage.remove();
-            const clonedItem = activeItem.cloneNode(true);
-            clonedItem.removeAttribute("id");
-            clonedItem.setAttribute(
-                "draggable",
-                "false"
-            );
 
-            cell.dataset.category = activeItem.dataset.category;
-            cell.appendChild(clonedItem);
-            cell.classList.remove("available");
-            cell.classList.add("occupied");
-            saveFunctionInGrid(
-                cell,
-                activeItem
-            );
-            setTimeout(() => {
-                activeCell.classList.remove(
-                    "selectedCell"
+    // ITEM SELECTEREN
+    functionItems.forEach((item) => {
+
+        item.addEventListener(
+
+            "touchstart",
+
+            function (ev) {
+
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                // oude selectie verwijderen
+                document
+                    .querySelectorAll(
+                        ".functionItem"
+                    )
+                    .forEach((el) => {
+
+                        el.classList.remove(
+                            "selectedMobileCell"
+                        );
+
+                    });
+
+                // huidige geel maken
+                ev.currentTarget.classList.add(
+                    "selectedMobileCell"
                 );
-            }, 1000);
-        }
-        activeItem = null;
-    }, { passive: false });
+
+                // geselecteerde item opslaan
+                selectedItem =
+                    ev.currentTarget;
+
+            },
+
+            { passive: false }
+
+        );
+
+    });
+
+
+    // ITEM IN GRID PLAATSEN
+    gridCells.forEach((cell) => {
+
+        cell.addEventListener(
+
+            "touchstart",
+
+            function (ev) {
+
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                if (!selectedItem) return;
+
+                // oude inhoud verwijderen
+                const existingItem =
+                    cell.querySelector(
+                        ".functionItem"
+                    );
+
+                const existingImage =
+                    cell.querySelector(
+                        ".gridImage"
+                    );
+
+                if (existingItem)
+                    existingItem.remove();
+
+                if (existingImage)
+                    existingImage.remove();
+
+                // clone maken
+                const clonedItem =
+                    selectedItem.cloneNode(
+                        true
+                    );
+
+                // geel uit grid halen
+                clonedItem.classList.remove(
+                    "selectedMobileCell"
+                );
+
+                clonedItem.removeAttribute(
+                    "id"
+                );
+
+                clonedItem.setAttribute(
+                    "draggable",
+                    "false"
+                );
+
+                // category opslaan
+                cell.dataset.category =
+                    selectedItem.dataset.category;
+
+                // item in grid zetten
+                cell.appendChild(
+                    clonedItem
+                );
+
+                // cell styling
+                cell.classList.remove(
+                    "available"
+                );
+
+                cell.classList.add(
+                    "occupied"
+                );
+
+                // save in database
+                saveFunctionInGrid(
+                    cell,
+                    selectedItem
+                );
+
+                // GEEL WEGHALEN UIT LIJST
+                selectedItem.classList.remove(
+                    "selectedMobileCell"
+                );
+
+                // GEEN SELECTIE MEER
+                selectedItem = null;
+
+            },
+
+            { passive: false }
+
+        );
+
+    });
+
 }
 
 // TOOLTIP
@@ -250,43 +316,52 @@ function saveFunctionInGrid(cell, originalItem) {
     });
 }
 
+// KLEUR EFFECTEN
+function getEffectClass(value) {
+    if (value > 0) {
+        return "positiveEffect";
+    }
+    if (value < 0) {
+        return "negativeEffect";
+    }
+    return "neutralEffect";
+}
 
 // EFFECT TABLE DIRECT UPDATEN
-window.updateEffectTable = function (effectTotals, qualityOfLife) {
-    Object.keys(effectTotals).forEach(function (category) {
-        const element =
-            document.querySelector(
-                `[data-effect-category="${category}"]`
-            );
-        if (element) {
-            const value = Number(effectTotals[category]);
-            element.textContent = value;
-            element.classList.remove(
-                "positiveEffect",
-                "negativeEffect",
-                "neutralEffect"
-            );
-            if (value > 0) {
-                element.classList.add(
-                    "positiveEffect"
+window.updateEffectTable = function (
+    effectTotals,
+    qualityOfLife
+) {
+    Object.keys(effectTotals).forEach(
+        function (category) {
+            const element =
+                document.querySelector(
+                    `[data-effect-category="${category}"]`
                 );
-            } else if (value < 0) {
-                element.classList.add(
-                    "negativeEffect"
-                );
-            } else {
-                element.classList.add(
-                    "neutralEffect"
-                );
+            if (element) {
+                const value =
+                    Number(
+                        effectTotals[category]
+                    );
+                element.innerHTML = `
+                    <span class="${getEffectClass(value)}">
+                        ${value}
+                    </span>
+                `;
             }
         }
-    });
+    );
     const qualityElement =
         document.getElementById(
             "qualityOfLifeValue"
         );
     if (qualityElement) {
-        qualityElement.textContent = qualityOfLife;
+        const total = qualityOfLife;
+        qualityElement.innerHTML = `
+            <span class="${getEffectClass(total)}">
+                ${total}
+            </span>
+        `;
     }
 };
 
@@ -320,51 +395,50 @@ function loadNeighborEffects(cell) {
 
 
 // TOOLTIP EFFECTS UPDATEN
-function updateTooltipEffects(effectTotals, qualityOfLife = null) {
+function updateTooltipEffects(
+    effectTotals,
+    qualityOfLife = null
+) {
     let calculatedQualityOfLife = 0;
-    Object.keys(effectTotals).forEach(function (category) {
-        const value = Number(effectTotals[category]);
-        calculatedQualityOfLife += value;
-        const element =
-            document.querySelector(
-                `[data-tooltip-effect-category="${category}"]`
-            );
-        if (element) {
-            element.textContent = value;
-            element.classList.remove(
-                "positiveEffect",
-                "negativeEffect",
-                "neutralEffect"
-            );
-            if (value > 0) {
-                element.classList.add(
-                    "positiveEffect"
+    Object.keys(effectTotals).forEach(
+        function (category) {
+            const value =
+                Number(
+                    effectTotals[category]
                 );
-            } else if (value < 0) {
-                element.classList.add(
-                    "negativeEffect"
+            calculatedQualityOfLife += value;
+            const element =
+                document.querySelector(
+                    `[data-tooltip-effect-category="${category}"]`
                 );
-            } else {
-                element.classList.add(
-                    "neutralEffect"
-                );
+            if (element) {
+                element.innerHTML = `
+                    <span class="${getEffectClass(value)}">
+                        ${value}
+                    </span>
+                `;
             }
         }
-    });
+    );
     const qualityElement =
         document.getElementById(
             "tooltipQualityOfLife"
         );
     if (qualityElement) {
-
-        qualityElement.textContent =
-            qualityOfLife ?? calculatedQualityOfLife;
+        const total =
+            qualityOfLife ??
+            calculatedQualityOfLife;
+        qualityElement.innerHTML = `
+            <span class="${getEffectClass(total)}">
+                ${total}
+            </span>
+        `;
     }
 }
 
 
 // AUTO SCROLL
-let scrollInterval;
+let scrollInterval = null;
 
 function stopAutoScroll() {
     clearInterval(scrollInterval);

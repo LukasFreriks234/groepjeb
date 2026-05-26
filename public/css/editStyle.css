@@ -95,18 +95,18 @@ img {
     border: 1px solid #d0d5dd;
 }
 
-input.positiveEffect {
-    color: green !important;
+.positiveEffect {
+    color: green;
     font-weight: bold;
 }
 
-input.negativeEffect {
-    color: red !important;
+.negativeEffect {
+    color: red;
     font-weight: bold;
 }
 
-input.neutralEffect {
-    color: black !important;
+.neutralEffect {
+    color: black;
 }
 
 @media (max-width: 900px) {

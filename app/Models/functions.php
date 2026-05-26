@@ -15,8 +15,14 @@ class Functions extends Model
     protected $fillable = [
         'name',
         'image',
-        // 'effect',
+        //'effects',
         'category',
+        'related_function_id',
+        'relationship_safety',
+        'relationship_recreation',
+        'relationship_environmental',
+        'relationship_services',
+        'relationship_mobility',
     ];
 
     public function category()

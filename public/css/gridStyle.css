@@ -144,6 +144,24 @@
     color: black;
 }
 
-.selectedMobileCell {
-    background-color: yellow !important;
+.functionItem {
+    background-color: transparent;
+}
+
+/* TELEFOON */
+@media (max-width: 768px) {
+
+    .functionItem.selectedMobileCell {
+        background-color: yellow !important;
+        color: black !important;
+    }
+
+}
+
+/* DESKTOP */
+@media (min-width: 769px) {
+    .functionItem.selectedMobileCell {
+        background-color: yellow !important;
+        color: black !important;
+    }
 }

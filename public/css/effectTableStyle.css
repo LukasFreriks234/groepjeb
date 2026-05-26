@@ -43,3 +43,17 @@
 .effectDescription {
     font-size: 0.9rem;
 }
+
+.positiveEffect {
+    color: green;
+    font-weight: bold;
+}
+
+.negativeEffect {
+    color: red;
+    font-weight: bold;
+}
+
+.neutralEffect {
+    color: black;
+}
