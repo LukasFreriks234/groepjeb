@@ -38,11 +38,11 @@ class FunctionController extends Controller
             'name' => 'required|string|max:255|unique:functions,name',
             'category' => 'required|exists:categories,category',
             'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'Safety' => 'required|numeric',
-            'Recreation' => 'required|numeric',
-            'Environmental_Quality' => 'required|numeric',
-            'Services' => 'required|numeric',
-            'Mobility' => 'required|numeric',
+            'Safety' => 'required|numeric|between:-10,10',
+            'Recreation' => 'required|numeric|between:-10,10',
+            'Environmental_Quality' => 'required|numeric|between:-10,10',
+            'Services' => 'required|numeric|between:-10,10',
+            'Mobility' => 'required|numeric|between:-10,10',
         ]);
 
         $imageName = $request->file('image')->hashName();
@@ -90,11 +90,11 @@ class FunctionController extends Controller
             'name' => 'required|string|max:255|unique:functions,name,' . $id,
             'category' => 'required|exists:categories,category',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'Safety' => 'required|numeric',
-            'Recreation' => 'required|numeric',
-            'Environmental_Quality' => 'required|numeric',
-            'Services' => 'required|numeric',
-            'Mobility' => 'required|numeric',
+            'Safety' => 'required|numeric|between:-10,10',
+            'Recreation' => 'required|numeric|between:-10,10',
+            'Environmental_Quality' => 'required|numeric|between:-10,10',
+            'Services' => 'required|numeric|between:-10,10',
+            'Mobility' => 'required|numeric|between:-10,10',
         ]);
 
         $functionData = [

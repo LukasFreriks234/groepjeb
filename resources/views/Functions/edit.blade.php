@@ -49,35 +49,45 @@
                 name="Safety"
                 label="Safety"
                 type="number"
-                :value="old('Safety', $function->effects->Safety)"
+                :value="old('Safety', data_get($function->effects, 'Safety', 0))"
+                min="-10"
+                max="10"
             />
 
             <x-formInput
                 name="Recreation"
                 label="Recreation"
                 type="number"
-                :value="old('Recreation', $function->effects->Recreation)"
+                :value="old('Recreation', data_get($function->effects, 'Recreation', 0))"
+                min="-10"
+                max="10"
             />
 
             <x-formInput
                 name="Environmental_Quality"
                 label="Environmental Quality"
                 type="number"
-                :value="old('Environmental_Quality', $function->effects->{'Environmental Quality'})"
+                :value="old('Environmental_Quality', data_get($function->effects, 'Environmental Quality', 0))"
+                min="-10"
+                max="10"
             />
 
             <x-formInput
                 name="Services"
                 label="Services"
                 type="number"
-                :value="old('Services', $function->effects->Services)"
+                :value="old('Services', data_get($function->effects, 'Services', 0))"
+                min="-10"
+                max="10"
             />
 
             <x-formInput
                 name="Mobility"
                 label="Mobility"
                 type="number"
-                :value="old('Mobility', $function->effects->Mobility)"
+                :value="old('Mobility', data_get($function->effects, 'Mobility', 0))"
+                min="-10"
+                max="10"
             />
 
             <button type="submit">Save changes</button>
