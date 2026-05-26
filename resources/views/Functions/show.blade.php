@@ -47,11 +47,17 @@
                 <button type="button">Back</button>
             </a>
 
-            <a href="{{ route('functions.edit', $function->id) }}">
-                <button type="button">Edit</button>
-            </a>
+            @auth
+                @if(auth()->user()->role === 'admin')
 
-            <button type="button" class="delete">Delete</button>
+                    <a href="{{ route('functions.edit', $function->id) }}">
+                        <button type="button">Edit</button>
+                    </a>
+
+                    <button type="button" class="delete">Delete</button>
+
+                @endif
+            @endauth
 
         </div>
 

@@ -13,9 +13,15 @@
     <div class="topbar">
         <h1>All functions:</h1>
 
-        <a href="{{ route('functions.create') }}">
-            <button class="createButton">Create new function</button>
-        </a>
+        @auth
+            @if(auth()->user()->role === 'admin')
+
+                <a href="{{ route('functions.create') }}">
+                    <button class="createButton">Create function</button>
+                </a>
+
+            @endif
+        @endauth
     </div>
 
     <div class="category">

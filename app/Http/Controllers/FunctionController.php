@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
+use Illuminate\Support\Facades\Auth;
 
 class FunctionController extends Controller
 {
@@ -27,6 +28,9 @@ class FunctionController extends Controller
 
     public function create()
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
         $categories = Category::all();
 
         return view('Functions.create', compact('categories'));
@@ -34,6 +38,10 @@ class FunctionController extends Controller
 
     public function store(Request $request)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255|unique:functions,name',
             'category' => 'required|exists:categories,category',
@@ -76,6 +84,9 @@ class FunctionController extends Controller
 
     public function edit($id)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
         $function = Functions::with('effects')->findOrFail($id);
         $categories = Category::all();
 
@@ -84,6 +95,9 @@ class FunctionController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
         $function = Functions::with('effects')->findOrFail($id);
 
         $request->validate([
