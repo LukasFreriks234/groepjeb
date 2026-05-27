@@ -23,10 +23,10 @@
                 />
 
                 <label for="image">Image</label>
-                <input 
-                    type="file" 
-                    id="image" 
-                    name="image" 
+                <input
+                    type="file"
+                    id="image"
+                    name="image"
                     accept="image/*"
                     alt="Upload an image for the new function"
                 >
@@ -40,6 +40,77 @@
                         </option>
                     @endforeach
                 </select>
+
+                <h2>Add Relationship</h2>
+
+                <label for="related_function">Select Function</label>
+                <select id="related_function" name="related_function">
+                    <option value="">-- Select Function --</option>
+
+                    @foreach(($functions ?? []) as $relatedFunction)
+                        <option value="{{ $relatedFunction->id }}"
+                            {{ old('related_function') == $relatedFunction->id ? 'selected' : '' }}>
+                            {{ $relatedFunction->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <h2>Relationship Effects</h2>
+
+                <label for="relationship_safety">Safety</label>
+                <input
+                    type="number"
+                    id="relationship_safety"
+                    name="relationship_safety"
+                    class="relationship-effect-input"
+                    value="{{ old('relationship_safety', 0) }}"
+                    min="-10"
+                    max="10"
+                >
+
+                <label for="relationship_recreation">Recreation</label>
+                <input
+                    type="number"
+                    id="relationship_recreation"
+                    name="relationship_recreation"
+                    class="relationship-effect-input"
+                    value="{{ old('relationship_recreation', 0) }}"
+                    min="-10"
+                    max="10"
+                >
+
+                <label for="relationship_environmental">Environmental Quality</label>
+                <input
+                    type="number"
+                    id="relationship_environmental"
+                    name="relationship_environmental"
+                    class="relationship-effect-input"
+                    value="{{ old('relationship_environmental', 0) }}"
+                    min="-10"
+                    max="10"
+                >
+
+                <label for="relationship_services">Services</label>
+                <input
+                    type="number"
+                    id="relationship_services"
+                    name="relationship_services"
+                    class="relationship-effect-input"
+                    value="{{ old('relationship_services', 0) }}"
+                    min="-10"
+                    max="10"
+                >
+
+                <label for="relationship_mobility">Mobility</label>
+                <input
+                    type="number"
+                    id="relationship_mobility"
+                    name="relationship_mobility"
+                    class="relationship-effect-input"
+                    value="{{ old('relationship_mobility', 0) }}"
+                    min="-10"
+                    max="10"
+                >
 
                 <h2>Effects</h2>
 
@@ -92,6 +163,29 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const relatedFunctionSelect = document.getElementById('related_function');
+            const relationshipInputs = document.querySelectorAll('.relationship-effect-input');
+
+            function toggleRelationshipInputs() {
+                const hasRelationship = relatedFunctionSelect.value !== '';
+
+                relationshipInputs.forEach(function (input) {
+                    input.disabled = !hasRelationship;
+
+                    if (!hasRelationship) {
+                        input.value = 0;
+                    }
+                });
+            }
+
+            relatedFunctionSelect.addEventListener('change', toggleRelationshipInputs);
+
+            toggleRelationshipInputs();
+        });
+    </script>
 </body>
 
 </html>

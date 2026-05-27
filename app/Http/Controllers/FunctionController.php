@@ -33,8 +33,9 @@ class FunctionController extends Controller
         }
 
         $categories = Category::all();
+        $functions = Functions::all();
 
-        return view('Functions.create', compact('categories'));
+        return view('Functions.create', compact('categories', 'functions'));
     }
 
     public function store(Request $request)
@@ -47,28 +48,36 @@ class FunctionController extends Controller
             'name' => 'required|string|max:255|unique:functions,name',
             'category' => 'required|exists:categories,category',
             'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+
             'Safety' => 'required|numeric|between:-10,10',
             'Recreation' => 'required|numeric|between:-10,10',
             'Environmental_Quality' => 'required|numeric|between:-10,10',
             'Services' => 'required|numeric|between:-10,10',
             'Mobility' => 'required|numeric|between:-10,10',
+
+            'related_function' => 'nullable|exists:functions,id',
+            'relationship_safety' => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_recreation' => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_environmental' => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_services' => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_mobility' => 'required_with:related_function|nullable|integer|between:-10,10',
         ]);
 
-        $imageName = $request->file('image')->hashName();
-        $imageFolder = public_path('images/functions');
+        $imagePath = $this->saveUploadedFunctionImage($request);
 
-        if (!is_dir($imageFolder)) {
-            mkdir($imageFolder, 0755, true);
-        }
-
-        $request->file('image')->move($imageFolder, $imageName);
-
-        $imagePath = 'images/functions/' . $imageName;
+        $hasRelationship = !empty($request->related_function);
 
         $function = Functions::create([
             'name' => $request->name,
             'category' => $request->category,
             'image' => $imagePath,
+
+            'related_function_id' => $hasRelationship ? $request->related_function : null,
+            'relationship_safety' => $hasRelationship ? $request->relationship_safety : 0,
+            'relationship_recreation' => $hasRelationship ? $request->relationship_recreation : 0,
+            'relationship_environmental' => $hasRelationship ? $request->relationship_environmental : 0,
+            'relationship_services' => $hasRelationship ? $request->relationship_services : 0,
+            'relationship_mobility' => $hasRelationship ? $request->relationship_mobility : 0,
         ]);
 
         Effects::create([
@@ -116,36 +125,29 @@ class FunctionController extends Controller
             'Mobility' => 'required|numeric|between:-10,10',
 
             'related_function' => 'nullable|exists:functions,id',
-            'relationship_safety' => 'required|integer|between:-10,10',
-            'relationship_recreation' => 'required|integer|between:-10,10',
-            'relationship_environmental' => 'required|integer|between:-10,10',
-            'relationship_services' => 'required|integer|between:-10,10',
-            'relationship_mobility' => 'required|integer|between:-10,10',
+            'relationship_safety' => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_recreation' => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_environmental' => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_services' => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_mobility' => 'required_with:related_function|nullable|integer|between:-10,10',
         ]);
+
+        $hasRelationship = !empty($request->related_function);
 
         $functionData = [
             'name' => $request->name,
             'category' => $request->category,
 
-            'related_function_id' => $request->related_function,
-            'relationship_safety' => $request->relationship_safety,
-            'relationship_recreation' => $request->relationship_recreation,
-            'relationship_environmental' => $request->relationship_environmental,
-            'relationship_services' => $request->relationship_services,
-            'relationship_mobility' => $request->relationship_mobility,
+            'related_function_id' => $hasRelationship ? $request->related_function : null,
+            'relationship_safety' => $hasRelationship ? $request->relationship_safety : 0,
+            'relationship_recreation' => $hasRelationship ? $request->relationship_recreation : 0,
+            'relationship_environmental' => $hasRelationship ? $request->relationship_environmental : 0,
+            'relationship_services' => $hasRelationship ? $request->relationship_services : 0,
+            'relationship_mobility' => $hasRelationship ? $request->relationship_mobility : 0,
         ];
 
         if ($request->hasFile('image')) {
-            $imageName = $request->file('image')->hashName();
-            $imageFolder = public_path('images/functions');
-
-            if (!is_dir($imageFolder)) {
-                mkdir($imageFolder, 0755, true);
-            }
-
-            $request->file('image')->move($imageFolder, $imageName);
-
-            $functionData['image'] = 'images/functions/' . $imageName;
+            $functionData['image'] = $this->saveUploadedFunctionImage($request);
         }
 
         $function->update($functionData);
@@ -159,5 +161,29 @@ class FunctionController extends Controller
         ]);
 
         return redirect()->route('functions.show', $function->id);
+    }
+
+    private function saveUploadedFunctionImage(Request $request)
+    {
+        $imageName = $request->file('image')->hashName();
+
+        $relativeFolder = 'images/functions';
+        $imageFolder = public_path($relativeFolder);
+
+        if (!is_dir($imageFolder)) {
+            mkdir($imageFolder, 0777, true);
+        }
+
+        if (!is_writable($imageFolder)) {
+            chmod($imageFolder, 0777);
+        }
+
+        if (!is_writable($imageFolder)) {
+            abort(500, 'De map public/images/functions is niet schrijfbaar. Zet het project buiten OneDrive of controleer de maprechten.');
+        }
+
+        $request->file('image')->move($imageFolder, $imageName);
+
+        return $relativeFolder . '/' . $imageName;
     }
 }

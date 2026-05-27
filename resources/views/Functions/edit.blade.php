@@ -80,7 +80,7 @@
                 min="-10"
                 max="10"
                 value="{{ old('relationship_safety', $function->relationship_safety ?? 0) }}"
-                class="{{ (old('relationship_safety', $function->relationship_safety ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_safety', $function->relationship_safety ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+                class="relationship-effect-input {{ (old('relationship_safety', $function->relationship_safety ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_safety', $function->relationship_safety ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
             >
 
             <label for="relationship_recreation">Recreation</label>
@@ -91,7 +91,7 @@
                 min="-10"
                 max="10"
                 value="{{ old('relationship_recreation', $function->relationship_recreation ?? 0) }}"
-                class="{{ (old('relationship_recreation', $function->relationship_recreation ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_recreation', $function->relationship_recreation ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+                class="relationship-effect-input {{ (old('relationship_recreation', $function->relationship_recreation ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_recreation', $function->relationship_recreation ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
             >
 
             <label for="relationship_environmental">Environmental Quality</label>
@@ -102,7 +102,7 @@
                 min="-10"
                 max="10"
                 value="{{ old('relationship_environmental', $function->relationship_environmental ?? 0) }}"
-                class="{{ (old('relationship_environmental', $function->relationship_environmental ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_environmental', $function->relationship_environmental ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+                class="relationship-effect-input {{ (old('relationship_environmental', $function->relationship_environmental ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_environmental', $function->relationship_environmental ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
             >
 
             <label for="relationship_services">Services</label>
@@ -113,7 +113,7 @@
                 min="-10"
                 max="10"
                 value="{{ old('relationship_services', $function->relationship_services ?? 0) }}"
-                class="{{ (old('relationship_services', $function->relationship_services ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_services', $function->relationship_services ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+                class="relationship-effect-input {{ (old('relationship_services', $function->relationship_services ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_services', $function->relationship_services ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
             >
 
             <label for="relationship_mobility">Mobility</label>
@@ -124,7 +124,7 @@
                 min="-10"
                 max="10"
                 value="{{ old('relationship_mobility', $function->relationship_mobility ?? 0) }}"
-                class="{{ (old('relationship_mobility', $function->relationship_mobility ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_mobility', $function->relationship_mobility ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+                class="relationship-effect-input {{ (old('relationship_mobility', $function->relationship_mobility ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_mobility', $function->relationship_mobility ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
             >
 
             <!-- EFFECTS -->
@@ -200,6 +200,29 @@
     </div>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const relatedFunctionSelect = document.getElementById('related_function');
+        const relationshipInputs = document.querySelectorAll('.relationship-effect-input');
+
+        function toggleRelationshipInputs() {
+            const hasRelationship = relatedFunctionSelect.value !== '';
+
+            relationshipInputs.forEach(function (input) {
+                input.disabled = !hasRelationship;
+
+                if (!hasRelationship) {
+                    input.value = 0;
+                }
+            });
+        }
+
+        relatedFunctionSelect.addEventListener('change', toggleRelationshipInputs);
+
+        toggleRelationshipInputs();
+    });
+</script>
 
 </body>
 </html>
