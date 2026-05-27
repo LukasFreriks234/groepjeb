@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-
 class Functions extends Model
 {
     use HasFactory;
@@ -15,7 +14,6 @@ class Functions extends Model
     protected $fillable = [
         'name',
         'image',
-        //'effects',
         'category',
         'related_function_id',
         'relationship_safety',
@@ -33,5 +31,10 @@ class Functions extends Model
     public function effects()
     {
         return $this->hasOne(Effects::class, 'id', 'id');
+    }
+
+    public function relatedFunction()
+    {
+        return $this->belongsTo(Functions::class, 'related_function_id', 'id');
     }
 }

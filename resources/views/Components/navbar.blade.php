@@ -1,6 +1,12 @@
 <nav class="navbar" aria-label="Main Navigation">
     <ul class="navbar-menu">
         <li>
+            <a href="/grid" class="navbar-button">
+                Grid
+            </a>
+        </li>
+
+        <li>
             <a href="{{ route('functions.index') }}" class="navbar-button">
                 Overview
             </a>

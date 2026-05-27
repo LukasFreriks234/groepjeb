@@ -20,7 +20,7 @@ class FunctionController extends Controller
 
     public function show($id)
     {
-        $function = Functions::with('effects')->findOrFail($id);
+        $function = Functions::with(['effects', 'relatedFunction'])->findOrFail($id);
         $effect = Effects::find($id);
 
         return view('Functions.show', compact('function', 'effect'));

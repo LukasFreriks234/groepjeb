@@ -34,6 +34,7 @@ class Effects extends Model
             $effectTotals[$category->category] = 0;
         }
 
+        // NORMALE EFFECTS OPTELLEN
         foreach ($cells as $cell) {
             if (!$cell->is_available && $cell->cityFunction) {
                 $functionId = $cell->cityFunction->id;
@@ -49,7 +50,64 @@ class Effects extends Model
             }
         }
 
+        // RELATIONSHIP EFFECTS OPTELLEN
+        self::addRelationshipEffects($cells, $categories, $effectTotals);
+
         return $effectTotals;
+    }
+
+    private static function addRelationshipEffects($cells, $categories, &$effectTotals)
+    {
+        $relationshipColumns = [
+            'Safety' => 'relationship_safety',
+            'Recreation' => 'relationship_recreation',
+            'Environmental Quality' => 'relationship_environmental',
+            'Services' => 'relationship_services',
+            'Mobility' => 'relationship_mobility',
+        ];
+
+        $occupiedCells = $cells->filter(function ($cell) {
+            return !$cell->is_available && $cell->cityFunction;
+        })->values();
+
+        foreach ($occupiedCells as $cell) {
+            $function = $cell->cityFunction;
+
+            if (!$function->related_function_id) {
+                continue;
+            }
+
+            foreach ($occupiedCells as $neighborCell) {
+                if ($cell->id === $neighborCell->id) {
+                    continue;
+                }
+
+                if (!self::cellsAreNeighbors($cell, $neighborCell)) {
+                    continue;
+                }
+
+                if ($neighborCell->cityFunction->id != $function->related_function_id) {
+                    continue;
+                }
+
+                foreach ($categories as $category) {
+                    $categoryName = $category->category;
+                    $relationshipColumn = $relationshipColumns[$categoryName] ?? null;
+
+                    if ($relationshipColumn) {
+                        $effectTotals[$categoryName] += (int) ($function->getAttribute($relationshipColumn) ?? 0);
+                    }
+                }
+            }
+        }
+    }
+
+    private static function cellsAreNeighbors($cellA, $cellB)
+    {
+        $xDifference = abs($cellA->x_coordinate - $cellB->x_coordinate);
+        $yDifference = abs($cellA->y_coordinate - $cellB->y_coordinate);
+
+        return ($xDifference + $yDifference) === 1;
     }
 
     public static function calculateQualityOfLife($cells, $categories)

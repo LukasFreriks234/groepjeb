@@ -43,6 +43,36 @@
                 {{ data_get($function->effects, 'Mobility', 0) }}
             </p>
 
+            <h2>Relationship</h2>
+
+            @if($function->related_function_id)
+                <p><strong>Related function:</strong>
+                    {{ $function->relatedFunction->name ?? 'Unknown function' }}
+                </p>
+
+                <p><strong>Safety:</strong>
+                    {{ $function->relationship_safety ?? 0 }}
+                </p>
+
+                <p><strong>Recreation:</strong>
+                    {{ $function->relationship_recreation ?? 0 }}
+                </p>
+
+                <p><strong>Environmental Quality:</strong>
+                    {{ $function->relationship_environmental ?? 0 }}
+                </p>
+
+                <p><strong>Services:</strong>
+                    {{ $function->relationship_services ?? 0 }}
+                </p>
+
+                <p><strong>Mobility:</strong>
+                    {{ $function->relationship_mobility ?? 0 }}
+                </p>
+            @else
+                <p><strong>Relationship:</strong> No relationship</p>
+            @endif
+
             <a href="{{ route('functions.index') }}">
                 <button type="button">Back</button>
             </a>

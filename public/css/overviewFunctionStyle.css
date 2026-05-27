@@ -23,6 +23,10 @@
 }
 
 body {
+    margin: 0;
+}
+
+.overviewContent {
     margin: 20px 50px;
 }
 
