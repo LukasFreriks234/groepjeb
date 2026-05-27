@@ -24,34 +24,59 @@ class Effects extends Model
         return $this->belongsTo(Functions::class, 'id', 'id');
     }
 
+    private static $pollutingFunctions = ['Road', 'Shop', 'Gas Station'];
+
+    private static $sensitiveCategoryMap = [
+        'Park'     => 'Recreation',
+        'School'   => 'Services',
+        'Hospital' => 'Services',
+    ];
+
     public static function calculateEffectTotals($cells, $categories)
     {
         $effects = self::all()->keyBy('id');
 
         $effectTotals = [];
-
         foreach ($categories as $category) {
             $effectTotals[$category->category] = 0;
         }
 
-        // NORMALE EFFECTS OPTELLEN
+        $functionProcessed = [];
+
         foreach ($cells as $cell) {
             if (!$cell->is_available && $cell->cityFunction) {
                 $functionId = $cell->cityFunction->id;
-                $effect = $effects->get($functionId);
+                $effect     = $effects->get($functionId);
 
-                if ($effect) {
-                    foreach ($categories as $category) {
-                        $columnName = $category->category;
+                if (!$effect) {
+                    continue;
+                }
 
-                        $effectTotals[$columnName] += (int) ($effect->getAttribute($columnName) ?? 0);
+                $functionProcessed[$functionId] = ($functionProcessed[$functionId] ?? 0) + 1;
+                $occurrence = $functionProcessed[$functionId];
+
+                foreach ($categories as $category) {
+                    $columnName = $category->category;
+                    $baseValue  = (int) ($effect->getAttribute($columnName) ?? 0);
+
+                    if ($baseValue <= 0) {
+                        $effectTotals[$columnName] += $baseValue;
+                        continue;
                     }
+
+                    $adjustedValue = match($occurrence) {
+                        1       => $baseValue,
+                        2       => (int) ceil($baseValue / 2),
+                        default => 0,
+                    };
+
+                    $effectTotals[$columnName] += $adjustedValue;
                 }
             }
         }
 
-        // RELATIONSHIP EFFECTS OPTELLEN
         self::addRelationshipEffects($cells, $categories, $effectTotals);
+        self::addNegativeProximityPenalties($cells, $effectTotals);
 
         return $effectTotals;
     }
@@ -59,21 +84,83 @@ class Effects extends Model
     private static function addRelationshipEffects($cells, $categories, &$effectTotals)
     {
         $relationshipColumns = [
-            'Safety' => 'relationship_safety',
-            'Recreation' => 'relationship_recreation',
+            'Safety'                => 'relationship_safety',
+            'Recreation'            => 'relationship_recreation',
             'Environmental Quality' => 'relationship_environmental',
-            'Services' => 'relationship_services',
-            'Mobility' => 'relationship_mobility',
+            'Services'              => 'relationship_services',
+            'Mobility'              => 'relationship_mobility',
         ];
 
         $occupiedCells = $cells->filter(function ($cell) {
             return !$cell->is_available && $cell->cityFunction;
         })->values();
 
+        $bonusedPairs = [];
+
         foreach ($occupiedCells as $cell) {
             $function = $cell->cityFunction;
 
-            if (!$function->related_function_id) {
+            foreach ($occupiedCells as $neighborCell) {
+                if ($cell->id === $neighborCell->id) {
+                    continue;
+                }
+
+                if (!self::cellsAreNeighbors($cell, $neighborCell)) {
+                    continue;
+                }
+
+                $cellCategory     = $cell->cityFunction->category         ?? null;
+                $neighborCategory = $neighborCell->cityFunction->category ?? null;
+
+                if ($cellCategory && $cellCategory === $neighborCategory) {
+                    $pairKey = implode('-', [min($cell->id, $neighborCell->id), max($cell->id, $neighborCell->id)]);
+
+                    if (!in_array($pairKey, $bonusedPairs)) {
+                        $bonusedPairs[] = $pairKey;
+
+                        if (array_key_exists($cellCategory, $effectTotals)) {
+                            $effectTotals[$cellCategory] += 2;
+                        }
+                    }
+                }
+
+                if (!$function->related_function_id) {
+                    continue;
+                }
+
+                if ($neighborCell->cityFunction->id != $function->related_function_id) {
+                    continue;
+                }
+
+                foreach ($categories as $category) {
+                    $categoryName       = $category->category;
+                    $relationshipColumn = $relationshipColumns[$categoryName] ?? null;
+
+                    if ($relationshipColumn) {
+                        $effectTotals[$categoryName] += (int) ($function->getAttribute($relationshipColumn) ?? 0);
+                    }
+                }
+            }
+        }
+    }
+
+    private static function addNegativeProximityPenalties($cells, &$effectTotals)
+    {
+        $occupiedCells = $cells->filter(
+            fn($cell) => !$cell->is_available && $cell->cityFunction
+        )->values();
+
+        $penalisedPairs = [];
+
+        foreach ($occupiedCells as $cell) {
+            $functionName = $cell->cityFunction->name ?? null;
+
+            if (!array_key_exists($functionName, self::$sensitiveCategoryMap)) {
+                continue;
+            }
+
+            $affectedCategory = self::$sensitiveCategoryMap[$functionName];
+            if (!array_key_exists($affectedCategory, $effectTotals)) {
                 continue;
             }
 
@@ -86,17 +173,17 @@ class Effects extends Model
                     continue;
                 }
 
-                if ($neighborCell->cityFunction->id != $function->related_function_id) {
+                $neighborName = $neighborCell->cityFunction->name ?? null;
+
+                if (!in_array($neighborName, self::$pollutingFunctions)) {
                     continue;
                 }
 
-                foreach ($categories as $category) {
-                    $categoryName = $category->category;
-                    $relationshipColumn = $relationshipColumns[$categoryName] ?? null;
+                $pairKey = implode('-', [min($cell->id, $neighborCell->id), max($cell->id, $neighborCell->id)]);
 
-                    if ($relationshipColumn) {
-                        $effectTotals[$categoryName] += (int) ($function->getAttribute($relationshipColumn) ?? 0);
-                    }
+                if (!in_array($pairKey, $penalisedPairs)) {
+                    $penalisedPairs[]                = $pairKey;
+                    $effectTotals[$affectedCategory] -= 2;
                 }
             }
         }
