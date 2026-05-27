@@ -196,7 +196,7 @@
     <div class="image-section">
         <p>Current image:</p>
         <img src="{{ asset($function->image) }}"
-             alt="Afbeelding van {{ $function->name }}">
+             alt="Image of {{ $function->name }}">
     </div>
 
 </div>
