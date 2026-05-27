@@ -28,4 +28,5 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/functions/{id}/edit', [FunctionController::class, 'edit'])->name('functions.edit');
     Route::patch('/functions/{id}/update', [FunctionController::class, 'update'])->name('functions.update');
+    Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });

@@ -163,6 +163,15 @@ class FunctionController extends Controller
         return redirect()->route('functions.show', $function->id);
     }
 
+    public function destroy(Request $request, $id)
+    {
+        $function = Functions::findOrFail($id);
+
+        $function->delete();
+
+        return redirect()->route('functions.index');;
+    }
+
     private function saveUploadedFunctionImage(Request $request)
     {
         $imageName = $request->file('image')->hashName();

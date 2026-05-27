@@ -84,8 +84,12 @@
                         <button type="button">Edit</button>
                     </a>
 
-                    <button type="button" class="delete">Delete</button>
+                    <form action="{{ route('functions.destroy', $function->id) }}" method="POST">
+                        @csrf
+                        @method('delete')
 
+                        <button type="submit" class="delete">Delete</button>
+                    </form>
                 @endif
             @endauth
 

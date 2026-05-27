@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('image');
             // $table->text('effect');
             $table->string('category');
+            $table->softDeletes();
 
             $table->foreign('category')
                 ->references('category')
