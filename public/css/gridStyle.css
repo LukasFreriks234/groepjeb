@@ -3,7 +3,7 @@
 }
 
 .citySection {
-   width: 100%;
+    width: 100%;
     max-width: 100%;
     box-sizing: border-box;
 }
@@ -69,6 +69,7 @@
     display: none;
 }
 
+/* DELETE BUTTON */
 .delete-btn {
     position: absolute;
     top: 6px;
@@ -77,7 +78,7 @@
     height: 26px;
     border-radius: 50%;
     border: none;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     color: white;
     font-size: 16px;
     display: flex;
@@ -86,9 +87,11 @@
     cursor: pointer;
     opacity: 0;
     transform: scale(0.8);
-    z-index: 9999;
+    z-index: 99999;
+    pointer-events: auto;
 }
 
+/* DESKTOP: alleen zichtbaar bij hover */
 .gridCell:hover .delete-btn {
     opacity: 1;
     transform: scale(1);
@@ -99,6 +102,7 @@
     transform: scale(1.1);
 }
 
+/* TOOLTIP */
 .functionTooltip {
     position: fixed;
     width: 220px;
@@ -111,7 +115,7 @@
     pointer-events: none;
     font-size: 16px;
     font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
 }
 
@@ -130,6 +134,7 @@
     color: black;
 }
 
+/* EFFECT KLEUREN */
 .positiveEffect {
     color: green;
     font-weight: bold;
@@ -148,20 +153,72 @@
     background-color: transparent;
 }
 
-/* TELEFOON */
-@media (max-width: 768px) {
+/* MOBIELE SELECTIE */
+.gridCell.selectedMobileCell {
+    background-color: yellow !important;
+    outline: 3px solid black;
+    outline-offset: -3px;
+}
+
+.functionItem.selectedMobileCell {
+    background-color: yellow !important;
+    color: black !important;
+}
+
+.draggableGridFunction.selectedMobileCell {
+    outline: 3px solid yellow;
+    outline-offset: 2px;
+}
+
+/* MOBIEL / TOUCH DEVICES */
+@media (hover: none), (max-width: 768px) {
+    .gridCell.selectedMobileCell {
+        background-color: yellow !important;
+        outline: 3px solid black;
+        outline-offset: -3px;
+    }
 
     .functionItem.selectedMobileCell {
         background-color: yellow !important;
         color: black !important;
     }
 
+    .draggableGridFunction.selectedMobileCell {
+        outline: 3px solid yellow;
+        outline-offset: 2px;
+    }
+
+    /* Mobiel: delete-knop zichtbaar bij gevulde cell */
+    .gridCell.occupied .delete-btn,
+    .gridCell.selectedMobileCell .delete-btn {
+        opacity: 1 !important;
+        transform: scale(1) !important;
+        display: flex !important;
+        z-index: 99999 !important;
+        pointer-events: auto !important;
+    }
+
+    /* Mobiel: geen delete-knop bij lege cell */
+    .gridCell.available .delete-btn {
+        display: none !important;
+    }
 }
 
 /* DESKTOP */
-@media (min-width: 769px) {
+@media (hover: hover) and (min-width: 769px) {
+    .gridCell.selectedMobileCell {
+        background-color: yellow !important;
+        outline: 3px solid black;
+        outline-offset: -3px;
+    }
+
     .functionItem.selectedMobileCell {
         background-color: yellow !important;
         color: black !important;
+    }
+
+    .draggableGridFunction.selectedMobileCell {
+        outline: 3px solid yellow;
+        outline-offset: 2px;
     }
 }

@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 enableDrag();
                 enableMobileDrag();
+                refreshDeleteButtonsIfAvailable();
             }
 
             // FUNCTIE VAN GRID CELL NAAR ANDERE GRID CELL
@@ -52,10 +53,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (!fromCell) return;
 
+                // Als je naar dezelfde cell sleept, niks doen
                 if (fromCell.dataset.id === cell.dataset.id) {
                     return;
                 }
 
+                // Check of target cell al een functie heeft
                 const targetImage = cell.querySelector(".gridImage");
 
                 let targetData = null;
@@ -69,8 +72,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     };
                 }
 
+                // Target cell leegmaken
                 clearCell(cell);
 
+                // Gesleepte functie in target cell zetten
                 const draggedImage = createGridImage({
                     functionId: dragData.functionId,
                     category: dragData.category,
@@ -82,8 +87,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 cell.appendChild(draggedImage);
                 markCellOccupied(cell, dragData.category);
 
+                // Oude cell leegmaken
                 clearCell(fromCell);
 
+                // Als target cell al een functie had, zet die terug in de oude cell
                 if (targetData) {
                     const swappedImage = createGridImage({
                         functionId: targetData.functionId,
@@ -96,17 +103,21 @@ document.addEventListener("DOMContentLoaded", function () {
                     fromCell.appendChild(swappedImage);
                     markCellOccupied(fromCell, targetData.category);
                 } else {
+                    // Als target leeg was, blijft oude cell leeg
                     markCellAvailable(fromCell);
                 }
 
+                // Opslaan + effect table updaten
                 moveFunctionInGrid(
                     dragData.fromCellId,
                     cell.dataset.id,
                     dragData.functionId
                 );
 
+                // Nieuwe grid images ook draggable maken
                 enableDrag();
                 enableMobileDrag();
+                refreshDeleteButtonsIfAvailable();
             }
         });
     });
@@ -122,6 +133,7 @@ function getDragData(ev) {
     try {
         return JSON.parse(rawData);
     } catch (error) {
+        // fallback voor oude code: alleen item id
         return {
             source: "library",
             itemId: rawData
@@ -160,6 +172,14 @@ function markCellAvailable(cell) {
 }
 
 
+// DELETE BUTTONS OPNIEUW CHECKEN
+function refreshDeleteButtonsIfAvailable() {
+    if (typeof window.refreshDeleteButtons === "function") {
+        window.refreshDeleteButtons();
+    }
+}
+
+
 // GRID IMAGE MAKEN
 function createGridImage(data) {
     const image = document.createElement("img");
@@ -184,6 +204,7 @@ function enableDrag() {
     functionItems.forEach((item) => {
         item.setAttribute("draggable", "true");
 
+        // voorkomt dubbele event listeners
         if (item.dataset.dragEnabled === "true") return;
         item.dataset.dragEnabled = "true";
 
@@ -209,6 +230,7 @@ function enableDrag() {
     gridImages.forEach((image) => {
         image.setAttribute("draggable", "true");
 
+        // voorkomt dubbele event listeners
         if (image.dataset.dragEnabled === "true") return;
         image.dataset.dragEnabled = "true";
 
@@ -233,29 +255,57 @@ function enableDrag() {
 let selectedMobileElement = null;
 let selectedMobileData = null;
 let mobileDragEnabled = false;
+let tooltipHideTimeout = null;
 
 function enableMobileDrag() {
     if (mobileDragEnabled) return;
     mobileDragEnabled = true;
 
     document.addEventListener("touchstart", function (ev) {
-        const touchedFunction = ev.target.closest(".functionItem, .draggableGridFunction");
+        const touchedCell = ev.target.closest(".gridCell");
+        let touchedFunction = ev.target.closest(".functionItem, .draggableGridFunction");
 
+        // MOBIEL: als je op een bezette grid cell tikt, selecteer de image in die cell
+        // Hierdoor hoef je niet precies op het plaatje te klikken.
+        if (!touchedFunction && touchedCell) {
+            touchedFunction = touchedCell.querySelector(".draggableGridFunction");
+        }
+
+        // MOBIEL: effects tonen als je op een grid cell tikt
+        if (touchedCell) {
+            const touch = ev.touches[0];
+
+            if (touch) {
+                showEffectsTooltip(touchedCell, touch.clientX, touch.clientY, true);
+            }
+        }
+
+        // Als er al iets geselecteerd is en je tikt op een grid cell,
+        // dan moet hij plaatsen of swappen.
+        // Dit moet vóór touchedFunction staan, anders selecteert hij de target functie opnieuw.
+        if (selectedMobileData && touchedCell) {
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            if (
+                selectedMobileData.source === "grid" &&
+                selectedMobileData.fromCellId === touchedCell.dataset.id
+            ) {
+                clearMobileSelection();
+                return;
+            }
+
+            placeSelectedMobileFunction(touchedCell);
+            return;
+        }
+
+        // Als er nog niks geselecteerd is, selecteer je een function item.
         if (touchedFunction) {
             ev.preventDefault();
             ev.stopPropagation();
 
             selectMobileFunction(touchedFunction);
             return;
-        }
-
-        const touchedCell = ev.target.closest(".gridCell");
-
-        if (touchedCell && selectedMobileData) {
-            ev.preventDefault();
-            ev.stopPropagation();
-
-            placeSelectedMobileFunction(touchedCell);
         }
     }, { passive: false });
 }
@@ -267,6 +317,12 @@ function selectMobileFunction(item) {
 
     selectedMobileElement = item;
     item.classList.add("selectedMobileCell");
+
+    const parentCell = item.closest(".gridCell");
+
+    if (parentCell) {
+        parentCell.classList.add("selectedMobileCell");
+    }
 
     if (item.classList.contains("draggableGridFunction")) {
         selectedMobileData = {
@@ -289,13 +345,17 @@ function selectMobileFunction(item) {
             imageAlt: image ? image.alt : item.textContent.trim()
         };
     }
+
+    // Mobiel: als je een grid-cell selecteert, maak/check direct de delete-knop
+    // Dit is nodig omdat touchstart door gridDragDrop wordt gestopt met stopPropagation.
+    refreshDeleteButtonsIfAvailable();
 }
 
 
 // MOBIELE SELECTIE WEGHALEN
 function clearMobileSelection() {
     document
-        .querySelectorAll(".functionItem, .draggableGridFunction")
+        .querySelectorAll(".functionItem, .draggableGridFunction, .gridCell")
         .forEach((item) => {
             item.classList.remove("selectedMobileCell");
         });
@@ -330,6 +390,7 @@ function placeSelectedMobileFunction(cell) {
         clearMobileSelection();
 
         enableDrag();
+        refreshDeleteButtonsIfAvailable();
         return;
     }
 
@@ -399,6 +460,53 @@ function placeSelectedMobileFunction(cell) {
         clearMobileSelection();
 
         enableDrag();
+        refreshDeleteButtonsIfAvailable();
+    }
+}
+
+
+// TOOLTIP TONEN
+function showEffectsTooltip(cell, clientX, clientY, autoHide = false) {
+    const tooltip = document.getElementById("functionTooltip");
+
+    if (!tooltip) return;
+
+    loadNeighborEffects(cell);
+
+    tooltip.classList.remove("hidden");
+
+    const padding = 10;
+    const tooltipWidth = tooltip.offsetWidth;
+    const tooltipHeight = tooltip.offsetHeight;
+
+    let left = clientX + 15;
+    let top = clientY + 15;
+
+    if (left + tooltipWidth > window.innerWidth - padding) {
+        left = clientX - tooltipWidth - 15;
+    }
+
+    if (top + tooltipHeight > window.innerHeight - padding) {
+        top = clientY - tooltipHeight - 15;
+    }
+
+    if (left < padding) {
+        left = padding;
+    }
+
+    if (top < padding) {
+        top = padding;
+    }
+
+    tooltip.style.left = left + "px";
+    tooltip.style.top = top + "px";
+
+    if (autoHide) {
+        clearTimeout(tooltipHideTimeout);
+
+        tooltipHideTimeout = setTimeout(() => {
+            tooltip.classList.add("hidden");
+        }, 2500);
     }
 }
 
@@ -409,36 +517,9 @@ function enableTooltip() {
     const gridCells = document.querySelectorAll(".gridCell");
 
     gridCells.forEach((cell) => {
+        // PC: hover
         cell.addEventListener("mousemove", function (ev) {
-            loadNeighborEffects(cell);
-
-            tooltip.classList.remove("hidden");
-
-            const padding = 10;
-            const tooltipWidth = tooltip.offsetWidth;
-            const tooltipHeight = tooltip.offsetHeight;
-
-            let left = ev.clientX + 15;
-            let top = ev.clientY + 15;
-
-            if (left + tooltipWidth > window.innerWidth - padding) {
-                left = ev.clientX - tooltipWidth - 15;
-            }
-
-            if (top + tooltipHeight > window.innerHeight - padding) {
-                top = ev.clientY - tooltipHeight - 15;
-            }
-
-            if (left < padding) {
-                left = padding;
-            }
-
-            if (top < padding) {
-                top = padding;
-            }
-
-            tooltip.style.left = left + "px";
-            tooltip.style.top = top + "px";
+            showEffectsTooltip(cell, ev.clientX, ev.clientY);
         });
 
         cell.addEventListener("mouseleave", function () {
@@ -475,6 +556,7 @@ function saveFunctionInGrid(cell, originalItem) {
 
         if (data.success && data.effectTotals) {
             updateEffectTable(data.effectTotals, data.qualityOfLife);
+            refreshDeleteButtonsIfAvailable();
         }
     })
     .catch(error => {
@@ -522,6 +604,7 @@ function moveFunctionInGrid(fromCellId, toCellId, functionId) {
 
         if (data.success && data.effectTotals) {
             updateEffectTable(data.effectTotals, data.qualityOfLife);
+            refreshDeleteButtonsIfAvailable();
         }
     })
     .catch(error => {
