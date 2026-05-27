@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\FunctionEdited;
+use App\Notifications\FunctionCreated;
 use Illuminate\Support\Facades\Auth;
 
 class FunctionController extends Controller
@@ -89,6 +92,8 @@ class FunctionController extends Controller
             'Mobility' => $request->Mobility,
         ]);
 
+        Notification::send(Auth::user(), new FunctionCreated($function));
+
         return redirect()->route('functions.index');
     }
 
@@ -159,6 +164,8 @@ class FunctionController extends Controller
             'Services' => $request->Services,
             'Mobility' => $request->Mobility,
         ]);
+
+        Notification::send(Auth::user(), new FunctionEdited($function));
 
         return redirect()->route('functions.show', $function->id);
     }

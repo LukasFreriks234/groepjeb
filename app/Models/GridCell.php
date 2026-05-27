@@ -10,6 +10,6 @@ class GridCell extends Model
     
     public function cityFunction()
     {
-        return $this->belongsTo(functions::class, 'destination_type', 'id');
+        return $this->belongsTo(Functions::class, 'destination_type', 'id');
     }
 }
