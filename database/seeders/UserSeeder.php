@@ -18,14 +18,14 @@ class UserSeeder extends Seeder
             'name' => 'Test Planner',
             'role' => 'cityplanner',
             'email' => 'test@cityplanner.com',
-            'password' => Hash::make(env('ADMIN_PASSWORD'))
+            'password' => 'test'
         ]);
 
         User::create([
             'name' => 'Test Admin',
             'role' => 'admin',
-            'email' => 'noreply.metropolisb@gmail.com',
-            'password' => Hash::make(env('ADMIN_PASSWORD'))
+            'email' => 'test@admin.com',
+            'password' => 'test'
         ]);
     }
 }
