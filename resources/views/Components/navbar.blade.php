@@ -8,7 +8,7 @@
 
         <li>
             <a href="{{ route('functions.index') }}" class="navbar-button">
-                Overview
+                Functions
             </a>
         </li>
 
