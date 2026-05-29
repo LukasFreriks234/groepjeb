@@ -28,6 +28,7 @@
             @endauth
         </div>
 
+        <h2>Categories</h2>
         <div class="category">
             <input type="text" id="myInput" placeholder="Search for names.."><br>
 
@@ -62,9 +63,11 @@
             array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arrFunctions);
         ?>
 
+        <h2>Functions</h2>
+
         <ul id="functionsList">
             @foreach($arrFunctions as $function)
-                <a href="{{ route('functions.show', $function['id']) }}" class="noStyle">
+                <a href="{{ route('functions.show', $function['id']) }}" class="noStyle" aria-label="function {{ $function['name'] }} in category {{ $function['category'] }}">
                     <li 
                         id="function{{ $function['id'] }}" 
                         class="functionItem" 
