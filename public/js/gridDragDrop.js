@@ -782,3 +782,11 @@ document.addEventListener("touchmove", function (ev) {
 document.addEventListener("dragend", stopAutoScroll);
 document.addEventListener("drop", stopAutoScroll);
 document.addEventListener("touchend", stopAutoScroll);
+
+const list = document.getElementById('effectsList');
+if (list) {
+    const label = Object.entries(effectTotals)
+        .map(([key, val]) => `${key}: ${val}`)
+        .join(', ');
+    list.setAttribute('aria-label', `Effect totals: ${label}, Quality of Life: ${qualityOfLife}`);
+}
