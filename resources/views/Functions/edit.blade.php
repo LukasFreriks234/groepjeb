@@ -191,6 +191,10 @@
                 Save changes
             </button>
         </form>
+
+        <a href="{{ route('functions.index') }}">
+                <button type="button">Back</button>
+            </a>
     </div>
 
     <!-- IMAGE -->
