@@ -1,20 +1,23 @@
-@props(['name', 'label', 'type' => 'text', 'value' => '', 'min' => null, 'max' => null])
+@props(['name' => '', 'label', 'type' => 'text', 'value' => '', 'min' => null, 'max' => null])
 
-<label for="{{ $name }}">{{ $label }}</label>
+<label for="input-{{ $name }}">{{ $label }}</label>
 
 <input
-    id="{{ $name }}"
+    id="input-{{ $name }}"
     name="{{ $name }}"
     type="{{ $type }}"
     value="{{ old($name, $value ?? '') }}"
-    min="{{ $min }}"
-    max="{{ $max }}"
+    @if($min !== null) min="{{ $min }}" @endif
+    @if($max !== null) max="{{ $max }}" @endif
     required
-    aria-describedby="{{ $name }}-error"
+    @error($name)
+        aria-invalid="true"
+        aria-describedby="{{ $name }}-error"
+    @enderror
 />
 
 @error($name)
-    <span id="{{ $name }}-error" class="error-text">
+    <span id="{{ $name }}-error" class="error-text" role="alert">
         {{ $message }}
     </span>
 @enderror
