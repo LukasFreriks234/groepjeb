@@ -34,10 +34,19 @@
     <ul id="functionsList">
         @foreach($arrFunctions as $function)
             <li 
-                id="function{{ $function['id'] }}" 
+                 id="function{{ $function['id'] }}" 
                 class="functionItem"
                 data-function-id="{{ $function['id'] }}"
                 data-category="{{ $function['category'] }}"
+                tabindex="0"
+                role="button"
+                aria-label="Open function {{ $function['name'] }} in category {{ $function['category'] }}. 
+                this function has the effects:
+                Safety: {{ data_get($function, 'effects.Safety', 0) }},
+                Recreation: {{ data_get($function, 'effects.Recreation', 0) }},
+                Environmental Quality: {{ data_get($function, 'effects.Environmental Quality', 0) }},
+                Services: {{ data_get($function, 'effects.Services', 0) }},
+                and Mobility: {{ data_get($function, 'effects.Mobility', 0) }}"
             >
                 <div class="functionImage">
                     <img 

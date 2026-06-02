@@ -17,71 +17,73 @@
 
         <div class="form-section">
 
-            <p><strong>Name:</strong> {{ $function->name }}</p>
+            <h2>Function information</h2>
 
-            <p><strong>Category:</strong> {{ $function->category }}</p>
+            <p tabindex="0"><strong>Name:</strong> {{ $function->name }}</p>
+
+            <p tabindex="0"><strong>Category:</strong> {{ $function->category }}</p>
 
             <h2>Effects</h2>
 
-            <p><strong>Safety:</strong>
+            <p tabindex="0"><strong>Safety:</strong>
                 {{ data_get($function->effects, 'Safety', 0) }}
             </p>
 
-            <p><strong>Recreation:</strong>
+            <p tabindex="0"><strong>Recreation:</strong>
                 {{ data_get($function->effects, 'Recreation', 0) }}
             </p>
 
-            <p><strong>Environmental Quality:</strong>
+            <p tabindex="0"><strong>Environmental Quality:</strong>
                 {{ data_get($function->effects, 'Environmental Quality', 0) }}
             </p>
 
-            <p><strong>Services:</strong>
+            <p tabindex="0"><strong>Services:</strong>
                 {{ data_get($function->effects, 'Services', 0) }}
             </p>
 
-            <p><strong>Mobility:</strong>
+            <p tabindex="0"><strong>Mobility:</strong>
                 {{ data_get($function->effects, 'Mobility', 0) }}
             </p>
 
             <h2>Relationship</h2>
 
             @if($function->related_function_id)
-                <p><strong>Related function:</strong>
+                <p tabindex="0"><strong>Related function:</strong>
                     {{ $function->relatedFunction->name ?? 'Unknown function' }}
                 </p>
 
-                <p><strong>Safety:</strong>
+                <p tabindex="0"><strong>Safety:</strong>
                     {{ $function->relationship_safety ?? 0 }}
                 </p>
 
-                <p><strong>Recreation:</strong>
+                <p tabindex="0"><strong>Recreation:</strong>
                     {{ $function->relationship_recreation ?? 0 }}
                 </p>
 
-                <p><strong>Environmental Quality:</strong>
+                <p tabindex="0"><strong>Environmental Quality:</strong>
                     {{ $function->relationship_environmental ?? 0 }}
                 </p>
 
-                <p><strong>Services:</strong>
+                <p tabindex="0"><strong>Services:</strong>
                     {{ $function->relationship_services ?? 0 }}
                 </p>
 
-                <p><strong>Mobility:</strong>
+                <p tabindex="0"><strong>Mobility:</strong>
                     {{ $function->relationship_mobility ?? 0 }}
                 </p>
             @else
-                <p><strong>Relationship:</strong> No relationship</p>
+                <p tabindex="0">No relationship</p>
             @endif
 
             <a href="{{ route('functions.index') }}">
-                <button type="button">Back</button>
+                <button type="button" tabindex="-1">Back</button>
             </a>
 
             @auth
                 @if(auth()->user()->role === 'admin')
 
                     <a href="{{ route('functions.edit', $function->id) }}">
-                        <button type="button">Edit</button>
+                        <button type="button" tabindex="-1">Edit</button>
                     </a>
 
                     <form action="{{ route('functions.destroy', $function->id) }}" method="POST">
@@ -96,10 +98,7 @@
         </div>
 
         <div class="image-section">
-            <img 
-                src="{{ asset($function->image) }}" 
-                alt="Image from {{ $function->name }}"
-            >
+            <img src="{{ asset($function->image) }}" alt="Illustration of {{ $function->name }}">
         </div>
 
     </div>
