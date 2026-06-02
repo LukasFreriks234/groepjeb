@@ -7,6 +7,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     gridCells.forEach((cell) => {
 
+        const initialImage = cell.querySelector(".gridImage");
+        if (initialImage) {
+            setCellLabel(cell, initialImage.alt, initialImage.dataset.category);
+        } else {
+            setCellLabel(cell, null, null);
+        }
+
         // drag over toestaan
         cell.addEventListener("dragover", function (ev) {
             ev.preventDefault();
@@ -37,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 cell.appendChild(newImage);
-
+                setCellLabel(cell, originalItem.textContent.trim(), originalItem.dataset.category);
                 markCellOccupied(cell, originalItem.dataset.category);
 
                 saveFunctionInGrid(cell, originalItem);
@@ -85,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 cell.appendChild(draggedImage);
+                setCellLabel(cell, draggedImage.alt, dragData.category);
                 markCellOccupied(cell, dragData.category);
 
                 // Oude cell leegmaken
@@ -102,9 +110,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     fromCell.appendChild(swappedImage);
                     markCellOccupied(fromCell, targetData.category);
+                    setCellLabel(
+                        fromCell,
+                        targetData.imageAlt,
+                        targetData.category
+                    );
                 } else {
                     // Als target leeg was, blijft oude cell leeg
                     markCellAvailable(fromCell);
+                    setCellLabel(fromCell, null, null);
                 }
 
                 // Opslaan + effect table updaten
@@ -733,6 +747,29 @@ function checkScroll(clientY) {
     }
 }
 
+function setCellLabel(cell, name = null, category = null) {
+    const x = cell.dataset.x;
+    const y = cell.dataset.y;
+    let baseLabel = `Cel row ${y}, column ${x}.`;
+
+    if (name) {
+        let cleanName = name.trim();
+
+        if (category) {
+            const regex = new RegExp(`\\(?\\s*${category}\\s*\\)?`, "gi");
+            cleanName = cleanName.replace(regex, "").trim();
+        }
+
+        if (category) {
+            cell.setAttribute("aria-label", `${baseLabel} Occupied by ${cleanName} (${category})`);
+        } else {
+            cell.setAttribute("aria-label", `${baseLabel} Occupied by ${cleanName}`);
+        }
+    } else {
+        cell.setAttribute("aria-label", `${baseLabel} Available.`);
+    }
+}
+
 document.addEventListener("dragover", function (ev) {
     checkScroll(ev.clientY);
 });
@@ -745,3 +782,11 @@ document.addEventListener("touchmove", function (ev) {
 document.addEventListener("dragend", stopAutoScroll);
 document.addEventListener("drop", stopAutoScroll);
 document.addEventListener("touchend", stopAutoScroll);
+
+const list = document.getElementById('effectsList');
+if (list) {
+    const label = Object.entries(effectTotals)
+        .map(([key, val]) => `${key}: ${val}`)
+        .join(', ');
+    list.setAttribute('aria-label', `Effect totals: ${label}, Quality of Life: ${qualityOfLife}`);
+}

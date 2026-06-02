@@ -9,9 +9,11 @@
                 <div 
                     class="gridCell {{ $cell->is_available ? 'available' : 'occupied' }}"
                     data-id="{{ $cell->id }}"
+                    data-x="{{ $cell->x_coordinate }}"
+                    data-y="{{ $cell->y_coordinate }}"
                     role="gridcell"
                     tabindex="0"
-                    aria-label="Cel on position {{ $cell->x_coordinate }}, {{ $cell->y_coordinate }}. Status: {{ $cell->is_available ? 'available' : 'occupied' }}"
+                    aria-label="Cel row {{ $cell->y_coordinate }}, column {{ $cell->x_coordinate }}."
                 >
                     @if(!$cell->is_available && $cell->cityFunction)
                         <img
@@ -31,7 +33,7 @@
 </div>
 
 <!-- TOOLTIP -->
-<div id="functionTooltip" class="functionTooltip hidden">
+<div id="functionTooltip" class="functionTooltip" tabindex="0" aria-label="Effect values" aria-live="polite" hidden>
     <ul id="tooltipEffectsList">
         @foreach($categories as $category)
             <li>

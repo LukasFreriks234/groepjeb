@@ -27,6 +27,7 @@
 
             <!-- NAME -->
             <x-formInput
+
                 name="name"
                 label="Name"
                 :value="old('name', $function->name)"
@@ -43,7 +44,7 @@
 
             <!-- CATEGORY -->
             <label for="category">Category</label>
-            <select id="category" name="category">
+            <select id="category" name="category" autocomplete="off">
                 @foreach($categories as $category)
                     <option value="{{ $category->category }}"
                         {{ old('category', $function->category) == $category->category ? 'selected' : '' }}>
@@ -55,8 +56,8 @@
             <!-- ADD RELATIONSHIP -->
             <h2>Add Relationship</h2>
 
-            <label for="related_function">Select Function</label>
-            <select id="related_function" name="related_function">
+                <label for="related_function">Select Function</label>
+                <select id="related_function" name="related_function" aria-label="Select a function to create a relationship with">
                 <option value="">-- Select Function --</option>
 
                 @foreach($functions as $relatedFunction)
@@ -190,13 +191,17 @@
                 Save changes
             </button>
         </form>
+
+        <a href="{{ route('functions.index') }}">
+                <button type="button">Back</button>
+            </a>
     </div>
 
     <!-- IMAGE -->
     <div class="image-section">
         <p>Current image:</p>
         <img src="{{ asset($function->image) }}"
-             alt="Image of {{ $function->name }}">
+             alt="">
     </div>
 
 </div>
@@ -214,6 +219,15 @@
 
                 if (!hasRelationship) {
                     input.value = 0;
+                    input.setAttribute('aria-disabled', 'true');
+                    input.style.pointerEvents = 'none';
+                    input.style.opacity = '0.5';
+                    input.readOnly = true;
+                } else {
+                    input.removeAttribute('aria-disabled');
+                    input.style.pointerEvents = 'auto';
+                    input.style.opacity = '1';
+                    input.readOnly = false;
                 }
             });
         }

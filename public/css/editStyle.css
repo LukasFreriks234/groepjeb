@@ -68,6 +68,18 @@ input:focus {
     border-color: #2e90fa;
 }
 
+select {
+    display: block;
+    width: 100%;
+    padding: 12px; /* Zorgt voor een groter klikoppervlak (minimaal 44px hoog voor A11y) */
+    font-size: 16px; /* Voorkomt dat iOS automatisch inzoomt bij selectie */
+    cursor: pointer;
+}
+
+select:focus, input:focus {
+    outline: 2px solid #005fcc; /* Zorgt dat de gebruiker ziet waar de focus is */
+}
+
 button {
     margin-top: 20px;
     background: #1d4ed8;
