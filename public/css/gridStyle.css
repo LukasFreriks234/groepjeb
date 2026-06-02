@@ -29,6 +29,13 @@
     min-height: 0;
 }
 
+/* Alleen outline, geen kleurverandering */
+.gridCell:focus,
+.gridCell:focus-visible {
+    outline: 3px solid black;
+    outline-offset: -3px;
+}
+
 .gridCell img,
 .gridCell svg {
     object-fit: contain;
@@ -91,15 +98,19 @@
     pointer-events: auto;
 }
 
-/* DESKTOP: alleen zichtbaar bij hover */
-.gridCell:hover .delete-btn {
+/* DESKTOP: zichtbaar bij hover en focus in de cell */
+.gridCell:hover .delete-btn,
+.gridCell:focus-within .delete-btn {
     opacity: 1;
     transform: scale(1);
 }
 
-.delete-btn:hover {
+.delete-btn:hover,
+.delete-btn:focus {
     background: red;
     transform: scale(1.1);
+    outline: 3px solid black;
+    outline-offset: 2px;
 }
 
 /* TOOLTIP */
@@ -153,44 +164,50 @@
     background-color: transparent;
 }
 
-/* MOBIELE SELECTIE */
-.gridCell.selectedMobileCell {
+/* SELECTIE MOBIEL + KEYBOARD */
+.gridCell.selectedMobileCell,
+.gridCell.keyboardSelected {
     background-color: yellow !important;
-    outline: 3px solid black;
+    outline: 3px solid black !important;
     outline-offset: -3px;
 }
 
-.functionItem.selectedMobileCell {
+.functionItem.selectedMobileCell,
+.functionItem.keyboardSelected {
     background-color: yellow !important;
     color: black !important;
 }
 
-.draggableGridFunction.selectedMobileCell {
+.draggableGridFunction.selectedMobileCell,
+.draggableGridFunction.keyboardSelected {
     outline: 3px solid yellow;
     outline-offset: 2px;
 }
 
 /* MOBIEL / TOUCH DEVICES */
 @media (hover: none), (max-width: 768px) {
-    .gridCell.selectedMobileCell {
+    .gridCell.selectedMobileCell,
+    .gridCell.keyboardSelected {
         background-color: yellow !important;
-        outline: 3px solid black;
+        outline: 3px solid black !important;
         outline-offset: -3px;
     }
 
-    .functionItem.selectedMobileCell {
+    .functionItem.selectedMobileCell,
+    .functionItem.keyboardSelected {
         background-color: yellow !important;
         color: black !important;
     }
 
-    .draggableGridFunction.selectedMobileCell {
+    .draggableGridFunction.selectedMobileCell,
+    .draggableGridFunction.keyboardSelected {
         outline: 3px solid yellow;
         outline-offset: 2px;
     }
 
-    /* Mobiel: delete-knop zichtbaar bij gevulde cell */
     .gridCell.occupied .delete-btn,
-    .gridCell.selectedMobileCell .delete-btn {
+    .gridCell.selectedMobileCell .delete-btn,
+    .gridCell.keyboardSelected .delete-btn {
         opacity: 1 !important;
         transform: scale(1) !important;
         display: flex !important;
@@ -198,7 +215,6 @@
         pointer-events: auto !important;
     }
 
-    /* Mobiel: geen delete-knop bij lege cell */
     .gridCell.available .delete-btn {
         display: none !important;
     }
@@ -206,19 +222,35 @@
 
 /* DESKTOP */
 @media (hover: hover) and (min-width: 769px) {
-    .gridCell.selectedMobileCell {
+    .gridCell.selectedMobileCell,
+    .gridCell.keyboardSelected {
         background-color: yellow !important;
-        outline: 3px solid black;
+        outline: 3px solid black !important;
         outline-offset: -3px;
     }
 
-    .functionItem.selectedMobileCell {
+    .functionItem.selectedMobileCell,
+    .functionItem.keyboardSelected {
         background-color: yellow !important;
         color: black !important;
     }
 
-    .draggableGridFunction.selectedMobileCell {
+    .draggableGridFunction.selectedMobileCell,
+    .draggableGridFunction.keyboardSelected {
         outline: 3px solid yellow;
         outline-offset: 2px;
     }
+}
+
+/* SCREENREADER ONLY */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
