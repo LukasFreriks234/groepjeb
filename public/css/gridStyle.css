@@ -153,22 +153,6 @@
     background-color: transparent;
 }
 
-/* MOBIELE SELECTIE */
-.gridCell.selectedMobileCell {
-    background-color: yellow !important;
-    outline: 3px solid black;
-    outline-offset: -3px;
-}
-
-.functionItem.selectedMobileCell {
-    background-color: yellow !important;
-    color: black !important;
-}
-
-.draggableGridFunction.selectedMobileCell {
-    outline: 3px solid yellow;
-    outline-offset: 2px;
-}
 
 /* MOBIEL / TOUCH DEVICES */
 @media (hover: none), (max-width: 768px) {
@@ -181,11 +165,6 @@
     .functionItem.selectedMobileCell {
         background-color: yellow !important;
         color: black !important;
-    }
-
-    .draggableGridFunction.selectedMobileCell {
-        outline: 3px solid yellow;
-        outline-offset: 2px;
     }
 
     /* Mobiel: delete-knop zichtbaar bij gevulde cell */

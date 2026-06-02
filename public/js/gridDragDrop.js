@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     enableDrag();
     enableMobileDrag();
+    enableKeyboardPlacement();
     enableTooltip();
 
     const gridCells = document.querySelectorAll(".gridCell");
@@ -134,6 +135,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 refreshDeleteButtonsIfAvailable();
             }
         });
+
+        cell.addEventListener("keydown", function (ev) {
+            if (ev.key === "Enter" || ev.key === " ") {
+                if (!selectedMobileData) {
+                    return;
+                }
+                ev.preventDefault();
+                placeSelectedMobileFunction(cell);
+            }
+        });
     });
 });
 
@@ -217,10 +228,22 @@ function enableDrag() {
 
     functionItems.forEach((item) => {
         item.setAttribute("draggable", "true");
+        item.setAttribute("tabindex", "0");
+        item.setAttribute("role", "button");
 
-        // voorkomt dubbele event listeners
         if (item.dataset.dragEnabled === "true") return;
         item.dataset.dragEnabled = "true";
+
+        // ENTER EN KLIK DOEN HETZELFDE
+        item.addEventListener("click", function () {
+            selectMobileFunction(item);
+        });
+        item.addEventListener("keydown", function (ev) {
+            if (ev.key === "Enter") {
+                ev.preventDefault();
+                item.click();
+            }
+        });
 
         item.addEventListener("dragstart", function (ev) {
             const image = ev.currentTarget.querySelector("img");
@@ -233,31 +256,9 @@ function enableDrag() {
                     functionId: ev.currentTarget.dataset.functionId,
                     category: ev.currentTarget.dataset.category,
                     imageSrc: image ? image.src : "",
-                    imageAlt: image ? image.alt : ev.currentTarget.textContent.trim()
-                })
-            );
-        });
-    });
-
-    const gridImages = document.querySelectorAll(".draggableGridFunction");
-
-    gridImages.forEach((image) => {
-        image.setAttribute("draggable", "true");
-
-        // voorkomt dubbele event listeners
-        if (image.dataset.dragEnabled === "true") return;
-        image.dataset.dragEnabled = "true";
-
-        image.addEventListener("dragstart", function (ev) {
-            ev.dataTransfer.setData(
-                "text/plain",
-                JSON.stringify({
-                    source: "grid",
-                    functionId: ev.currentTarget.dataset.functionId,
-                    fromCellId: ev.currentTarget.dataset.fromCellId,
-                    category: ev.currentTarget.dataset.category,
-                    imageSrc: ev.currentTarget.src,
-                    imageAlt: ev.currentTarget.alt
+                    imageAlt: image
+                        ? image.alt
+                        : ev.currentTarget.textContent.trim()
                 })
             );
         });
@@ -330,6 +331,7 @@ function selectMobileFunction(item) {
     clearMobileSelection();
 
     selectedMobileElement = item;
+
     item.classList.add("selectedMobileCell");
 
     const parentCell = item.closest(".gridCell");
@@ -360,11 +362,8 @@ function selectMobileFunction(item) {
         };
     }
 
-    // Mobiel: als je een grid-cell selecteert, maak/check direct de delete-knop
-    // Dit is nodig omdat touchstart door gridDragDrop wordt gestopt met stopPropagation.
     refreshDeleteButtonsIfAvailable();
 }
-
 
 // MOBIELE SELECTIE WEGHALEN
 function clearMobileSelection() {
@@ -372,12 +371,49 @@ function clearMobileSelection() {
         .querySelectorAll(".functionItem, .draggableGridFunction, .gridCell")
         .forEach((item) => {
             item.classList.remove("selectedMobileCell");
+            item.setAttribute("aria-selected", "false");
         });
 
     selectedMobileElement = null;
     selectedMobileData = null;
+
+    window.addEventListener("resize", function () {
+
+    if (window.innerWidth > 768) {
+        clearMobileSelection();
+    }
+});
 }
 
+function enableKeyboardPlacement() {
+    document.addEventListener("keydown", function (ev) {
+        if (ev.key !== "Enter") {
+            return;
+        }
+
+        const focusedElement = document.activeElement;
+
+        if (!focusedElement) {
+            return;
+        }
+
+        // Functie selecteren
+        if (focusedElement.classList.contains("functionItem")) {
+            ev.preventDefault();
+            selectMobileFunction(focusedElement);
+            return;
+        }
+
+        // Grid cell
+        if (
+            focusedElement.classList.contains("gridCell") &&
+            selectedMobileData
+        ) {
+            ev.preventDefault();
+            placeSelectedMobileFunction(focusedElement);
+        }
+    });
+}
 
 // MOBIEL ITEM IN GRID PLAATSEN
 function placeSelectedMobileFunction(cell) {
@@ -629,10 +665,15 @@ function moveFunctionInGrid(fromCellId, toCellId, functionId) {
 
 // EFFECT TABLE DIRECT UPDATEN
 window.updateEffectTable = function (effectTotals, qualityOfLife) {
+
     Object.keys(effectTotals).forEach(function (category) {
-        const element = document.querySelector(`[data-effect-category="${category}"]`);
+
+        const element = document.querySelector(
+            `[data-effect-category="${category}"]`
+        );
 
         if (element) {
+
             const value = Number(effectTotals[category]);
 
             element.innerHTML = `
@@ -643,9 +684,11 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
         }
     });
 
-    const qualityElement = document.getElementById("qualityOfLifeValue");
+    const qualityElement =
+        document.getElementById("qualityOfLifeValue");
 
     if (qualityElement) {
+
         const total = Number(qualityOfLife);
 
         qualityElement.innerHTML = `
@@ -654,8 +697,46 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
             </span>
         `;
     }
-};
 
+    // SCREENREADER UPDATE
+    const announcement =
+        document.getElementById("effectsAnnouncement");
+
+    if (announcement) {
+
+        const text = Object.entries(effectTotals)
+            .map(([key, value]) => {
+
+                const number = Number(value);
+
+                if (number < 0) {
+                    return `${key} min ${Math.abs(number)}`;
+                }
+
+                return `${key} ${number}`;
+            })
+            .join(", ");
+
+        const qol = Number(qualityOfLife);
+
+        let qolText = "";
+
+        if (qol < 0) {
+            qolText = `min ${Math.abs(qol)}`;
+        } else {
+            qolText = `${qol}`;
+        }
+
+        announcement.textContent = "";
+
+        setTimeout(() => {
+
+            announcement.textContent =
+                `Effects updated. ${text}. Quality of Life ${qolText}.`;
+
+        }, 300);
+    }
+};
 
 // EFFECTS VAN BOVEN/LINKS/RECHTS/ONDER LADEN VOOR TOOLTIP
 function loadNeighborEffects(cell) {

@@ -1,6 +1,6 @@
 @props(['categories', 'effectTotals' => [], 'qualityOfLife' => 0])
 
-<div>
+<div aria-labelledby="effects-heading">
     <h2>Effects</h2>
 
     <ul 
@@ -22,4 +22,11 @@
             <span id="qualityOfLifeValue">{{ $qualityOfLife }}</span>
         </li>
     </ul>
+
+    <div
+        id="effectsAnnouncement"
+        aria-live="assertive"
+        aria-atomic="true"
+        class="sr-only"
+    ></div>
 </div>
