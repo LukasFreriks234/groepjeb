@@ -79,12 +79,13 @@
                 <button type="button" tabindex="-1">Back</button>
             </a>
 
-            @auth
-                @if(auth()->user()->role === 'admin')
 
                     <a href="{{ route('functions.edit', $function->id) }}">
                         <button type="button" tabindex="-1">Edit</button>
                     </a>
+
+                    @auth
+                        @if(auth()->user()->role === 'admin')
 
                     <form action="{{ route('functions.destroy', $function->id) }}" method="POST">
                         @csrf

@@ -99,9 +99,6 @@ class FunctionController extends Controller
 
     public function edit($id)
     {
-        if (Auth::user()->role !== 'admin') {
-            abort(403);
-        }
 
         $function = Functions::with('effects')->findOrFail($id);
         $categories = Category::all();
@@ -112,57 +109,61 @@ class FunctionController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (Auth::user()->role !== 'admin') {
-            abort(403);
-        }
-
         $function = Functions::with('effects')->findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255|unique:functions,name,' . $id,
-            'category' => 'required|exists:categories,category',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        $isAdmin = auth()->user() && auth()->user()->role === 'admin';
 
-            'Safety' => 'required|numeric|between:-10,10',
-            'Recreation' => 'required|numeric|between:-10,10',
+        $rules = [
+            'Safety'                => 'required|numeric|between:-10,10',
+            'Recreation'            => 'required|numeric|between:-10,10',
             'Environmental_Quality' => 'required|numeric|between:-10,10',
-            'Services' => 'required|numeric|between:-10,10',
-            'Mobility' => 'required|numeric|between:-10,10',
-
-            'related_function' => 'nullable|exists:functions,id',
-            'relationship_safety' => 'required_with:related_function|nullable|integer|between:-10,10',
-            'relationship_recreation' => 'required_with:related_function|nullable|integer|between:-10,10',
-            'relationship_environmental' => 'required_with:related_function|nullable|integer|between:-10,10',
-            'relationship_services' => 'required_with:related_function|nullable|integer|between:-10,10',
-            'relationship_mobility' => 'required_with:related_function|nullable|integer|between:-10,10',
-        ]);
-
-        $hasRelationship = !empty($request->related_function);
-
-        $functionData = [
-            'name' => $request->name,
-            'category' => $request->category,
-
-            'related_function_id' => $hasRelationship ? $request->related_function : null,
-            'relationship_safety' => $hasRelationship ? $request->relationship_safety : 0,
-            'relationship_recreation' => $hasRelationship ? $request->relationship_recreation : 0,
-            'relationship_environmental' => $hasRelationship ? $request->relationship_environmental : 0,
-            'relationship_services' => $hasRelationship ? $request->relationship_services : 0,
-            'relationship_mobility' => $hasRelationship ? $request->relationship_mobility : 0,
+            'Services'              => 'required|numeric|between:-10,10',
+            'Mobility'              => 'required|numeric|between:-10,10',
         ];
 
-        if ($request->hasFile('image')) {
-            $functionData['image'] = $this->saveUploadedFunctionImage($request);
+        if ($isAdmin) {
+            $rules = array_merge($rules, [
+                'name'                       => 'required|string|max:255|unique:functions,name,' . $id,
+                'category'                   => 'required|exists:categories,category',
+                'image'                      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'related_function'           => 'nullable|exists:functions,id',
+                'relationship_safety'        => 'required_with:related_function|nullable|integer|between:-10,10',
+                'relationship_recreation'    => 'required_with:related_function|nullable|integer|between:-10,10',
+                'relationship_environmental' => 'required_with:related_function|nullable|integer|between:-10,10',
+                'relationship_services'      => 'required_with:related_function|nullable|integer|between:-10,10',
+                'relationship_mobility'      => 'required_with:related_function|nullable|integer|between:-10,10',
+            ]);
         }
 
-        $function->update($functionData);
+        $request->validate($rules);
+
+        if ($isAdmin) {
+            $hasRelationship = !empty($request->related_function);
+
+            $functionData = [
+                'name'                       => $request->name,
+                'category'                   => $request->category,
+                'related_function_id'        => $hasRelationship ? $request->related_function : null,
+                'relationship_safety'        => $hasRelationship ? $request->relationship_safety : 0,
+                'relationship_recreation'    => $hasRelationship ? $request->relationship_recreation : 0,
+                'relationship_environmental' => $hasRelationship ? $request->relationship_environmental : 0,
+                'relationship_services'      => $hasRelationship ? $request->relationship_services : 0,
+                'relationship_mobility'      => $hasRelationship ? $request->relationship_mobility : 0,
+            ];
+
+            if ($request->hasFile('image')) {
+                $functionData['image'] = $this->saveUploadedFunctionImage($request);
+            }
+
+            $function->update($functionData);
+        }
 
         $function->effects()->update([
-            'Safety' => $request->Safety,
-            'Recreation' => $request->Recreation,
+            'Safety'                => $request->Safety,
+            'Recreation'            => $request->Recreation,
             'Environmental Quality' => $request->Environmental_Quality,
-            'Services' => $request->Services,
-            'Mobility' => $request->Mobility,
+            'Services'              => $request->Services,
+            'Mobility'              => $request->Mobility,
         ]);
 
         Notification::send(Auth::user(), new FunctionEdited($function));
