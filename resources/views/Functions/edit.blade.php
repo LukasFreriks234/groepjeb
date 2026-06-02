@@ -9,6 +9,8 @@
 
     <link rel="stylesheet"
           href="{{ asset('css/editStyle.css') }}">
+
+    <script src="{{ asset('js/functionForm.js') }}" defer></script>
 </head>
 
 <body>
@@ -227,38 +229,6 @@
     </div>
 
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const relatedFunctionSelect = document.getElementById('related_function');
-        const relationshipInputs = document.querySelectorAll('.relationship-effect-input');
-
-        function toggleRelationshipInputs() {
-            const hasRelationship = relatedFunctionSelect.value !== '';
-
-            relationshipInputs.forEach(function (input) {
-                input.disabled = !hasRelationship;
-
-                if (!hasRelationship) {
-                    input.value = 0;
-                    input.setAttribute('aria-disabled', 'true');
-                    input.style.pointerEvents = 'none';
-                    input.style.opacity = '0.5';
-                    input.readOnly = true;
-                } else {
-                    input.removeAttribute('aria-disabled');
-                    input.style.pointerEvents = 'auto';
-                    input.style.opacity = '1';
-                    input.readOnly = false;
-                }
-            });
-        }
-
-        relatedFunctionSelect.addEventListener('change', toggleRelationshipInputs);
-
-        toggleRelationshipInputs();
-    });
-</script>
 
 </body>
 </html>
