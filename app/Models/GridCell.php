@@ -12,4 +12,9 @@ class GridCell extends Model
     {
         return $this->belongsTo(Functions::class, 'destination_type', 'id');
     }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'eventgrid_cells', 'grid_cell_id', 'event_id');
+    }
 }
