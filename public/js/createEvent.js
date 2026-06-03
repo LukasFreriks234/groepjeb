@@ -17,10 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 const dynamic = document.getElementById('dynamic');
-const dynamicEvent = document.getElementById('dynamicEvent');
+const dynamicEventBox = document.getElementById('dynamicEventBox');
 
 function toggleDynamicEvent() {
-    dynamicEvent.style.display =
+    dynamicEventBox.style.display =
         dynamic.checked ? 'block' : 'none';
 }
 

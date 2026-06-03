@@ -12,15 +12,24 @@
 <body>
     <h1>Create Event</h1>
 
+    @if ($errors->any())
+        <div style="color:red;">
+            @foreach ($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
+
     <div class="container">
         <div class="form-section">
-            <form method="POST" action="{{ route('functions.store') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('events.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <x-formInput name="name" label="Name" :value="old('name')" />
 
                 <label for="image">Image</label>
-                <input type="file" id="image" name="image" accept="image/*" alt="Upload an image for the new function">
+                <input type="file" id="image" name="image" accept="image/*" alt="Upload an image for the new function"
+                    :value="old('name')">
 
                 <!-- Link to destination -->
 
@@ -54,11 +63,11 @@
                 <div id="recurringFields">
                     <div>
                         <label>Frequency</label>
-                        <select>
-                            <option>---</option>
-                            <option>daily</option>
-                            <option>weekly</option>
-                            <option>monthly</option>
+                        <select name="recurrencePattern">
+                            <option value="">---</option>
+                            <option value="daily">daily</option>
+                            <option value="weekly">weekly</option>
+                            <option value="monthly">monthly</option>
                             <option>custom</option>
                         </select>
                     </div>
@@ -73,13 +82,13 @@
                 <h2>Dynamic event</h2>
 
                 <div class="containerRadio">
-                    <input type="checkbox" id="dynamic" name="typeEvent" value="dynamic" />
+                    <input type="checkbox" id="dynamic" name="dynamic" value="1" />
                     <label for="dynamic">Dynamic event</label>
                 </div>
 
-                <div id="dynamicEvent">
+                <div id="dynamicEventBox">
                     <!-- HIER KOMT ROUTE -->
-                     HEllo
+                    HEllo
                 </div>
 
                 <button type="submit">Create event</button>

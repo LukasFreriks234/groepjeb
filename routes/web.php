@@ -23,6 +23,7 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
 
     Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+    Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
