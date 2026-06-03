@@ -202,12 +202,17 @@
                 value="{{ old('Mobility', data_get($function->effects, 'Mobility', 0)) }}"
                 class="{{ (old('Mobility', data_get($function->effects, 'Mobility', 0)) > 0) ? 'positiveEffect' : ((old('Mobility', data_get($function->effects, 'Mobility', 0)) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
             >
-
+        <div class="button-group">
             <!-- SAVE -->
             <button type="submit">
                 Save changes
             </button>
         </form>
+    </div>
+
+    <a href="{{ route('functions.show', $function->id) }}">
+                <button type="button">Back</button>
+    </a>
     </div>
 
     <!-- IMAGE -->
