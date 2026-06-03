@@ -42,3 +42,20 @@
 .navbar-button:hover {
     background-color: #f0f0f0;
 }
+
+.navbar-button:focus,
+.navbar-button:focus-visible {
+    outline: 3px solid black;
+    outline-offset: 3px;
+    background-color: yellow;
+}
+
+.navbar-button[aria-current="page"] {
+    background-color: #1e3a8a;
+    color: white;
+    border: 3px solid black;
+}
+
+button.navbar-button {
+    appearance: none;
+}

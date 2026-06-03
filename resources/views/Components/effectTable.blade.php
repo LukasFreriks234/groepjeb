@@ -1,18 +1,40 @@
 @props(['categories', 'effectTotals' => [], 'qualityOfLife' => 0])
 
-<div aria-labelledby="effects-heading">
+@php
+    $effectsText = 'Effects. ';
+
+    foreach ($categories as $category) {
+        $effectValue = $effectTotals[$category->category] ?? 0;
+        $effectsText .= $category->category . ' ' . $effectValue . '. ';
+    }
+
+    $effectsText .= 'Quality of Life ' . $qualityOfLife . '.';
+@endphp
+
+<div>
     <h2>Effects</h2>
+
+    <div
+        id="effectsReader"
+        class="sr-only"
+        tabindex="0"
+    >
+        {{ $effectsText }}
+    </div>
 
     <ul 
         id="effectsList"
-        tabindex="0"
-        aria-label="Effect totals: @foreach($categories as $category){{ $category->category }}: {{ $effectTotals[$category->category] ?? 0 }}, @endforeach Quality of Life: {{ $qualityOfLife }}"
+        aria-hidden="true"
     >
         @foreach ($categories as $category)
+            @php
+                $effectValue = $effectTotals[$category->category] ?? 0;
+            @endphp
+
             <li>
                 {{ $category->category }}:
                 <span data-effect-category="{{ $category->category }}">
-                    {{ $effectTotals[$category->category] ?? 0 }}
+                    {{ $effectValue }}
                 </span>
             </li>
         @endforeach
@@ -23,10 +45,12 @@
         </li>
     </ul>
 
-    <div
-        id="effectsAnnouncement"
-        aria-live="assertive"
-        aria-atomic="true"
-        class="sr-only"
-    ></div>
+    <div 
+        id="effectsLiveStatus" 
+        class="sr-only" 
+        role="status" 
+        aria-live="polite"
+    >
+        {{ $effectsText }}
+    </div>
 </div>

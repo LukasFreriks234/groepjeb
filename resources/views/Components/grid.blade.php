@@ -4,8 +4,21 @@
     <main class="citySection">
         <h2>City area</h2>
 
-        <div class="metropolisGrid" role="grid">
+        <p id="gridKeyboardInstructions" class="sr-only">
+            Keyboard instructions: use Tab or Shift Tab to move to the grid. Inside the grid, use the arrow keys to move between cells. Press Enter or Space on a filled cell to select the function. Press Enter or Space on another cell to move or swap it. Use the remove button to remove a function from a filled cell.
+        </p>
+
+        <div 
+            class="metropolisGrid" 
+            role="grid"
+            aria-describedby="gridKeyboardInstructions"
+        >
             @foreach($cells as $cell)
+                @php
+                    $readableRow = $cell->y_coordinate + 1;
+                    $readableColumn = $cell->x_coordinate + 1;
+                @endphp
+
                 <div 
                     class="gridCell {{ $cell->is_available ? 'available' : 'occupied' }}"
                     data-id="{{ $cell->id }}"
@@ -13,15 +26,18 @@
                     data-y="{{ $cell->y_coordinate }}"
                     role="gridcell"
                     tabindex="0"
-                    aria-label="Cel row {{ $cell->y_coordinate }}, column {{ $cell->x_coordinate }}."
+                    aria-label="Grid cell row {{ $readableRow }}, column {{ $readableColumn }}. {{ $cell->is_available ? 'Empty cell. Press Enter or Space to place a selected function here.' : 'Contains ' . $cell->cityFunction->name . '. Press Enter or Space to select this function to move it. Use the remove button to remove it.' }}"
                 >
                     @if(!$cell->is_available && $cell->cityFunction)
                         <img
                             src="{{ asset($cell->cityFunction->image) }}"
-                            alt="{{ $cell->cityFunction->name }}"
+                            alt=""
+                            aria-hidden="true"
+                            tabindex="-1"
                             class="gridImage draggableGridFunction"
                             draggable="true"
                             data-function-id="{{ $cell->cityFunction->id }}"
+                            data-function-name="{{ $cell->cityFunction->name }}"
                             data-from-cell-id="{{ $cell->id }}"
                             data-category="{{ $cell->cityFunction->category }}"
                         >
@@ -32,8 +48,14 @@
     </main>
 </div>
 
-<!-- TOOLTIP -->
-<div id="functionTooltip" class="functionTooltip" tabindex="0" aria-label="Effect values" aria-live="polite" hidden>
+<div 
+    id="functionTooltip" 
+    class="functionTooltip hidden" 
+    tabindex="0" 
+    aria-label="Effect values" 
+    aria-live="polite"
+    hidden
+>
     <ul id="tooltipEffectsList">
         @foreach($categories as $category)
             <li>

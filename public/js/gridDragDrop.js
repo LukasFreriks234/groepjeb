@@ -1,26 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
     enableDrag();
     enableMobileDrag();
-    enableKeyboardPlacement();
+    enableKeyboardDragDrop();
+    enableArrowKeyGridNavigation();
     enableTooltip();
+    updateEffectsAccessibilityLabelForReader();
 
-    const gridCells = document.querySelectorAll(".gridCell");
-
-    gridCells.forEach((cell) => {
-
+    document.querySelectorAll(".gridCell").forEach((cell) => {
         const initialImage = cell.querySelector(".gridImage");
+
         if (initialImage) {
-            setCellLabel(cell, initialImage.alt, initialImage.dataset.category);
+            setCellLabel(cell, getGridImageName(initialImage), initialImage.dataset.category);
         } else {
             setCellLabel(cell, null, null);
         }
 
-        // drag over toestaan
         cell.addEventListener("dragover", function (ev) {
             ev.preventDefault();
         });
 
-        // drop
         cell.addEventListener("drop", function (ev) {
             ev.preventDefault();
 
@@ -28,111 +26,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!dragData) return;
 
-            // FUNCTIE UIT DE LIBRARY NAAR DE GRID
             if (dragData.source === "library") {
                 const originalItem = document.getElementById(dragData.itemId);
 
                 if (!originalItem) return;
 
-                clearCell(cell);
-
-                const newImage = createGridImage({
-                    functionId: originalItem.dataset.functionId,
-                    category: originalItem.dataset.category,
-                    imageSrc: dragData.imageSrc,
-                    imageAlt: dragData.imageAlt,
-                    targetCellId: cell.dataset.id
-                });
-
-                cell.appendChild(newImage);
-                setCellLabel(cell, originalItem.textContent.trim(), originalItem.dataset.category);
-                markCellOccupied(cell, originalItem.dataset.category);
-
-                saveFunctionInGrid(cell, originalItem);
-
-                enableDrag();
-                enableMobileDrag();
-                refreshDeleteButtonsIfAvailable();
+                placeLibraryFunctionInCell(cell, originalItem, dragData);
+                return;
             }
 
-            // FUNCTIE VAN GRID CELL NAAR ANDERE GRID CELL
             if (dragData.source === "grid") {
-                const fromCell = document.querySelector(`.gridCell[data-id="${dragData.fromCellId}"]`);
-
-                if (!fromCell) return;
-
-                // Als je naar dezelfde cell sleept, niks doen
-                if (fromCell.dataset.id === cell.dataset.id) {
-                    return;
-                }
-
-                // Check of target cell al een functie heeft
-                const targetImage = cell.querySelector(".gridImage");
-
-                let targetData = null;
-
-                if (targetImage) {
-                    targetData = {
-                        functionId: targetImage.dataset.functionId,
-                        category: targetImage.dataset.category,
-                        imageSrc: targetImage.src,
-                        imageAlt: targetImage.alt
-                    };
-                }
-
-                // Target cell leegmaken
-                clearCell(cell);
-
-                // Gesleepte functie in target cell zetten
-                const draggedImage = createGridImage({
-                    functionId: dragData.functionId,
-                    category: dragData.category,
-                    imageSrc: dragData.imageSrc,
-                    imageAlt: dragData.imageAlt,
-                    targetCellId: cell.dataset.id
-                });
-
-                cell.appendChild(draggedImage);
-                setCellLabel(cell, draggedImage.alt, dragData.category);
-                markCellOccupied(cell, dragData.category);
-
-                // Oude cell leegmaken
-                clearCell(fromCell);
-
-                // Als target cell al een functie had, zet die terug in de oude cell
-                if (targetData) {
-                    const swappedImage = createGridImage({
-                        functionId: targetData.functionId,
-                        category: targetData.category,
-                        imageSrc: targetData.imageSrc,
-                        imageAlt: targetData.imageAlt,
-                        targetCellId: fromCell.dataset.id
-                    });
-
-                    fromCell.appendChild(swappedImage);
-                    markCellOccupied(fromCell, targetData.category);
-                    setCellLabel(
-                        fromCell,
-                        targetData.imageAlt,
-                        targetData.category
-                    );
-                } else {
-                    // Als target leeg was, blijft oude cell leeg
-                    markCellAvailable(fromCell);
-                    setCellLabel(fromCell, null, null);
-                }
-
-                // Opslaan + effect table updaten
-                moveFunctionInGrid(
-                    dragData.fromCellId,
-                    cell.dataset.id,
-                    dragData.functionId
-                );
-
-                // Nieuwe grid images ook draggable maken
-                enableDrag();
-                enableMobileDrag();
-                refreshDeleteButtonsIfAvailable();
+                placeGridFunctionInCell(cell, dragData);
             }
         });
 
@@ -158,7 +62,6 @@ function getDragData(ev) {
     try {
         return JSON.parse(rawData);
     } catch (error) {
-        // fallback voor oude code: alleen item id
         return {
             source: "library",
             itemId: rawData
@@ -169,7 +72,7 @@ function getDragData(ev) {
 
 // CELL LEEGMAKEN
 function clearCell(cell) {
-    const existingItems = cell.querySelectorAll(".functionItem, .gridImage");
+    const existingItems = cell.querySelectorAll(".functionItem, .gridImage, .delete-btn");
 
     existingItems.forEach((item) => {
         item.remove();
@@ -210,21 +113,48 @@ function createGridImage(data) {
     const image = document.createElement("img");
 
     image.src = data.imageSrc;
-    image.alt = data.imageAlt || "Function image";
+    image.alt = "";
+    image.setAttribute("aria-hidden", "true");
+    image.setAttribute("tabindex", "-1");
     image.classList.add("gridImage", "draggableGridFunction");
     image.setAttribute("draggable", "true");
 
     image.dataset.functionId = data.functionId;
     image.dataset.fromCellId = data.targetCellId;
     image.dataset.category = data.category;
+    image.dataset.functionName = data.imageAlt || "Function";
 
     return image;
 }
 
 
-// DRAG FUNCTIE
+// NAAM UIT GRID IMAGE HALEN
+function getGridImageName(image) {
+    return image.dataset.functionName || image.alt || "Function";
+}
+
+
+// FUNCTIE NAAM UIT FUNCTION TABLE HALEN
+function getFunctionNameFromItem(item) {
+    const functionNameElement = item.querySelector(".functionName");
+
+    if (functionNameElement) {
+        return functionNameElement.textContent.trim();
+    }
+
+    const image = item.querySelector("img");
+
+    if (image && image.alt) {
+        return image.alt.trim();
+    }
+
+    return item.textContent.trim();
+}
+
+
+// DRAG FUNCTIE VOOR MUIS
 function enableDrag() {
-    const functionItems = document.querySelectorAll(".functionItem");
+    const functionItems = document.querySelectorAll("#functionsList .functionItem");
 
     functionItems.forEach((item) => {
         item.setAttribute("draggable", "true");
@@ -247,6 +177,7 @@ function enableDrag() {
 
         item.addEventListener("dragstart", function (ev) {
             const image = ev.currentTarget.querySelector("img");
+            const functionName = getFunctionNameFromItem(ev.currentTarget);
 
             ev.dataTransfer.setData(
                 "text/plain",
@@ -256,9 +187,32 @@ function enableDrag() {
                     functionId: ev.currentTarget.dataset.functionId,
                     category: ev.currentTarget.dataset.category,
                     imageSrc: image ? image.src : "",
-                    imageAlt: image
-                        ? image.alt
-                        : ev.currentTarget.textContent.trim()
+                    imageAlt: functionName
+                })
+            );
+        });
+    });
+
+    const gridImages = document.querySelectorAll(".draggableGridFunction");
+
+    gridImages.forEach((image) => {
+        image.setAttribute("draggable", "true");
+        image.setAttribute("tabindex", "-1");
+        image.setAttribute("aria-hidden", "true");
+
+        if (image.dataset.dragEnabled === "true") return;
+        image.dataset.dragEnabled = "true";
+
+        image.addEventListener("dragstart", function (ev) {
+            ev.dataTransfer.setData(
+                "text/plain",
+                JSON.stringify({
+                    source: "grid",
+                    functionId: ev.currentTarget.dataset.functionId,
+                    fromCellId: ev.currentTarget.dataset.fromCellId,
+                    category: ev.currentTarget.dataset.category,
+                    imageSrc: ev.currentTarget.src,
+                    imageAlt: getGridImageName(ev.currentTarget)
                 })
             );
         });
@@ -266,7 +220,119 @@ function enableDrag() {
 }
 
 
-// MOBIEL TOEGEVOEGD
+// LIBRARY FUNCTIE IN CELL PLAATSEN
+function placeLibraryFunctionInCell(cell, originalItem, dragData) {
+    const functionName = dragData.imageAlt || getFunctionNameFromItem(originalItem);
+
+    clearCell(cell);
+
+    const newImage = createGridImage({
+        functionId: originalItem.dataset.functionId || dragData.functionId,
+        category: originalItem.dataset.category || dragData.category,
+        imageSrc: dragData.imageSrc,
+        imageAlt: functionName,
+        targetCellId: cell.dataset.id
+    });
+
+    cell.appendChild(newImage);
+
+    markCellOccupied(cell, originalItem.dataset.category || dragData.category);
+    setCellLabel(cell, functionName, originalItem.dataset.category || dragData.category);
+
+    saveFunctionInGrid(cell, originalItem);
+
+    enableDrag();
+    enableMobileDrag();
+    refreshDeleteButtonsIfAvailable();
+
+    const position = getReadableCellPosition(cell);
+
+    announceKeyboardStatus(
+        `${functionName} placed in grid cell row ${position.row}, column ${position.column}.`
+    );
+
+    cell.focus();
+}
+
+
+// GRID FUNCTIE IN CELL PLAATSEN OF WISSELEN
+function placeGridFunctionInCell(cell, dragData) {
+    const fromCell = document.querySelector(`.gridCell[data-id="${dragData.fromCellId}"]`);
+
+    if (!fromCell) return;
+
+    if (fromCell.dataset.id === cell.dataset.id) {
+        announceKeyboardStatus("Selection cancelled.");
+        return;
+    }
+
+    const targetImage = cell.querySelector(".gridImage");
+
+    let targetData = null;
+
+    if (targetImage) {
+        targetData = {
+            functionId: targetImage.dataset.functionId,
+            category: targetImage.dataset.category,
+            imageSrc: targetImage.src,
+            imageAlt: getGridImageName(targetImage)
+        };
+    }
+
+    clearCell(cell);
+
+    const draggedImage = createGridImage({
+        functionId: dragData.functionId,
+        category: dragData.category,
+        imageSrc: dragData.imageSrc,
+        imageAlt: dragData.imageAlt,
+        targetCellId: cell.dataset.id
+    });
+
+    cell.appendChild(draggedImage);
+    markCellOccupied(cell, dragData.category);
+    setCellLabel(cell, dragData.imageAlt, dragData.category);
+
+    clearCell(fromCell);
+
+    if (targetData) {
+        const swappedImage = createGridImage({
+            functionId: targetData.functionId,
+            category: targetData.category,
+            imageSrc: targetData.imageSrc,
+            imageAlt: targetData.imageAlt,
+            targetCellId: fromCell.dataset.id
+        });
+
+        fromCell.appendChild(swappedImage);
+        markCellOccupied(fromCell, targetData.category);
+        setCellLabel(fromCell, targetData.imageAlt, targetData.category);
+    } else {
+        markCellAvailable(fromCell);
+        setCellLabel(fromCell, null, null);
+    }
+
+    moveFunctionInGrid(
+        dragData.fromCellId,
+        cell.dataset.id,
+        dragData.functionId
+    );
+
+    enableDrag();
+    enableMobileDrag();
+    refreshDeleteButtonsIfAvailable();
+
+    const position = getReadableCellPosition(cell);
+
+    announceKeyboardStatus(
+        `${dragData.imageAlt} moved to grid cell row ${position.row}, column ${position.column}.`
+    );
+
+    cell.focus();
+}
+
+
+// MOBIEL
 let selectedMobileElement = null;
 let selectedMobileData = null;
 let mobileDragEnabled = false;
@@ -278,15 +344,12 @@ function enableMobileDrag() {
 
     document.addEventListener("touchstart", function (ev) {
         const touchedCell = ev.target.closest(".gridCell");
-        let touchedFunction = ev.target.closest(".functionItem, .draggableGridFunction");
+        let touchedFunction = ev.target.closest("#functionsList .functionItem, .draggableGridFunction");
 
-        // MOBIEL: als je op een bezette grid cell tikt, selecteer de image in die cell
-        // Hierdoor hoef je niet precies op het plaatje te klikken.
         if (!touchedFunction && touchedCell) {
             touchedFunction = touchedCell.querySelector(".draggableGridFunction");
         }
 
-        // MOBIEL: effects tonen als je op een grid cell tikt
         if (touchedCell) {
             const touch = ev.touches[0];
 
@@ -295,9 +358,6 @@ function enableMobileDrag() {
             }
         }
 
-        // Als er al iets geselecteerd is en je tikt op een grid cell,
-        // dan moet hij plaatsen of swappen.
-        // Dit moet vóór touchedFunction staan, anders selecteert hij de target functie opnieuw.
         if (selectedMobileData && touchedCell) {
             ev.preventDefault();
             ev.stopPropagation();
@@ -314,13 +374,11 @@ function enableMobileDrag() {
             return;
         }
 
-        // Als er nog niks geselecteerd is, selecteer je een function item.
         if (touchedFunction) {
             ev.preventDefault();
             ev.stopPropagation();
 
             selectMobileFunction(touchedFunction);
-            return;
         }
     }, { passive: false });
 }
@@ -332,12 +390,12 @@ function selectMobileFunction(item) {
 
     selectedMobileElement = item;
 
-    item.classList.add("selectedMobileCell");
-
     const parentCell = item.closest(".gridCell");
 
     if (parentCell) {
         parentCell.classList.add("selectedMobileCell");
+    } else {
+        item.classList.add("selectedMobileCell");
     }
 
     if (item.classList.contains("draggableGridFunction")) {
@@ -347,10 +405,11 @@ function selectMobileFunction(item) {
             fromCellId: item.dataset.fromCellId,
             category: item.dataset.category,
             imageSrc: item.src,
-            imageAlt: item.alt
+            imageAlt: getGridImageName(item)
         };
     } else {
         const image = item.querySelector("img");
+        const functionName = getFunctionNameFromItem(item);
 
         selectedMobileData = {
             source: "library",
@@ -358,7 +417,7 @@ function selectMobileFunction(item) {
             functionId: item.dataset.functionId,
             category: item.dataset.category,
             imageSrc: image ? image.src : "",
-            imageAlt: image ? image.alt : item.textContent.trim()
+            imageAlt: functionName
         };
     }
 
@@ -368,10 +427,10 @@ function selectMobileFunction(item) {
 // MOBIELE SELECTIE WEGHALEN
 function clearMobileSelection() {
     document
-        .querySelectorAll(".functionItem, .draggableGridFunction, .gridCell")
+        .querySelectorAll("#functionsList .functionItem, .draggableGridFunction, .gridCell")
         .forEach((item) => {
             item.classList.remove("selectedMobileCell");
-            item.setAttribute("aria-selected", "false");
+            item.classList.remove("keyboardSelected");
         });
 
     selectedMobileElement = null;
@@ -419,98 +478,256 @@ function enableKeyboardPlacement() {
 function placeSelectedMobileFunction(cell) {
     if (!selectedMobileData || !selectedMobileElement) return;
 
-    // MOBIEL: LIBRARY NAAR GRID
     if (selectedMobileData.source === "library") {
-        clearCell(cell);
-
-        const newImage = createGridImage({
-            functionId: selectedMobileData.functionId,
-            category: selectedMobileData.category,
-            imageSrc: selectedMobileData.imageSrc,
-            imageAlt: selectedMobileData.imageAlt,
-            targetCellId: cell.dataset.id
-        });
-
-        cell.appendChild(newImage);
-
-        markCellOccupied(cell, selectedMobileData.category);
-
-        saveFunctionInGrid(cell, selectedMobileElement);
-
+        placeLibraryFunctionInCell(cell, selectedMobileElement, selectedMobileData);
         clearMobileSelection();
-
-        enableDrag();
-        refreshDeleteButtonsIfAvailable();
         return;
     }
 
-    // MOBIEL: GRID NAAR GRID
     if (selectedMobileData.source === "grid") {
-        const fromCell = document.querySelector(`.gridCell[data-id="${selectedMobileData.fromCellId}"]`);
+        placeGridFunctionInCell(cell, selectedMobileData);
+        clearMobileSelection();
+    }
+}
 
-        if (!fromCell) {
-            clearMobileSelection();
+
+// KEYBOARD DRAG AND DROP
+let selectedKeyboardElement = null;
+let selectedKeyboardData = null;
+
+function enableKeyboardDragDrop() {
+    document.addEventListener("keydown", function (ev) {
+        const isEnter = ev.key === "Enter";
+        const isSpace = ev.key === " " || ev.key === "Spacebar" || ev.code === "Space";
+
+        if (!isEnter && !isSpace) {
             return;
         }
 
-        if (fromCell.dataset.id === cell.dataset.id) {
-            clearMobileSelection();
+        if (ev.target.closest(".delete-btn")) {
             return;
         }
 
-        const targetImage = cell.querySelector(".gridImage");
+        const functionItem = ev.target.closest("#functionsList .functionItem");
+        const gridCell = ev.target.closest(".gridCell");
 
-        let targetData = null;
-
-        if (targetImage) {
-            targetData = {
-                functionId: targetImage.dataset.functionId,
-                category: targetImage.dataset.category,
-                imageSrc: targetImage.src,
-                imageAlt: targetImage.alt
-            };
+        if (!functionItem && !gridCell) {
+            return;
         }
 
-        clearCell(cell);
+        ev.preventDefault();
 
-        const draggedImage = createGridImage({
-            functionId: selectedMobileData.functionId,
-            category: selectedMobileData.category,
-            imageSrc: selectedMobileData.imageSrc,
-            imageAlt: selectedMobileData.imageAlt,
-            targetCellId: cell.dataset.id
+        if (selectedKeyboardData && gridCell) {
+            if (
+                selectedKeyboardData.source === "grid" &&
+                selectedKeyboardData.fromCellId === gridCell.dataset.id
+            ) {
+                clearKeyboardSelection();
+                announceKeyboardStatus("Selection cancelled.");
+                return;
+            }
+
+            placeSelectedKeyboardFunction(gridCell);
+            return;
+        }
+
+        if (functionItem) {
+            selectKeyboardFunction(functionItem);
+            return;
+        }
+
+        if (gridCell) {
+            const imageInCell = gridCell.querySelector(".draggableGridFunction");
+
+            if (imageInCell) {
+                selectKeyboardFunction(imageInCell);
+            } else {
+                announceKeyboardStatus("Empty grid cell. Select a function first, then press Enter or Space here to place it.");
+            }
+        }
+    });
+}
+
+
+// KEYBOARD FUNCTIE SELECTEREN
+function selectKeyboardFunction(item) {
+    clearKeyboardSelection();
+
+    selectedKeyboardElement = item;
+
+    const parentCell = item.closest(".gridCell");
+
+    if (parentCell) {
+        parentCell.classList.add("selectedMobileCell");
+        parentCell.classList.add("keyboardSelected");
+    } else {
+        item.classList.add("selectedMobileCell");
+        item.classList.add("keyboardSelected");
+    }
+
+    if (item.classList.contains("draggableGridFunction")) {
+        selectedKeyboardData = {
+            source: "grid",
+            functionId: item.dataset.functionId,
+            fromCellId: item.dataset.fromCellId,
+            category: item.dataset.category,
+            imageSrc: item.src,
+            imageAlt: getGridImageName(item)
+        };
+
+        announceKeyboardStatus(
+            `${getGridImageName(item)} selected. Move to another grid cell with Tab, Shift Tab, or arrow keys. Press Enter or Space to move or swap it.`
+        );
+    } else {
+        const image = item.querySelector("img");
+        const functionName = getFunctionNameFromItem(item);
+
+        selectedKeyboardData = {
+            source: "library",
+            itemId: item.id,
+            functionId: item.dataset.functionId,
+            category: item.dataset.category,
+            imageSrc: image ? image.src : "",
+            imageAlt: functionName
+        };
+
+        announceKeyboardStatus(
+            `${functionName} selected. Move to a grid cell and press Enter or Space to place it.`
+        );
+    }
+
+    refreshDeleteButtonsIfAvailable();
+}
+
+
+// KEYBOARD SELECTIE WEGHALEN
+function clearKeyboardSelection() {
+    document
+        .querySelectorAll("#functionsList .functionItem, .draggableGridFunction, .gridCell")
+        .forEach((item) => {
+            item.classList.remove("selectedMobileCell");
+            item.classList.remove("keyboardSelected");
         });
 
-        cell.appendChild(draggedImage);
-        markCellOccupied(cell, selectedMobileData.category);
+    selectedKeyboardElement = null;
+    selectedKeyboardData = null;
+}
 
-        clearCell(fromCell);
 
-        if (targetData) {
-            const swappedImage = createGridImage({
-                functionId: targetData.functionId,
-                category: targetData.category,
-                imageSrc: targetData.imageSrc,
-                imageAlt: targetData.imageAlt,
-                targetCellId: fromCell.dataset.id
-            });
+// KEYBOARD ITEM IN GRID PLAATSEN
+function placeSelectedKeyboardFunction(cell) {
+    if (!selectedKeyboardData || !selectedKeyboardElement) return;
 
-            fromCell.appendChild(swappedImage);
-            markCellOccupied(fromCell, targetData.category);
-        } else {
-            markCellAvailable(fromCell);
+    if (selectedKeyboardData.source === "library") {
+        placeLibraryFunctionInCell(cell, selectedKeyboardElement, selectedKeyboardData);
+        clearKeyboardSelection();
+        return;
+    }
+
+    if (selectedKeyboardData.source === "grid") {
+        placeGridFunctionInCell(cell, selectedKeyboardData);
+        clearKeyboardSelection();
+    }
+}
+
+
+// PIJLTJES NAVIGATIE ALLEEN IN DE GRID
+function enableArrowKeyGridNavigation() {
+    document.addEventListener("keydown", function (ev) {
+        const currentCell = ev.target.closest(".gridCell");
+
+        if (!currentCell) return;
+
+        const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+
+        if (!arrowKeys.includes(ev.key)) {
+            return;
         }
 
-        moveFunctionInGrid(
-            selectedMobileData.fromCellId,
-            cell.dataset.id,
-            selectedMobileData.functionId
+        ev.preventDefault();
+
+        const currentX = Number(currentCell.dataset.x);
+        const currentY = Number(currentCell.dataset.y);
+
+        let targetX = currentX;
+        let targetY = currentY;
+
+        if (ev.key === "ArrowUp") {
+            targetY = currentY - 1;
+        }
+
+        if (ev.key === "ArrowDown") {
+            targetY = currentY + 1;
+        }
+
+        if (ev.key === "ArrowLeft") {
+            targetX = currentX - 1;
+        }
+
+        if (ev.key === "ArrowRight") {
+            targetX = currentX + 1;
+        }
+
+        const targetCell = document.querySelector(
+            `.gridCell[data-x="${targetX}"][data-y="${targetY}"]`
         );
 
-        clearMobileSelection();
+        if (targetCell) {
+            targetCell.focus();
+            announceCurrentGridCell(targetCell);
+        }
+    });
+}
 
-        enableDrag();
-        refreshDeleteButtonsIfAvailable();
+
+// LEESBARE GRID POSITIE
+function getReadableCellPosition(cell) {
+    return {
+        row: Number(cell.dataset.y) + 1,
+        column: Number(cell.dataset.x) + 1
+    };
+}
+
+
+// ZEGT WAAR JE IN DE GRID ZIT
+function announceCurrentGridCell(cell) {
+    const image = cell.querySelector(".gridImage");
+    const position = getReadableCellPosition(cell);
+
+    if (image) {
+        announceKeyboardStatus(
+            `Grid cell row ${position.row}, column ${position.column}. Contains ${getGridImageName(image)}. Press Enter or Space to select this function to move it. Use the remove button to remove it.`
+        );
+    } else {
+        announceKeyboardStatus(
+            `Grid cell row ${position.row}, column ${position.column}. Empty cell. Press Enter or Space to place a selected function here.`
+        );
+    }
+}
+
+
+// CELL LABEL VOOR SCREENREADERS
+function setCellLabel(cell, name = null, category = null) {
+    const position = getReadableCellPosition(cell);
+    const baseLabel = `Grid cell row ${position.row}, column ${position.column}.`;
+
+    if (name) {
+        let cleanName = name.trim();
+
+        if (category) {
+            const regex = new RegExp(`\\(?\\s*${category}\\s*\\)?`, "gi");
+            cleanName = cleanName.replace(regex, "").trim();
+        }
+
+        cell.setAttribute(
+            "aria-label",
+            `${baseLabel} Contains ${cleanName}. Press Enter or Space to select this function to move it. Use the remove button to remove it.`
+        );
+    } else {
+        cell.setAttribute(
+            "aria-label",
+            `${baseLabel} Empty cell. Press Enter or Space to place a selected function here.`
+        );
     }
 }
 
@@ -524,6 +741,7 @@ function showEffectsTooltip(cell, clientX, clientY, autoHide = false) {
     loadNeighborEffects(cell);
 
     tooltip.classList.remove("hidden");
+    tooltip.hidden = false;
 
     const padding = 10;
     const tooltipWidth = tooltip.offsetWidth;
@@ -556,6 +774,7 @@ function showEffectsTooltip(cell, clientX, clientY, autoHide = false) {
 
         tooltipHideTimeout = setTimeout(() => {
             tooltip.classList.add("hidden");
+            tooltip.hidden = true;
         }, 2500);
     }
 }
@@ -567,13 +786,13 @@ function enableTooltip() {
     const gridCells = document.querySelectorAll(".gridCell");
 
     gridCells.forEach((cell) => {
-        // PC: hover
         cell.addEventListener("mousemove", function (ev) {
             showEffectsTooltip(cell, ev.clientX, ev.clientY);
         });
 
         cell.addEventListener("mouseleave", function () {
             tooltip.classList.add("hidden");
+            tooltip.hidden = true;
         });
     });
 }
@@ -589,29 +808,63 @@ function saveFunctionInGrid(cell, originalItem) {
         return;
     }
 
-    fetch('/grid/assign-function', {
-        method: 'POST',
+    fetch("/grid/assign-function", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({
             cell_id: cellId,
             function_id: functionId
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Saved:", data);
+        .then(response => response.json())
+        .then(data => {
+            console.log("Saved:", data);
 
-        if (data.success && data.effectTotals) {
-            updateEffectTable(data.effectTotals, data.qualityOfLife);
-            refreshDeleteButtonsIfAvailable();
-        }
+            if (data.success && data.effectTotals) {
+                updateEffectTable(data.effectTotals, data.qualityOfLife);
+                refreshDeleteButtonsIfAvailable();
+            }
+        })
+        .catch(error => {
+            console.error("Save error:", error);
+        });
+}
+
+
+// FUNCTIE VERPLAATSEN IN MYSQL
+function moveFunctionInGrid(fromCellId, toCellId, functionId) {
+    if (!fromCellId || !toCellId || !functionId) {
+        console.error("from_cell_id, to_cell_id of function_id ontbreekt");
+        return;
+    }
+
+    fetch("/grid/move-function", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            from_cell_id: fromCellId,
+            to_cell_id: toCellId,
+            function_id: functionId
+        })
     })
-    .catch(error => {
-        console.error("Save error:", error);
-    });
+        .then(response => response.json())
+        .then(data => {
+            console.log("Moved:", data);
+
+            if (data.success && data.effectTotals) {
+                updateEffectTable(data.effectTotals, data.qualityOfLife);
+                refreshDeleteButtonsIfAvailable();
+            }
+        })
+        .catch(error => {
+            console.error("Move error:", error);
+        });
 }
 
 
@@ -629,40 +882,6 @@ function getEffectClass(value) {
 }
 
 
-// FUNCTIE VERPLAATSEN IN MYSQL
-function moveFunctionInGrid(fromCellId, toCellId, functionId) {
-    if (!fromCellId || !toCellId || !functionId) {
-        console.error("from_cell_id, to_cell_id of function_id ontbreekt");
-        return;
-    }
-
-    fetch('/grid/move-function', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-            from_cell_id: fromCellId,
-            to_cell_id: toCellId,
-            function_id: functionId
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Moved:", data);
-
-        if (data.success && data.effectTotals) {
-            updateEffectTable(data.effectTotals, data.qualityOfLife);
-            refreshDeleteButtonsIfAvailable();
-        }
-    })
-    .catch(error => {
-        console.error("Move error:", error);
-    });
-}
-
-
 // EFFECT TABLE DIRECT UPDATEN
 window.updateEffectTable = function (effectTotals, qualityOfLife) {
 
@@ -675,12 +894,9 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
         if (element) {
 
             const value = Number(effectTotals[category]);
-
-            element.innerHTML = `
-                <span class="${getEffectClass(value)}">
-                    ${value}
-                </span>
-            `;
+            element.textContent = value;
+            element.classList.remove("positiveEffect", "negativeEffect", "neutralEffect");
+            element.classList.add(getEffectClass(value));
         }
     });
 
@@ -690,13 +906,13 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
     if (qualityElement) {
 
         const total = Number(qualityOfLife);
-
-        qualityElement.innerHTML = `
-            <span class="${getEffectClass(total)}">
-                ${total}
-            </span>
-        `;
+        qualityElement.textContent = total;
+        qualityElement.classList.remove("positiveEffect", "negativeEffect", "neutralEffect");
+        qualityElement.classList.add(getEffectClass(total));
     }
+
+    updateEffectsAccessibilityLabelForReader();
+};
 
     // SCREENREADER UPDATE
     const announcement =
@@ -738,31 +954,68 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
     }
 };
 
+// EFFECT TABLE IN 1 KEER VOORLEZEN MET ECHTE TEKST
+function updateEffectsAccessibilityLabelForReader() {
+    const effectsReader = document.getElementById("effectsReader");
+    const effectsLiveStatus = document.getElementById("effectsLiveStatus");
+    const effectsList = document.getElementById("effectsList");
+
+    if (!effectsReader || !effectsList) return;
+
+    let fullText = "Effects. ";
+
+    const effectSpans = effectsList.querySelectorAll("[data-effect-category]");
+
+    effectSpans.forEach(function (span) {
+        const category = span.getAttribute("data-effect-category");
+        const value = span.textContent.trim();
+
+        fullText += `${category} ${value}. `;
+    });
+
+    const qualityElement = document.getElementById("qualityOfLifeValue");
+
+    if (qualityElement) {
+        fullText += `Quality of Life ${qualityElement.textContent.trim()}.`;
+    }
+
+    effectsReader.textContent = fullText;
+
+    if (effectsLiveStatus) {
+        effectsLiveStatus.textContent = "";
+
+        setTimeout(function () {
+            effectsLiveStatus.textContent = fullText;
+        }, 10);
+    }
+}
+
+
 // EFFECTS VAN BOVEN/LINKS/RECHTS/ONDER LADEN VOOR TOOLTIP
 function loadNeighborEffects(cell) {
     const cellId = cell.dataset.id;
 
     if (!cellId) return;
 
-    fetch('/grid/neighbor-effects', {
-        method: 'POST',
+    fetch("/grid/neighbor-effects", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({
             cell_id: cellId
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success && data.effectTotals) {
-            updateTooltipEffects(data.effectTotals, data.qualityOfLife);
-        }
-    })
-    .catch(error => {
-        console.error("Neighbor effects error:", error);
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.effectTotals) {
+                updateTooltipEffects(data.effectTotals, data.qualityOfLife);
+            }
+        })
+        .catch(error => {
+            console.error("Neighbor effects error:", error);
+        });
 }
 
 
@@ -777,11 +1030,9 @@ function updateTooltipEffects(effectTotals, qualityOfLife = null) {
         const element = document.querySelector(`[data-tooltip-effect-category="${category}"]`);
 
         if (element) {
-            element.innerHTML = `
-                <span class="${getEffectClass(value)}">
-                    ${value}
-                </span>
-            `;
+            element.textContent = value;
+            element.classList.remove("positiveEffect", "negativeEffect", "neutralEffect");
+            element.classList.add(getEffectClass(value));
         }
     });
 
@@ -790,11 +1041,9 @@ function updateTooltipEffects(effectTotals, qualityOfLife = null) {
     if (qualityElement) {
         const total = qualityOfLife ?? calculatedQualityOfLife;
 
-        qualityElement.innerHTML = `
-            <span class="${getEffectClass(total)}">
-                ${total}
-            </span>
-        `;
+        qualityElement.textContent = total;
+        qualityElement.classList.remove("positiveEffect", "negativeEffect", "neutralEffect");
+        qualityElement.classList.add(getEffectClass(total));
     }
 }
 
@@ -828,29 +1077,6 @@ function checkScroll(clientY) {
     }
 }
 
-function setCellLabel(cell, name = null, category = null) {
-    const x = cell.dataset.x;
-    const y = cell.dataset.y;
-    let baseLabel = `Cel row ${y}, column ${x}.`;
-
-    if (name) {
-        let cleanName = name.trim();
-
-        if (category) {
-            const regex = new RegExp(`\\(?\\s*${category}\\s*\\)?`, "gi");
-            cleanName = cleanName.replace(regex, "").trim();
-        }
-
-        if (category) {
-            cell.setAttribute("aria-label", `${baseLabel} Occupied by ${cleanName} (${category})`);
-        } else {
-            cell.setAttribute("aria-label", `${baseLabel} Occupied by ${cleanName}`);
-        }
-    } else {
-        cell.setAttribute("aria-label", `${baseLabel} Available.`);
-    }
-}
-
 document.addEventListener("dragover", function (ev) {
     checkScroll(ev.clientY);
 });
@@ -864,10 +1090,28 @@ document.addEventListener("dragend", stopAutoScroll);
 document.addEventListener("drop", stopAutoScroll);
 document.addEventListener("touchend", stopAutoScroll);
 
-const list = document.getElementById('effectsList');
-if (list) {
-    const label = Object.entries(effectTotals)
-        .map(([key, val]) => `${key}: ${val}`)
-        .join(', ');
-    list.setAttribute('aria-label', `Effect totals: ${label}, Quality of Life: ${qualityOfLife}`);
+
+// STATUS VOOR SCREENREADERS
+function announceKeyboardStatus(message) {
+    let status = document.getElementById("keyboardDragStatus");
+
+    if (!status) {
+        status = document.createElement("div");
+        status.id = "keyboardDragStatus";
+        status.setAttribute("role", "status");
+        status.setAttribute("aria-live", "polite");
+        status.style.position = "absolute";
+        status.style.left = "-9999px";
+        status.style.width = "1px";
+        status.style.height = "1px";
+        status.style.overflow = "hidden";
+
+        document.body.appendChild(status);
+    }
+
+    status.textContent = "";
+
+    setTimeout(function () {
+        status.textContent = message;
+    }, 10);
 }

@@ -1,6 +1,7 @@
 <div id="functionsTable">
     <div class="filters">
         <div>
+            <label for="myInput">Search functions</label>
             <input type="text" id="myInput" placeholder="Search for names.."><br>
 
             <?php 
@@ -31,22 +32,20 @@
     array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arrFunctions);
     ?>
 
-    <ul id="functionsList">
+    <p id="keyboardDragInstructions" class="sr-only">
+        Keyboard instructions: use Tab or Shift Tab to move through the function list. Press Enter or Space on a function to select it. Then move to a grid cell and press Enter or Space to place it.
+    </p>
+
+    <ul id="functionsList" aria-describedby="keyboardDragInstructions">
         @foreach($arrFunctions as $function)
             <li 
-                 id="function{{ $function['id'] }}" 
-                class="functionItem"
+                id="function{{ $function['id'] }}" 
+                class="functionItem keyboardDraggableFunction"
                 data-function-id="{{ $function['id'] }}"
                 data-category="{{ $function['category'] }}"
                 tabindex="0"
                 role="button"
-                aria-label="Open function {{ $function['name'] }} in category {{ $function['category'] }}. 
-                this function has the effects:
-                Safety: {{ data_get($function, 'effects.Safety', 0) }},
-                Recreation: {{ data_get($function, 'effects.Recreation', 0) }},
-                Environmental Quality: {{ data_get($function, 'effects.Environmental Quality', 0) }},
-                Services: {{ data_get($function, 'effects.Services', 0) }},
-                and Mobility: {{ data_get($function, 'effects.Mobility', 0) }}"
+                aria-label="Select function {{ $function['name'] }} in category {{ $function['category'] }} to place it in the grid. Effects: Safety {{ data_get($function, 'effects.Safety', 0) }}, Recreation {{ data_get($function, 'effects.Recreation', 0) }}, Environmental Quality {{ data_get($function, 'effects.Environmental Quality', 0) }}, Services {{ data_get($function, 'effects.Services', 0) }}, Mobility {{ data_get($function, 'effects.Mobility', 0) }}."
             >
                 <div class="functionImage">
                     <img 
