@@ -315,6 +315,27 @@ let selectedMobileData = null;
 let mobileDragEnabled = false;
 let tooltipHideTimeout = null;
 
+window.addEventListener("resize", function () {
+
+    if (window.innerWidth > 768) {
+
+        document
+            .querySelectorAll(
+                ".selectedMobileCell, .keyboardSelected"
+            )
+            .forEach((item) => {
+                item.classList.remove("selectedMobileCell");
+                item.classList.remove("keyboardSelected");
+                item.setAttribute("aria-selected", "false");
+            });
+
+        selectedMobileElement = null;
+        selectedMobileData = null;
+        selectedKeyboardElement = null;
+        selectedKeyboardData = null;
+    }
+});
+
 function enableMobileDrag() {
     if (mobileDragEnabled) return;
     mobileDragEnabled = true;
@@ -371,8 +392,10 @@ function selectMobileFunction(item) {
 
     if (parentCell) {
         parentCell.classList.add("selectedMobileCell");
+        parentCell.setAttribute("aria-selected", "true");
     } else {
         item.classList.add("selectedMobileCell");
+        item.setAttribute("aria-selected", "true");
     }
 
     if (item.classList.contains("draggableGridFunction")) {
@@ -401,7 +424,6 @@ function selectMobileFunction(item) {
     refreshDeleteButtonsIfAvailable();
 }
 
-
 // MOBIELE SELECTIE WEGHALEN
 function clearMobileSelection() {
     document
@@ -409,6 +431,7 @@ function clearMobileSelection() {
         .forEach((item) => {
             item.classList.remove("selectedMobileCell");
             item.classList.remove("keyboardSelected");
+            item.setAttribute("aria-selected", "false");
         });
 
     selectedMobileElement = null;
@@ -499,11 +522,10 @@ function selectKeyboardFunction(item) {
 
     const parentCell = item.closest(".gridCell");
 
+    // GEEN selectedMobileCell meer voor desktop/toetsenbord
     if (parentCell) {
-        parentCell.classList.add("selectedMobileCell");
         parentCell.classList.add("keyboardSelected");
     } else {
-        item.classList.add("selectedMobileCell");
         item.classList.add("keyboardSelected");
     }
 
@@ -711,30 +733,53 @@ function showEffectsTooltip(cell, clientX, clientY, autoHide = false) {
     tooltip.style.left = left + "px";
     tooltip.style.top = top + "px";
 
-    if (autoHide) {
-        clearTimeout(tooltipHideTimeout);
+    const announcement = document.getElementById("tooltipAnnouncement");
 
-        tooltipHideTimeout = setTimeout(() => {
-            tooltip.classList.add("hidden");
-            tooltip.hidden = true;
-        }, 2500);
+    if (announcement) {
+
+        const tooltipText = tooltip.innerText
+            .replace(/\s+/g, " ")
+            .trim();
+
+        announcement.textContent = "";
+
+        setTimeout(() => {
+            announcement.textContent = tooltipText;
+        }, 100);
     }
 }
 
 
-// TOOLTIP
 function enableTooltip() {
     const tooltip = document.getElementById("functionTooltip");
     const gridCells = document.querySelectorAll(".gridCell");
 
     gridCells.forEach((cell) => {
+
+        // Koppel tooltip aan deze cel
+        cell.setAttribute("aria-describedby", "functionTooltip");
+
         cell.addEventListener("mousemove", function (ev) {
             showEffectsTooltip(cell, ev.clientX, ev.clientY);
         });
 
         cell.addEventListener("mouseleave", function () {
             tooltip.classList.add("hidden");
-            tooltip.hidden = true;
+        });
+
+        cell.addEventListener("focus", function () {
+
+            const rect = cell.getBoundingClientRect();
+
+            showEffectsTooltip(
+                cell,
+                rect.left + rect.width / 2,
+                rect.top + rect.height / 2
+            );
+        });
+
+        cell.addEventListener("blur", function () {
+            tooltip.classList.add("hidden");
         });
     });
 }
@@ -923,11 +968,17 @@ function updateTooltipEffects(effectTotals, qualityOfLife = null) {
         const value = Number(effectTotals[category]);
         calculatedQualityOfLife += value;
 
-        const element = document.querySelector(`[data-tooltip-effect-category="${category}"]`);
+        const element = document.querySelector(
+            `[data-tooltip-effect-category="${category}"]`
+        );
 
         if (element) {
             element.textContent = value;
-            element.classList.remove("positiveEffect", "negativeEffect", "neutralEffect");
+            element.classList.remove(
+                "positiveEffect",
+                "negativeEffect",
+                "neutralEffect"
+            );
             element.classList.add(getEffectClass(value));
         }
     });
@@ -938,11 +989,23 @@ function updateTooltipEffects(effectTotals, qualityOfLife = null) {
         const total = qualityOfLife ?? calculatedQualityOfLife;
 
         qualityElement.textContent = total;
-        qualityElement.classList.remove("positiveEffect", "negativeEffect", "neutralEffect");
+        qualityElement.classList.remove(
+            "positiveEffect",
+            "negativeEffect",
+            "neutralEffect"
+        );
         qualityElement.classList.add(getEffectClass(total));
     }
-}
 
+    announceKeyboardStatus(
+        `Environmental Quality ${effectTotals["Environmental Quality"] ?? 0}. ` +
+        `Mobility ${effectTotals["Mobility"] ?? 0}. ` +
+        `Recreation ${effectTotals["Recreation"] ?? 0}. ` +
+        `Safety ${effectTotals["Safety"] ?? 0}. ` +
+        `Services ${effectTotals["Services"] ?? 0}. ` +
+        `Quality of Life ${qualityOfLife ?? calculatedQualityOfLife}.`
+    );
+}
 
 // AUTO SCROLL
 let scrollInterval = null;
@@ -994,8 +1057,10 @@ function announceKeyboardStatus(message) {
     if (!status) {
         status = document.createElement("div");
         status.id = "keyboardDragStatus";
-        status.setAttribute("role", "status");
-        status.setAttribute("aria-live", "polite");
+        status.setAttribute("role", "alert");
+        status.setAttribute("aria-live", "assertive");
+        status.setAttribute("aria-atomic", "true");
+
         status.style.position = "absolute";
         status.style.left = "-9999px";
         status.style.width = "1px";
@@ -1007,7 +1072,7 @@ function announceKeyboardStatus(message) {
 
     status.textContent = "";
 
-    setTimeout(function () {
+    requestAnimationFrame(() => {
         status.textContent = message;
-    }, 10);
+    });
 }

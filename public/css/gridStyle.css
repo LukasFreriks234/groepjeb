@@ -147,17 +147,17 @@
 
 /* EFFECT KLEUREN */
 .positiveEffect {
-    color: green;
+    color: #008000; /* groen */
     font-weight: bold;
 }
 
 .negativeEffect {
-    color: red;
+    color: #cc0000; /* rood */
     font-weight: bold;
 }
 
 .neutralEffect {
-    color: black;
+    color: #000000;
 }
 
 .functionItem {
@@ -222,20 +222,18 @@
 
 /* DESKTOP */
 @media (hover: hover) and (min-width: 769px) {
-    .gridCell.selectedMobileCell,
+
     .gridCell.keyboardSelected {
         background-color: yellow !important;
         outline: 3px solid black !important;
         outline-offset: -3px;
     }
 
-    .functionItem.selectedMobileCell,
     .functionItem.keyboardSelected {
         background-color: yellow !important;
         color: black !important;
     }
 
-    .draggableGridFunction.selectedMobileCell,
     .draggableGridFunction.keyboardSelected {
         outline: 3px solid yellow;
         outline-offset: 2px;

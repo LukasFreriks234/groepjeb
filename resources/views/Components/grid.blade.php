@@ -48,19 +48,25 @@
     </main>
 </div>
 
-<div 
-    id="functionTooltip" 
-    class="functionTooltip hidden" 
-    tabindex="0" 
-    aria-label="Effect values" 
-    aria-live="polite"
-    hidden
+<div
+    id="functionTooltip"
+    class="functionTooltip hidden"
+    role="tooltip"
 >
+    <div
+        id="tooltipAnnouncement"
+        class="sr-only"
+        aria-live="assertive"
+        aria-atomic="true"
+    ></div>
+
     <ul id="tooltipEffectsList">
         @foreach($categories as $category)
             <li>
                 {{ $category->category }}:
-                <span data-tooltip-effect-category="{{ $category->category }}">0</span>
+                <span data-tooltip-effect-category="{{ $category->category }}">
+                    0
+                </span>
             </li>
         @endforeach
 
