@@ -21,17 +21,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Maak de delete-knop aan
-        const image = cell.querySelector('.gridImage');
-        console.log('CELL:', cell);
-        console.log('IMAGE:', image);
-        console.log('ALT:', image?.alt);
-        const functionName = image?.alt || 'function';
-        console.log('FUNCTION NAME:', functionName);
         const btn = document.createElement('button');
         btn.innerHTML = '✕';
         btn.className = 'delete-btn';
         btn.type = 'button';
-        btn.setAttribute('aria-label', `Remove ${functionName}`);
+        btn.setAttribute('aria-label', 'Remove function');
 
         cell.appendChild(btn);
 

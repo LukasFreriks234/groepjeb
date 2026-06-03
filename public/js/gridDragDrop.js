@@ -39,16 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 placeGridFunctionInCell(cell, dragData);
             }
         });
-
-        cell.addEventListener("keydown", function (ev) {
-            if (ev.key === "Enter" || ev.key === " ") {
-                if (!selectedMobileData) {
-                    return;
-                }
-                ev.preventDefault();
-                placeSelectedMobileFunction(cell);
-            }
-        });
     });
 });
 
@@ -158,22 +148,9 @@ function enableDrag() {
 
     functionItems.forEach((item) => {
         item.setAttribute("draggable", "true");
-        item.setAttribute("tabindex", "0");
-        item.setAttribute("role", "button");
 
         if (item.dataset.dragEnabled === "true") return;
         item.dataset.dragEnabled = "true";
-
-        // ENTER EN KLIK DOEN HETZELFDE
-        item.addEventListener("click", function () {
-            selectMobileFunction(item);
-        });
-        item.addEventListener("keydown", function (ev) {
-            if (ev.key === "Enter") {
-                ev.preventDefault();
-                item.click();
-            }
-        });
 
         item.addEventListener("dragstart", function (ev) {
             const image = ev.currentTarget.querySelector("img");
@@ -424,6 +401,7 @@ function selectMobileFunction(item) {
     refreshDeleteButtonsIfAvailable();
 }
 
+
 // MOBIELE SELECTIE WEGHALEN
 function clearMobileSelection() {
     document
@@ -435,44 +413,8 @@ function clearMobileSelection() {
 
     selectedMobileElement = null;
     selectedMobileData = null;
-
-    window.addEventListener("resize", function () {
-
-    if (window.innerWidth > 768) {
-        clearMobileSelection();
-    }
-});
 }
 
-function enableKeyboardPlacement() {
-    document.addEventListener("keydown", function (ev) {
-        if (ev.key !== "Enter") {
-            return;
-        }
-
-        const focusedElement = document.activeElement;
-
-        if (!focusedElement) {
-            return;
-        }
-
-        // Functie selecteren
-        if (focusedElement.classList.contains("functionItem")) {
-            ev.preventDefault();
-            selectMobileFunction(focusedElement);
-            return;
-        }
-
-        // Grid cell
-        if (
-            focusedElement.classList.contains("gridCell") &&
-            selectedMobileData
-        ) {
-            ev.preventDefault();
-            placeSelectedMobileFunction(focusedElement);
-        }
-    });
-}
 
 // MOBIEL ITEM IN GRID PLAATSEN
 function placeSelectedMobileFunction(cell) {
@@ -884,15 +826,10 @@ function getEffectClass(value) {
 
 // EFFECT TABLE DIRECT UPDATEN
 window.updateEffectTable = function (effectTotals, qualityOfLife) {
-
     Object.keys(effectTotals).forEach(function (category) {
-
-        const element = document.querySelector(
-            `[data-effect-category="${category}"]`
-        );
+        const element = document.querySelector(`[data-effect-category="${category}"]`);
 
         if (element) {
-
             const value = Number(effectTotals[category]);
             element.textContent = value;
             element.classList.remove("positiveEffect", "negativeEffect", "neutralEffect");
@@ -900,11 +837,9 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
         }
     });
 
-    const qualityElement =
-        document.getElementById("qualityOfLifeValue");
+    const qualityElement = document.getElementById("qualityOfLifeValue");
 
     if (qualityElement) {
-
         const total = Number(qualityOfLife);
         qualityElement.textContent = total;
         qualityElement.classList.remove("positiveEffect", "negativeEffect", "neutralEffect");
@@ -914,45 +849,6 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
     updateEffectsAccessibilityLabelForReader();
 };
 
-    // SCREENREADER UPDATE
-    const announcement =
-        document.getElementById("effectsAnnouncement");
-
-    if (announcement) {
-
-        const text = Object.entries(effectTotals)
-            .map(([key, value]) => {
-
-                const number = Number(value);
-
-                if (number < 0) {
-                    return `${key} min ${Math.abs(number)}`;
-                }
-
-                return `${key} ${number}`;
-            })
-            .join(", ");
-
-        const qol = Number(qualityOfLife);
-
-        let qolText = "";
-
-        if (qol < 0) {
-            qolText = `min ${Math.abs(qol)}`;
-        } else {
-            qolText = `${qol}`;
-        }
-
-        announcement.textContent = "";
-
-        setTimeout(() => {
-
-            announcement.textContent =
-                `Effects updated. ${text}. Quality of Life ${qolText}.`;
-
-        }, 300);
-    }
-};
 
 // EFFECT TABLE IN 1 KEER VOORLEZEN MET ECHTE TEKST
 function updateEffectsAccessibilityLabelForReader() {
