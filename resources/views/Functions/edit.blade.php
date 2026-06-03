@@ -44,7 +44,7 @@
 
             <!-- CATEGORY -->
             <label for="category">Category</label>
-            <select id="category" name="category" aria-haspopup="listbox">
+            <select id="category" name="category" autocomplete="off">
                 @foreach($categories as $category)
                     <option value="{{ $category->category }}"
                         {{ old('category', $function->category) == $category->category ? 'selected' : '' }}>
@@ -56,8 +56,8 @@
             <!-- ADD RELATIONSHIP -->
             <h2>Add Relationship</h2>
 
-            <label for="related_function">Select Function</label>
-            <select id="related_function" name="related_function" aria-haspopup="listbox">
+                <label for="related_function">Select Function</label>
+                <select id="related_function" name="related_function" aria-label="Select a function to create a relationship with">
                 <option value="">-- Select Function --</option>
 
                 @foreach($functions as $relatedFunction)
