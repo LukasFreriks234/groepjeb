@@ -88,7 +88,7 @@
 
                 <div id="dynamicEventBox">
                     <!-- HIER KOMT ROUTE -->
-                    HEllo
+                    Route selector
                 </div>
 
                 <button type="submit">Create event</button>
