@@ -31,7 +31,6 @@
             @csrf
             @method('PATCH')
 
-            <!-- NAME -->
             @if($isAdmin)
                 <x-formInput
                     name="name"
@@ -46,7 +45,6 @@
                 </div>
             @endif
 
-            <!-- IMAGE -->
             <label for="image">Change image</label>
             <input
                 type="file"
@@ -56,7 +54,6 @@
                 {{ !$isAdmin ? 'disabled' : '' }}
             >
 
-            <!-- CATEGORY -->
             <label for="category">Category</label>
             <select id="category" name="category" autocomplete="off" {{ !$isAdmin ? 'disabled' : '' }}>
                 @foreach($categories as $category)
@@ -67,7 +64,6 @@
                 @endforeach
             </select>
 
-            <!-- ADD RELATIONSHIP -->
             <h2>Add Relationship</h2>
 
             <label for="related_function">Select Function</label>
@@ -89,7 +85,6 @@
                 @endforeach
             </select>
 
-            <!-- RELATIONSHIP EFFECTS -->
             <h2>Relationship Effects</h2>
 
             <label for="relationship_safety">Safety</label>
@@ -226,7 +221,6 @@
     </a>
     </div>
 
-    <!-- IMAGE -->
     <div class="image-section">
         <p>Current image:</p>
         <img src="{{ asset($function->image) }}"
