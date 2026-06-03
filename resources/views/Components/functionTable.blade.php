@@ -1,7 +1,7 @@
 <div id="functionsTable">
     <div class="filters">
         <div>
-            <input type="text" id="myInput" placeholder="Search for names.."><br>
+            <input type="text" id="myInput" placeholder="Search for functions.." aria-label="searchbar for functions"><br>
 
             <?php 
             $arrCategories = $categories->toArray();
@@ -31,24 +31,25 @@
     array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arrFunctions);
     ?>
 
-    <ul id="functionsList">
+    <ul id="functionsList" tabindex="-1" aria-label="functions" >
         @foreach($arrFunctions as $function)
-            <li 
+            <li tabindex="0"
                 id="function{{ $function['id'] }}" 
                 class="functionItem"
                 data-function-id="{{ $function['id'] }}"
                 data-category="{{ $function['category'] }}"
             >
                 <div class="functionImage">
-                    <img 
+                    <img
                         src="{{ asset($function['image']) }}" 
                         alt="{{ $function['name'] }}"
                         data-category="{{ $function['category'] }}"
                     >
                 </div>
 
-                <div>
+                <div class="functionDescription">
                     <p class="functionName">{{ $function['name'] }}</p>
+                    <p class="sr-only">Category</p>
                     <p class="functionCategory" name="{{ $function['category'] }}">
                         {{ $function['category'] }}
                     </p>
