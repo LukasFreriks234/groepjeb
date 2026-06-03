@@ -49,7 +49,7 @@ input {
     border-radius: 6px;
     font-size: 16px;
 
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 select {
@@ -60,7 +60,7 @@ select {
     border-radius: 6px;
     font-size: 16px;
 
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 input:focus {
@@ -138,4 +138,31 @@ img {
 
 .delete {
     background-color: red
+}
+
+.containerRadio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.containerRadio input[type="radio"], .containerRadio input[type="checkbox"] {
+    width: auto;
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.containerRadio label {
+    margin: 0;
+    padding-left: 30px;
+}
+
+.input-with-unit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#recurringFields, #dynamicEvent {
+    display: none;
 }
