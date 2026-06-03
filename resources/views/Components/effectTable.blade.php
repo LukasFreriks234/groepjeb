@@ -17,14 +17,15 @@
     <div
         id="effectsReader"
         class="sr-only"
-        tabindex="0"
-    >
-        {{ $effectsText }}
-    </div>
+        role="status"
+        aria-live="assertive"
+        aria-atomic="true"
+    ></div>
 
-    <ul 
+    <ul
         id="effectsList"
-        aria-hidden="true"
+        tabindex="0"
+        aria-describedby="effectsReader"
     >
         @foreach ($categories as $category)
             @php
@@ -44,13 +45,4 @@
             <span id="qualityOfLifeValue">{{ $qualityOfLife }}</span>
         </li>
     </ul>
-
-    <div 
-        id="effectsLiveStatus" 
-        class="sr-only" 
-        role="status" 
-        aria-live="polite"
-    >
-        {{ $effectsText }}
-    </div>
 </div>

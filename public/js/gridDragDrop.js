@@ -224,9 +224,9 @@ function placeLibraryFunctionInCell(cell, originalItem, dragData) {
 
     const position = getReadableCellPosition(cell);
 
-    announceKeyboardStatus(
-        `${functionName} placed in grid cell row ${position.row}, column ${position.column}.`
-    );
+    setTimeout(() => {
+        updateEffectsAccessibilityLabelForReader();
+    }, 500);
 
     cell.focus();
 }
@@ -301,9 +301,9 @@ function placeGridFunctionInCell(cell, dragData) {
 
     const position = getReadableCellPosition(cell);
 
-    announceKeyboardStatus(
-        `${dragData.imageAlt} moved to grid cell row ${position.row}, column ${position.column}.`
-    );
+    setTimeout(() => {
+        updateEffectsAccessibilityLabelForReader();
+    }, 500);
 
     cell.focus();
 }
@@ -891,72 +891,87 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
         qualityElement.classList.add(getEffectClass(total));
     }
 
-    updateEffectsAccessibilityLabelForReader();
+    requestAnimationFrame(() => {
+        updateEffectsAccessibilityLabelForReader();
+    });
 };
 
 
 // EFFECT TABLE IN 1 KEER VOORLEZEN MET ECHTE TEKST
 function updateEffectsAccessibilityLabelForReader() {
-    const effectsReader = document.getElementById("effectsReader");
-    const effectsLiveStatus = document.getElementById("effectsLiveStatus");
-    const effectsList = document.getElementById("effectsList");
 
-    if (!effectsReader || !effectsList) return;
+    const effectsList =
+        document.getElementById("effectsList");
 
-    let fullText = "Effects. ";
+    const effectsReader =
+        document.getElementById("effectsReader");
 
-    const effectSpans = effectsList.querySelectorAll("[data-effect-category]");
+    if (!effectsList || !effectsReader) {
+        return;
+    }
 
-    effectSpans.forEach(function (span) {
-        const category = span.getAttribute("data-effect-category");
-        const value = span.textContent.trim();
+    const effectSpans =
+        effectsList.querySelectorAll(
+            "[data-effect-category]"
+        );
 
-        fullText += `${category} ${value}. `;
+    const effectsText = [];
+
+    effectSpans.forEach((span) => {
+
+        const category =
+            span.dataset.effectCategory;
+
+        const numericValue =
+            Number(span.textContent.trim());
+
+        const readableValue =
+            numericValue < 0
+                ? `minus ${Math.abs(numericValue)}`
+                : `${numericValue}`;
+
+        effectsText.push(
+            `${category} ${readableValue}`
+        );
     });
 
-    const qualityElement = document.getElementById("qualityOfLifeValue");
+    const qualityElement =
+        document.getElementById(
+            "qualityOfLifeValue"
+        );
 
     if (qualityElement) {
-        fullText += `Quality of Life ${qualityElement.textContent.trim()}.`;
+
+        const total =
+            Number(
+                qualityElement.textContent.trim()
+            );
+
+        const readableTotal =
+            total < 0
+                ? `minus ${Math.abs(total)}`
+                : `${total}`;
+
+        effectsText.push(
+            `Quality of Life ${readableTotal}`
+        );
     }
 
-    effectsReader.textContent = fullText;
+    const fullText =
+        `Effects updated. ${effectsText.join(". ")}.`;
 
-    if (effectsLiveStatus) {
-        effectsLiveStatus.textContent = "";
+    // Screenreader live region updaten
+    effectsReader.textContent = "";
 
-        setTimeout(function () {
-            effectsLiveStatus.textContent = fullText;
-        }, 10);
-    }
-}
+    setTimeout(() => {
+        effectsReader.textContent = fullText;
+    }, 100);
 
-
-// EFFECTS VAN BOVEN/LINKS/RECHTS/ONDER LADEN VOOR TOOLTIP
-function loadNeighborEffects(cell) {
-    const cellId = cell.dataset.id;
-
-    if (!cellId) return;
-
-    fetch("/grid/neighbor-effects", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-            cell_id: cellId
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.effectTotals) {
-                updateTooltipEffects(data.effectTotals, data.qualityOfLife);
-            }
-        })
-        .catch(error => {
-            console.error("Neighbor effects error:", error);
-        });
+    // Als gebruiker naar de lijst tabt
+    effectsList.setAttribute(
+        "aria-label",
+        fullText
+    );
 }
 
 
@@ -998,12 +1013,36 @@ function updateTooltipEffects(effectTotals, qualityOfLife = null) {
     }
 
     announceKeyboardStatus(
-        `Environmental Quality ${effectTotals["Environmental Quality"] ?? 0}. ` +
-        `Mobility ${effectTotals["Mobility"] ?? 0}. ` +
-        `Recreation ${effectTotals["Recreation"] ?? 0}. ` +
-        `Safety ${effectTotals["Safety"] ?? 0}. ` +
-        `Services ${effectTotals["Services"] ?? 0}. ` +
-        `Quality of Life ${qualityOfLife ?? calculatedQualityOfLife}.`
+        `Environmental Quality ${
+            Number(effectTotals["Environmental Quality"] ?? 0) < 0
+                ? `minus ${Math.abs(Number(effectTotals["Environmental Quality"]))}`
+                : effectTotals["Environmental Quality"] ?? 0
+        }. ` +
+        `Mobility ${
+            Number(effectTotals["Mobility"] ?? 0) < 0
+                ? `minus ${Math.abs(Number(effectTotals["Mobility"]))}`
+                : effectTotals["Mobility"] ?? 0
+        }. ` +
+        `Recreation ${
+            Number(effectTotals["Recreation"] ?? 0) < 0
+                ? `minus ${Math.abs(Number(effectTotals["Recreation"]))}`
+                : effectTotals["Recreation"] ?? 0
+        }. ` +
+        `Safety ${
+            Number(effectTotals["Safety"] ?? 0) < 0
+                ? `minus ${Math.abs(Number(effectTotals["Safety"]))}`
+                : effectTotals["Safety"] ?? 0
+        }. ` +
+        `Services ${
+            Number(effectTotals["Services"] ?? 0) < 0
+                ? `minus ${Math.abs(Number(effectTotals["Services"]))}`
+                : effectTotals["Services"] ?? 0
+        }. ` +
+        `Quality of Life ${
+            Number(qualityOfLife ?? calculatedQualityOfLife) < 0
+                ? `minus ${Math.abs(Number(qualityOfLife ?? calculatedQualityOfLife))}`
+                : qualityOfLife ?? calculatedQualityOfLife
+        }.`
     );
 }
 
@@ -1052,27 +1091,37 @@ document.addEventListener("touchend", stopAutoScroll);
 
 // STATUS VOOR SCREENREADERS
 function announceKeyboardStatus(message) {
+
     let status = document.getElementById("keyboardDragStatus");
 
     if (!status) {
+
         status = document.createElement("div");
+
         status.id = "keyboardDragStatus";
-        status.setAttribute("role", "alert");
+        status.className = "sr-only";
+
+        status.setAttribute("role", "status");
         status.setAttribute("aria-live", "assertive");
         status.setAttribute("aria-atomic", "true");
-
-        status.style.position = "absolute";
-        status.style.left = "-9999px";
-        status.style.width = "1px";
-        status.style.height = "1px";
-        status.style.overflow = "hidden";
 
         document.body.appendChild(status);
     }
 
-    status.textContent = "";
+    status.remove();
 
-    requestAnimationFrame(() => {
+    status = document.createElement("div");
+
+    status.id = "keyboardDragStatus";
+    status.className = "sr-only";
+
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "assertive");
+    status.setAttribute("aria-atomic", "true");
+
+    document.body.appendChild(status);
+
+    setTimeout(() => {
         status.textContent = message;
-    });
+    }, 50);
 }
