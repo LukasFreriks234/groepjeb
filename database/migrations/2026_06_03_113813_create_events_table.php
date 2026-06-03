@@ -15,8 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('image_url');
-            $table->foreignId('grid_cells_id')->constrained('grid_cells')->onUpdate('cascade')
-                ->onDelete('set null');
+            $table->enum('type', ['one-off', 'recurring']);
+            $table->enum('recurrence_pattern', ['daily', 'weekly', 'monthly'])->nullable();
+            $table->json('days_of_week')->nullable();
+            $table->dateTime('start_date')->nullable();
+            $table->dateTime('end_date')->nullable();
+            $table->boolean('dynamic')->default(false);
             $table->timestamps();
         });
     }
