@@ -7,6 +7,7 @@ use App\Models\GridCell;
 use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
+use App\Models\Event;
 
 class GridCellController extends Controller
 {
@@ -19,6 +20,7 @@ class GridCellController extends Controller
 
         $functions = Functions::all();
         $categories = Category::all();
+        $events = Event::all();
 
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
         $qualityOfLife = Effects::calculateQualityOfLife($cells, $categories);
@@ -26,6 +28,7 @@ class GridCellController extends Controller
         return view('welcome', compact(
             'cells',
             'functions',
+            'events',
             'categories',
             'effectTotals',
             'qualityOfLife'
