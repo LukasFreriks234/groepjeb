@@ -18,7 +18,7 @@ class GridCellController extends Controller
             ->orderBy('x_coordinate')
             ->get();
 
-        $functions = Functions::all();
+        $functions = Functions::with('effects')->get();
         $categories = Category::all();
         $events = Event::all();
 

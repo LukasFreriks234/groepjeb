@@ -121,3 +121,9 @@
     background-color: lightgrey;
 }
 
+
+.sr-only{
+    width: 0px; 
+    height: 0px; 
+    overflow: hidden;
+}
