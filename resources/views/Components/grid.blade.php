@@ -17,6 +17,7 @@
                 @php
                     $readableRow = $cell->y_coordinate + 1;
                     $readableColumn = $cell->x_coordinate + 1;
+                     $hasFunction = $cell->cityFunction !== null;
                 @endphp
 
                 <div 
@@ -26,8 +27,12 @@
                     data-y="{{ $cell->y_coordinate }}"
                     role="gridcell"
                     tabindex="0"
-                    aria-label="Grid cell row {{ $readableRow }}, column {{ $readableColumn }}. {{ $cell->is_available ? 'Empty cell. Press Enter or Space to place a selected function here.' : 'Contains ' . $cell->cityFunction->name . '. Press Enter or Space to select this function to move it. Use the remove button to remove it.' }}"
-                >
+                    aria-label="Grid cell row {{ $readableRow }}, column {{ $readableColumn }}.
+                    {{ 
+                        $hasFunction
+                        ? 'Contains ' . $cell->cityFunction->name . '. Press Enter or Space to select this function to move it.'
+                        : 'Empty cell. Press Enter or Space to place a selected function here.'
+                    }}">
                     @if(!$cell->is_available && $cell->cityFunction)
                         <img
                             src="{{ asset($cell->cityFunction->image) }}"
