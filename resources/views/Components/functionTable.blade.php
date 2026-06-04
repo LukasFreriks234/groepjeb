@@ -1,7 +1,6 @@
 <div id="functionsTable">
     <div class="filters">
         <div>
-            <label for="myInput">Search functions</label>
             <input 
                 type="text" 
                 id="myInput" 
