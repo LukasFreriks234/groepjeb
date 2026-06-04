@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             CategoriesSeeder::class,
             GridCellSeeder::class,
             FunctionSeeder::class,
+            GroupsSeeder::class,
             EffectsSeeder::class,
             UserSeeder::class
         ]);

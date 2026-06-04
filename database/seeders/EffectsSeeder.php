@@ -28,7 +28,10 @@ class EffectsSeeder extends Seeder
         ];
 
         foreach ($effects as $effect) {
-            EffectsModel::create($effect);
+            EffectsModel::updateOrCreate(
+                ['id' => $effect['id']],
+                $effect
+            );
         }
     }
 }

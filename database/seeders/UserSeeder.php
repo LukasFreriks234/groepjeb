@@ -14,14 +14,18 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
+        User::updateOrCreate([
+            'email' => 'test@cityplanner.com',
+        ], [
             'name' => 'Test Planner',
             'role' => 'cityplanner',
             'email' => 'test@cityplanner.com',
             'password' => 'test'
         ]);
 
-        User::create([
+        User::updateOrCreate([
+            'email' => 'test@admin.com',
+        ], [
             'name' => 'Test Admin',
             'role' => 'admin',
             'email' => 'test@admin.com',
