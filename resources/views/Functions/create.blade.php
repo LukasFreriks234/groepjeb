@@ -253,6 +253,9 @@
                 </fieldset>
 
                 <button type="submit">Create function</button>
+                <a href="{{ route('functions.index') }}">
+                    <button type="button">Back</button>
+                </a>
             </form>
         </div>
     </div>

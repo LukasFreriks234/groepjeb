@@ -25,15 +25,20 @@
             @csrf
             @method('PATCH')
 
-            <!-- NAME -->
-            <x-formInput
+            @if($isAdmin)
+                <x-formInput
+                    name="name"
+                    label="Name"
+                    :value="old('name', $function->name)"
+                />
+            @else
+                <div class="form-group-readonly">
+                    <label>Name</label>
+                    <p class="readonly-text">{{ $function->name }}</p>
+                    <input type="hidden" name="name" value="{{ $function->name }}">
+                </div>
+            @endif
 
-                name="name"
-                label="Name"
-                :value="old('name', $function->name)"
-            />
-
-            <!-- IMAGE -->
             <label for="image">Change image</label>
             <input 
                 type="file" 
@@ -42,7 +47,6 @@
                 accept="image/*"
             >
 
-            <!-- CATEGORY -->
             <label for="category">Category</label>
             <select id="category" name="category" autocomplete="off">
                 @foreach($categories as $category)
@@ -53,7 +57,6 @@
                 @endforeach
             </select>
 
-            <!-- ADD RELATIONSHIP -->
             <h2>Add Relationship</h2>
 
                 <label for="related_function">Select Function</label>
@@ -70,7 +73,6 @@
                 @endforeach
             </select>
 
-            <!-- RELATIONSHIP EFFECTS -->
             <h2>Relationship Effects</h2>
 
             <label for="relationship_safety">Safety</label>
@@ -185,24 +187,19 @@
                 value="{{ old('Mobility', data_get($function->effects, 'Mobility', 0)) }}"
                 class="{{ (old('Mobility', data_get($function->effects, 'Mobility', 0)) > 0) ? 'positiveEffect' : ((old('Mobility', data_get($function->effects, 'Mobility', 0)) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
             >
-        <div class="button-group">
-            <!-- SAVE -->
-            <button type="submit">
-                Save changes
-            </button>
+            <div class="button-group">
+                <!-- SAVE -->
+                <button type="submit">
+                    Save changes
+                </button>
+                <a href="{{ route('functions.index') }}">
+                    <button type="button">Back</button>
+                </a>
+            </div>
         </form>
 
-        <a href="{{ route('functions.index') }}">
-                <button type="button">Back</button>
-            </a>
     </div>
 
-    <a href="{{ route('functions.show', $function->id) }}">
-                <button type="button">Back</button>
-    </a>
-    </div>
-
-    <!-- IMAGE -->
     <div class="image-section">
         <p>Current image:</p>
         <img src="{{ asset($function->image) }}"
