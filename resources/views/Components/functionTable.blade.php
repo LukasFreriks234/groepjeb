@@ -88,7 +88,7 @@
 <div id="eventsTable" class="tabContent" style="display:none;">
     <div class="filters">
         <div>
-            <input type="text" id="eventSearch" placeholder="Search events.."><br>
+            <input type="text" id="eventSearch" placeholder="Search events.." aria-label="Search events"><br>
 
             <input type="checkbox" id="typeOneOff" class="eventFilter" value="one-off">
             <label for="typeOneOff">One-off</label><br>
@@ -98,20 +98,32 @@
         </div>
 </div>
 
+    
+
 
     <?php 
         $arrEvents = $events->toArray();
         $arrEventName = array_column($arrEvents, 'name');
         array_multisort($arrEventName, SORT_ASC, $arrEvents);
     ?>
-    
-    <ul id="eventsList">
+    <p id="keyboardDragInstructions" class="sr-only">
+        Keyboard instructions: use Tab or Shift Tab to move through the event list. Press Enter or Space on an event to select it. Then move to a grid cell and press Enter or Space to place it.
+    </p>
+
+    <ul id="eventsList"
+        tabindex="-1" 
+        aria-label="events"
+        aria-describedby="keyboardDragInstructions">
         @foreach($arrEvents as $event)
             <li 
+                tabindex="0"
                 id="event{{ $event['id'] }}" 
                 class="functionItem"
                 data-event-id="{{ $event['id'] }}"
                 data-type="{{ $event['type'] }}"
+                role="button"
+                aria-label="Select event {{ $event['name'] }} of type {{ $event['type'] }} to place it in the grid."
+                
             >
                 <div class="functionImage">
                     <img 
