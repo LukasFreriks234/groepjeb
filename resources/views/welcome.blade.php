@@ -8,12 +8,14 @@
     <script type="text/javascript" src="{{ asset('js/functionTable.js') }}" defer></script>
     <script src="{{ asset('js/gridDragDrop.js') }}" defer></script>
     <script src="{{ asset('js/delete.js') }}" defer></script>
+    <script src="{{ asset('js/switchFunctionEvent.js') }}" defer></script>
 
     <link href="{{ asset('css/functionTableStyle.css') }}" type="text/css" rel="stylesheet"/>
     <link href="{{ asset('css/gridStyle.css') }}" type="text/css" rel="stylesheet"/>
     <link href="{{ asset('css/effectTableStyle.css') }}" type="text/css" rel="stylesheet"/>
     <link href="{{ asset('css/layout.css') }}" type="text/css" rel="stylesheet"/>
     <link href="{{ asset('css/navbarStyle.css') }}" type="text/css" rel="stylesheet"/>
+    <link href="{{ asset('css/functionEventsTableStyle.css') }}" type="text/css" rel="stylesheet"/>
 
     <title>Metropolis</title>
 </head>
