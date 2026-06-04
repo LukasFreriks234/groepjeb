@@ -1,3 +1,12 @@
+<div class="topNav">
+    <button class="tabButton active" data-target="functionsTable">
+        Functions
+    </button>
+    <button class="tabButton" data-target="eventsTable">
+        Events
+    </button>
+</div>
+
 <div id="functionsTable">
     <div class="filters">
         <div>
@@ -70,6 +79,47 @@
                     <p class="sr-only">Category</p>
                     <p class="functionCategory" name="{{ $function['category'] }}">
                         {{ $function['category'] }}
+                    </p>
+                </div>
+            </li>
+        @endforeach
+    </ul>
+</div>
+
+<div id="eventsTable" class="contentSection" style="display:none;">
+    <div class="filters">
+        <div>
+            <input type="text" id="myInput" placeholder="Search for names.."><br>
+        </div>
+    </div>
+
+    <?php 
+    $arrEvents = $functions->toArray();
+    $arrEventName = array_column($arrEvents, 'name');
+    $arrEventCategory = array_column($arrEvents, 'category');
+    array_multisort($arrEventCategory, SORT_ASC, $arrEventName, SORT_ASC, $arrEvents);
+    ?>
+
+    <ul id="functionsList">
+        @foreach($arrEvents as $event)
+            <li 
+                id="event{{ $event['id'] }}" 
+                class="functionItem"
+                data-function-id="{{ $event['id'] }}"
+                data-category="{{ $event['category'] }}"
+            >
+                <div class="functionImage">
+                    <img 
+                        src="{{ asset($event['image']) }}" 
+                        alt="{{ $event['name'] }}"
+                        data-category="{{ $event['category'] }}"
+                    >
+                </div>
+
+                <div>
+                    <p class="functionName">{{ $event['name'] }}</p>
+                    <p class="functionCategory" name="{{ $event['category'] }}">
+                        {{ $event['category'] }}
                     </p>
                 </div>
             </li>
