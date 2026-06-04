@@ -13,7 +13,7 @@ class EventSeeder extends Seeder
     {
         Event::create([
             'name' => 'Zomerfestival',
-            'image_url' => 'festival.jpg',
+            'image_url' => 'images/PoliceStation.png',
             'type' => 'recurring',
             'recurrence_pattern' => 'weekly',
             'days_of_week' => ['Friday', 'Saturday'],
@@ -24,7 +24,7 @@ class EventSeeder extends Seeder
 
         Event::create([
             'name' => 'Food Truck Markt',
-            'image_url' => 'foodmarket.jpg',
+            'image_url' => 'images/PoliceStation.png',
             'type' => 'one-off',
             'recurrence_pattern' => null,
             'days_of_week' => null,

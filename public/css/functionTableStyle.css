@@ -47,7 +47,7 @@
     font-style: italic;
 }
 
-#functionsList {
+#functionsList, #eventsList {
     width: 100%;
     list-style-type: none;
     margin: 0;
@@ -60,7 +60,7 @@
     touch-action: pan-y;
 }
 
-#functionsList .functionItem {
+#functionsList .functionItem, #eventsList .functionItem {
     background-color: lightblue;
     overflow: hidden;
     border-bottom-style: solid;
@@ -121,3 +121,9 @@
     background-color: lightgrey;
 }
 
+
+.sr-only{
+    width: 0px; 
+    height: 0px; 
+    overflow: hidden;
+}

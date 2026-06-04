@@ -45,3 +45,60 @@ function filterFunction() {
 window.addEventListener("load", filterFunction);
 document.getElementById("myInput").addEventListener("keyup", filterFunction);
 document.querySelectorAll(".functionFilter").forEach(elt => elt.addEventListener("click", filterFunction));
+
+function filterEvents() {
+  const boxes = document.querySelectorAll(".eventFilter");
+  const listItem = document.getElementById("eventsList").querySelectorAll("li");
+
+  const active = new Set();
+  const typeMap = new Map();
+
+  boxes.forEach(el => {
+    active.add(el.checked);
+    typeMap.set(el.value, el.checked);
+  });
+
+  let filterRows;
+
+  // FILTER op type (one-off / recurring)
+  if (active.has(true)) {
+    filterRows = [];
+
+    for (const item of listItem) {
+      const type = item.dataset.type;
+
+      if (typeMap.get(type)) {
+        filterRows.push(item);
+      }
+    }
+  } else {
+    filterRows = Array.from(listItem);
+  }
+
+  // SEARCH
+  const input = document.getElementById("eventSearch");
+  const filter = input.value.toUpperCase();
+
+  const searchRows = [];
+
+  for (const row of filterRows) {
+    const name = row.querySelector(".functionName").innerText;
+
+    if (name.toUpperCase().includes(filter)) {
+      searchRows.push(row);
+    }
+  }
+
+  // APPLY
+  for (const item of listItem) {
+    item.style.display = searchRows.includes(item) ? "" : "none";
+  }
+}
+
+window.addEventListener("load", filterEvents);
+
+document.getElementById("eventSearch")
+  .addEventListener("keyup", filterEvents);
+
+document.querySelectorAll(".eventFilter")
+  .forEach(el => el.addEventListener("click", filterEvents));

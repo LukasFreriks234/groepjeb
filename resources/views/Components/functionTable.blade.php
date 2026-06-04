@@ -7,7 +7,7 @@
     </button>
 </div>
 
-<div id="functionsTable">
+<div id="functionsTable" class="tabContent" style="display:block;">
     <div class="filters">
         <div>
             <input 
@@ -85,41 +85,56 @@
     </ul>
 </div>
 
-<div id="eventsTable" class="contentSection" style="display:none;">
+<div id="eventsTable" class="tabContent" style="display:none;">
     <div class="filters">
         <div>
-            <input type="text" id="myInput" placeholder="Search for names.."><br>
+            <input type="text" id="eventSearch" placeholder="Search events.." aria-label="Search events"><br>
+
+            <input type="checkbox" id="typeOneOff" class="eventFilter" value="one-off">
+            <label for="typeOneOff">One-off</label><br>
+
+            <input type="checkbox" id="typeRecurring" class="eventFilter" value="recurring">
+            <label for="typeRecurring">Recurring</label><br>
         </div>
-    </div>
+</div>
+
+    
+
 
     <?php 
-    $arrEvents = $functions->toArray();
-    $arrEventName = array_column($arrEvents, 'name');
-    $arrEventCategory = array_column($arrEvents, 'category');
-    array_multisort($arrEventCategory, SORT_ASC, $arrEventName, SORT_ASC, $arrEvents);
+        $arrEvents = $events->toArray();
+        $arrEventName = array_column($arrEvents, 'name');
+        array_multisort($arrEventName, SORT_ASC, $arrEvents);
     ?>
+    <p id="keyboardDragInstructions" class="sr-only">
+        Keyboard instructions: use Tab or Shift Tab to move through the event list. Press Enter or Space on an event to select it. Then move to a grid cell and press Enter or Space to place it.
+    </p>
 
-    <ul id="functionsList">
+    <ul id="eventsList"
+        tabindex="-1" 
+        aria-label="events"
+        aria-describedby="keyboardDragInstructions">
         @foreach($arrEvents as $event)
             <li 
+                tabindex="0"
                 id="event{{ $event['id'] }}" 
                 class="functionItem"
-                data-function-id="{{ $event['id'] }}"
-                data-category="{{ $event['category'] }}"
+                data-event-id="{{ $event['id'] }}"
+                data-type="{{ $event['type'] }}"
+                role="button"
+                aria-label="Select event {{ $event['name'] }} of type {{ $event['type'] }} to place it in the grid."
+                
             >
                 <div class="functionImage">
                     <img 
-                        src="{{ asset($event['image']) }}" 
+                        src="{{ asset($event['image_url']) }}" 
                         alt="{{ $event['name'] }}"
-                        data-category="{{ $event['category'] }}"
                     >
                 </div>
 
                 <div>
                     <p class="functionName">{{ $event['name'] }}</p>
-                    <p class="functionCategory" name="{{ $event['category'] }}">
-                        {{ $event['category'] }}
-                    </p>
+                    <p class="functionCategory">{{ $event['type'] }}</p>
                 </div>
             </li>
         @endforeach
