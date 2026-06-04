@@ -39,4 +39,9 @@ class Functions extends Model
     {
         return $this->belongsTo(Functions::class, 'related_function_id', 'id');
     }
+
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class, 'function_group', 'function_id', 'group_id');
+    }
 }
