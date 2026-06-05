@@ -9,11 +9,17 @@
 
     <link rel="stylesheet"
           href="{{ asset('css/editStyle.css') }}">
+
+    <script src="{{ asset('js/functionForm.js') }}" defer></script>
 </head>
 
 <body>
 
 <h1>Edit Function</h1>
+
+@php
+    $isAdmin = auth()->user() && auth()->user()->role === 'admin';
+@endphp
 
 <div class="container">
 
@@ -25,25 +31,31 @@
             @csrf
             @method('PATCH')
 
-            <!-- NAME -->
-            <x-formInput
-                name="name"
-                label="Name"
-                :value="old('name', $function->name)"
-            />
+            @if($isAdmin)
+                <x-formInput
+                    name="name"
+                    label="Name"
+                    :value="old('name', $function->name)"
+                />
+            @else
+                <div class="form-group-readonly">
+                    <label>Name</label>
+                    <p class="readonly-text">{{ $function->name }}</p>
+                    <input type="hidden" name="name" value="{{ $function->name }}">
+                </div>
+            @endif
 
-            <!-- IMAGE -->
             <label for="image">Change image</label>
-            <input 
-                type="file" 
-                id="image" 
-                name="image" 
+            <input
+                type="file"
+                id="image"
+                name="image"
                 accept="image/*"
+                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
-            <!-- CATEGORY -->
             <label for="category">Category</label>
-            <select id="category" name="category">
+            <select id="category" name="category" autocomplete="off" {{ !$isAdmin ? 'disabled' : '' }}>
                 @foreach($categories as $category)
                     <option value="{{ $category->category }}"
                         {{ old('category', $function->category) == $category->category ? 'selected' : '' }}>
@@ -52,11 +64,15 @@
                 @endforeach
             </select>
 
-            <!-- ADD RELATIONSHIP -->
             <h2>Add Relationship</h2>
 
             <label for="related_function">Select Function</label>
-            <select id="related_function" name="related_function">
+            <select
+                id="related_function"
+                name="related_function"
+                aria-label="Select a function to create a relationship with"
+                {{ !$isAdmin ? 'disabled' : '' }}
+            >
                 <option value="">-- Select Function --</option>
 
                 @foreach($functions as $relatedFunction)
@@ -69,7 +85,6 @@
                 @endforeach
             </select>
 
-            <!-- RELATIONSHIP EFFECTS -->
             <h2>Relationship Effects</h2>
 
             <label for="relationship_safety">Safety</label>
@@ -81,6 +96,7 @@
                 max="10"
                 value="{{ old('relationship_safety', $function->relationship_safety ?? 0) }}"
                 class="relationship-effect-input {{ (old('relationship_safety', $function->relationship_safety ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_safety', $function->relationship_safety ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <label for="relationship_recreation">Recreation</label>
@@ -92,6 +108,7 @@
                 max="10"
                 value="{{ old('relationship_recreation', $function->relationship_recreation ?? 0) }}"
                 class="relationship-effect-input {{ (old('relationship_recreation', $function->relationship_recreation ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_recreation', $function->relationship_recreation ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <label for="relationship_environmental">Environmental Quality</label>
@@ -103,6 +120,7 @@
                 max="10"
                 value="{{ old('relationship_environmental', $function->relationship_environmental ?? 0) }}"
                 class="relationship-effect-input {{ (old('relationship_environmental', $function->relationship_environmental ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_environmental', $function->relationship_environmental ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <label for="relationship_services">Services</label>
@@ -114,6 +132,7 @@
                 max="10"
                 value="{{ old('relationship_services', $function->relationship_services ?? 0) }}"
                 class="relationship-effect-input {{ (old('relationship_services', $function->relationship_services ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_services', $function->relationship_services ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <label for="relationship_mobility">Mobility</label>
@@ -125,6 +144,7 @@
                 max="10"
                 value="{{ old('relationship_mobility', $function->relationship_mobility ?? 0) }}"
                 class="relationship-effect-input {{ (old('relationship_mobility', $function->relationship_mobility ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_mobility', $function->relationship_mobility ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
+                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <!-- EFFECTS -->
@@ -184,45 +204,26 @@
                 value="{{ old('Mobility', data_get($function->effects, 'Mobility', 0)) }}"
                 class="{{ (old('Mobility', data_get($function->effects, 'Mobility', 0)) > 0) ? 'positiveEffect' : ((old('Mobility', data_get($function->effects, 'Mobility', 0)) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
             >
-
-            <!-- SAVE -->
-            <button type="submit">
-                Save changes
-            </button>
+            <div class="button-group">
+                <!-- SAVE -->
+                <button type="submit">
+                    Save changes
+                </button>
+                <a href="{{ route('functions.index') }}">
+                    <button type="button">Back</button>
+                </a>
+            </div>
         </form>
+
     </div>
 
-    <!-- IMAGE -->
     <div class="image-section">
         <p>Current image:</p>
         <img src="{{ asset($function->image) }}"
-             alt="Image of {{ $function->name }}">
+             alt="">
     </div>
 
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const relatedFunctionSelect = document.getElementById('related_function');
-        const relationshipInputs = document.querySelectorAll('.relationship-effect-input');
-
-        function toggleRelationshipInputs() {
-            const hasRelationship = relatedFunctionSelect.value !== '';
-
-            relationshipInputs.forEach(function (input) {
-                input.disabled = !hasRelationship;
-
-                if (!hasRelationship) {
-                    input.value = 0;
-                }
-            });
-        }
-
-        relatedFunctionSelect.addEventListener('change', toggleRelationshipInputs);
-
-        toggleRelationshipInputs();
-    });
-</script>
 
 </body>
 </html>

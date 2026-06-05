@@ -15,6 +15,8 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
 
     Route::get('/overview', [FunctionController::class, 'index'])->name('functions.index');
     Route::get('/overview/{id}', [FunctionController::class, 'show'])->name('functions.show');
+    Route::get('/functions/{id}/edit', [FunctionController::class, 'edit'])->name('functions.edit');
+    Route::patch('/functions/{id}/update', [FunctionController::class, 'update'])->name('functions.update');
 
     Route::post('/grid/assign-function', [GridCellController::class, 'assignFunction']);
     Route::post('/grid/move-function', [GridCellController::class, 'moveFunction']);
@@ -30,8 +32,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/functions/create', [FunctionController::class, 'create'])->name('functions.create');
     Route::post('/functions/store', [FunctionController::class, 'store'])->name('functions.store');
 
-    Route::get('/functions/{id}/edit', [FunctionController::class, 'edit'])->name('functions.edit');
-    Route::patch('/functions/{id}/update', [FunctionController::class, 'update'])->name('functions.update');
     Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });
 
