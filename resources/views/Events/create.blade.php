@@ -32,6 +32,18 @@
                 <input type="file" id="image" name="image" accept="image/*" alt="Upload an image for the new function"
                     :value="old('name')">
 
+                <label for="input-length">Length active</label>
+
+                <div class="length-container">
+                    <input id="input-length" name="length" type="number" value="{{ old('length') }}" required>
+
+                    <select name="lengthUnit">
+                        <option value="hours">Hours</option>
+                        <option value="days">Days</option>
+                        <option value="weeks">Weeks</option>
+                    </select>
+                </div>
+
                 <!-- Link to destination -->
 
                 <h2>Effect while active</h2>
@@ -157,6 +169,7 @@
                                 <?php endfor; ?>
                             </div>
                         </div>
+
                         <div id="onTheFields">
                             <div class="onThe">
                                 <select name="amountMonth">
@@ -195,25 +208,6 @@
                             <label>Year(s)</label>
                         </div>
 
-                        <!-- <label>Choose month(s)</label>
-
-                        <div class="months-grid">
-                            <?php
-                            $months = [
-                                'Jan', 'Feb', 'Mar', 'Apr',
-                                'May', 'Jun', 'Jul', 'Aug',
-                                'Sep', 'Oct', 'Nov', 'Dec'
-                            ];
-
-                            foreach ($months as $month):
-                            ?>
-                                <label class="month-box">
-                                    <input type="checkbox" name="months[]" value="<?= $month ?>">
-                                    <span><?= $month ?></span>
-                                </label>
-                            <?php endforeach; ?>
-                        </div> -->
-                        
                     </div>
                 </div>
 
