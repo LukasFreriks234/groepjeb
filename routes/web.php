@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\GridCellController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\FunctionController;
@@ -23,6 +24,9 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::post('/grid/neighbor-effects', [GridCellController::class, 'neighborEffects']);
 
     Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
+
+    Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+    Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
