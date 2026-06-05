@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Event</title>
     <link rel="stylesheet" href="{{ asset('css/editStyle.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/createEvent.css') }}">
     <script src="{{ asset('js/createEvent.js') }}" defer></script>
 </head>
 
@@ -64,18 +65,113 @@
                     <div>
                         <label>Frequency</label>
                         <select name="recurrencePattern">
-                            <option value="">---</option>
                             <option value="daily">daily</option>
                             <option value="weekly">weekly</option>
                             <option value="monthly">monthly</option>
-                            <option>custom</option>
+                            <option value="yearly">yearly</option>
                         </select>
                     </div>
+                    <div id="dailyFields">
+                        <div class="every">
+                            <label>Every</label>
+                            <select name="amountDay">
+                                <option>1</option>
+                                <option>2</option>
+                            </select>
+                            <label>Day(s)</label>
+                        </div>
+                    </div>
 
-                    <label>Active period</label>
-                    <div class="input-with-unit">
-                        <input type="number" name="activePeriod" />
-                        <span>days</span>
+                    <div id="weeklyFields">
+                        <div class="every">
+                            <label>Every</label>
+                            <select name="amountWeek">
+                                <option>1</option>
+                                <option>2</option>
+                            </select>
+                            <label>Week(s)</label>
+                        </div>
+                        <div class="weekDays">
+                            <div class="containerRadio">
+                                <input type="checkbox" id="monday">
+                                <label for="monday">Monday</label>
+                            </div>
+                            <div class="containerRadio">
+                                <input type="checkbox" id="tuesday">
+                                <label for="tuesday">Tuesday</label>
+                            </div>
+                            <div class="containerRadio">
+                                <input type="checkbox" id="wednesday">
+                                <label for="wednesday">Wednesday</label>
+                            </div>
+                            <div class="containerRadio">
+                                <input type="checkbox" id="thursday">
+                                <label for="thursday">Thursday</label>
+                            </div>
+                            <div class="containerRadio">
+                                <input type="checkbox" id="friday">
+                                <label for="friday">Friday</label>
+                            </div>
+                            <div class="containerRadio">
+                                <input type="checkbox" id="saturday">
+                                <label for="saturday">Saturday</label>
+                            </div>
+                            <div class="containerRadio">
+                                <input type="checkbox" id="sunday">
+                                <label for="sunday">Sunday</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="monthlyFields">
+                        <div class="every">
+                            <label>Every</label>
+                            <select name="amountMonth">
+                                <option>1</option>
+                                <option>2</option>
+                            </select>
+                            <label>Month(s)</label>
+                        </div>
+
+                        <div class="containerRadio">
+                            <input type="radio" id="each" name="typeMonth" />
+                            <label for="each">Each</label>
+                        </div>
+                        <div class="containerRadio">
+                            <input type="radio" id="onThe" name="typeMonth" />
+                            <label for="onThe">On the...</label>
+                        </div>
+
+                        <div id="eachFields">
+
+                        //! moet nog
+
+                        </div>
+                        <div id="onTheFields">
+                            <div class="onThe">
+                                <select name="amountMonth">
+                                    <option>First</option>
+                                    <option>Second</option>
+                                    <option>Third</option>
+                                    <option>Fourth</option>
+                                    <option>Fifth</option>
+                                    <option>Next to last</option>
+                                    <option>Last</option>
+                                </select>
+                                <select name="dayMonth">
+                                    <option>Monday</option>
+                                    <option>Tuesday</option>
+                                    <option>Wednesday</option>
+                                    <option>Thursday</option>
+                                    <option>Friday</option>
+                                    <option>Saturday</option>
+                                    <option>Sunday</option>
+                                    <option>Day</option>
+                                    <option>Weekday</option>
+                                    <option>Weekendday</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

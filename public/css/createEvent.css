@@ -1,0 +1,22 @@
+.every {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.every select {
+    width: 100px;
+}
+
+.weekDays {
+    display: flex;
+    justify-content: space-between;
+}
+
+.weekDays label {
+    padding: 0;
+}
+
+.onThe {
+    display: flex;
+}
