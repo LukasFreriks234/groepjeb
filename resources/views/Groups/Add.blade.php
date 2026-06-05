@@ -1,30 +1,63 @@
-<link rel="stylesheet" href="{{ asset('css/group.css') }}">
+<!DOCTYPE html>
+<html lang="en">
 
-<h1>Add Group</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div class="group-form-container">
-    <form method="POST" action="{{ route('groups.store') }}">
-        @csrf
+    <title>Add Group</title>
 
-        <div class="form-group">
-            <label for="name">Group Name</label>
+    <link href="{{ asset('css/group.css') }}" type="text/css" rel="stylesheet" />
+</head>
 
-            <input
-                type="text"
-                id="name"
-                name="name"
-                required
-            >
+<body>
+
+    <main class="group-page">
+
+        <h1>Add Group</h1>
+
+        <div class="group-form-container">
+
+            <form method="POST" action="{{ route('groups.store') }}">
+                @csrf
+
+                <div class="form-group">
+                    <label for="name">
+                        Group Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                    >
+                </div>
+
+                <div class="button-group">
+
+                    <button
+                        type="submit"
+                        class="save-button"
+                    >
+                        Add Group
+                    </button>
+
+                    <a
+                        href="{{ route('groups.index') }}"
+                        class="back-button"
+                    >
+                        Back
+                    </a>
+
+                </div>
+
+            </form>
+
         </div>
 
-        <div class="button-group">
-            <button type="submit" class="save-button">
-                Add Group
-            </button>
+    </main>
 
-            <a href="{{ route('groups.index') }}" class="back-button">
-                Back
-            </a>
-        </div>
-    </form>
-</div>
+</body>
+
+</html>
