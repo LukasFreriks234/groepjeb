@@ -37,6 +37,6 @@ class Event extends Model
     }
     public function gridCells()
     {
-        return $this->belongsToMany(GridCell::class, 'eventgrid_cells', 'event_id', 'grid_cell_id');
+        return $this->belongsToMany(GridCell::class, 'event_grid_cells', 'event_id', 'grid_cell_id')->withPivot('route_order');;
     }
 }

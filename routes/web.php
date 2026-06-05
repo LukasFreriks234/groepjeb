@@ -4,6 +4,7 @@ use App\Http\Controllers\GridCellController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\FunctionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GroupController;
 
 Route::get('/', [SessionController::class, 'create']);
 Route::post('/', [SessionController::class, 'store']);
@@ -30,3 +31,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });
+
+Route::post('/event/route',[EventController::class, 'saveRoute']);
+
+Route::get('/groups', [GroupController::class, 'index'])->name('groups.index');
+Route::get('/groups/add', [GroupController::class, 'add'])->name('groups.add');
+Route::post('/groups/add', [GroupController::class, 'store'])->name('groups.store');

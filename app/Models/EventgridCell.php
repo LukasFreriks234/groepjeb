@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class EventgridCell extends Model
 {
-    protected $table = 'eventgrid_cells';
-    protected $fillable = ['event_id', 'grid_cell_id'];
+    protected $table = 'event_grid_cells';
+    protected $fillable = ['event_id', 'grid_cell_id', 'route_order'];
 
     public function event()
     {

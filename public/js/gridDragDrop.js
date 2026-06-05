@@ -1,3 +1,8 @@
+let selectedEventId = null;
+let selectedEventImage = null;
+let routeOrder = 1;
+let routeMode = false;
+
 document.addEventListener("DOMContentLoaded", function () {
     enableDrag();
     enableMobileDrag();
@@ -7,6 +12,32 @@ document.addEventListener("DOMContentLoaded", function () {
     updateEffectsAccessibilityLabelForReader();
 
     document.querySelectorAll(".gridCell").forEach((cell) => {
+
+        cell.addEventListener('click', () => {
+
+            if (!routeMode || !selectedEventId) {
+                return;
+            }
+
+            const img = document.createElement('img');
+
+            img.src = selectedEventImage.src;
+            img.alt = selectedEventImage.alt;
+
+            img.style.width = '30px';
+            img.style.height = '30px';
+
+            cell.appendChild(img);
+
+            saveRouteCell(
+                selectedEventId,
+                cell.dataset.id,
+                routeOrder
+            );
+
+            routeOrder++;
+        });
+
         const initialImage = cell.querySelector(".gridImage");
 
         if (initialImage) {
@@ -40,8 +71,29 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
-});
 
+    document.querySelectorAll('#eventsList li').forEach(event => {
+        event.addEventListener('click', () => {
+
+            selectedEventId = event.dataset.eventId;
+
+            const image = event.querySelector('img');
+
+            selectedEventImage = {
+                src: image.src,
+                alt: image.alt
+            };
+
+            routeOrder = 1;
+            routeMode = true;
+
+            console.log(
+                'Event geselecteerd:',
+                selectedEventId
+            );
+        });
+    });
+});
 
 // DRAG DATA LEZEN
 function getDragData(ev) {
@@ -852,6 +904,30 @@ function moveFunctionInGrid(fromCellId, toCellId, functionId) {
         .catch(error => {
             console.error("Move error:", error);
         });
+}
+
+function saveRouteCell(eventId, cellId, routeOrder) {
+    fetch("/event/route", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector(
+                'meta[name="csrf-token"]'
+            ).content
+        },
+        body: JSON.stringify({
+            event_id: eventId,
+            grid_cell_id: cellId,
+            route_order: routeOrder
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Route saved:", data);
+    })
+    .catch(error => {
+        console.error(error);
+    });
 }
 
 

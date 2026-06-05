@@ -95,6 +95,9 @@
 
             <input type="checkbox" id="typeRecurring" class="eventFilter" value="recurring">
             <label for="typeRecurring">Recurring</label><br>
+
+            <input type="checkbox" id="typeDynamic" class="eventFilter" value="dynamic">
+            <label for="typeDynamic">Dynamic</label><br>
         </div>
 </div>
 
@@ -121,9 +124,9 @@
                 class="functionItem"
                 data-event-id="{{ $event['id'] }}"
                 data-type="{{ $event['type'] }}"
+                data-dynamic="{{ $event['dynamic'] ? '1' : '0' }}"
                 role="button"
                 aria-label="Select event {{ $event['name'] }} of type {{ $event['type'] }} to place it in the grid."
-                
             >
                 <div class="functionImage">
                     <img 

@@ -15,6 +15,6 @@ class GridCell extends Model
 
     public function events()
     {
-        return $this->belongsToMany(Event::class, 'eventgrid_cells', 'grid_cell_id', 'event_id');
+        return $this->belongsToMany(Event::class, 'event_grid_cells', 'grid_cell_id', 'event_id')->withPivot('route_order');
     }
 }

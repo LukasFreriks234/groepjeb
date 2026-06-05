@@ -21,6 +21,16 @@
         </li>
 
         <li>
+            <a
+                href="{{ route('groups.index') }}"
+                class="navbar-button"
+                @if(request()->routeIs('groups.index')) aria-current="page" @endif
+            >
+                Groups
+            </a>
+        </li>
+
+        <li>
             <form method="POST" action="/logout" class="logout-form">
                 @csrf
 

@@ -66,9 +66,13 @@ function filterEvents() {
 
     for (const item of listItem) {
       const type = item.dataset.type;
+      const dynamic = item.dataset.dynamic;
 
-      if (typeMap.get(type)) {
-        filterRows.push(item);
+      if (
+          typeMap.get(type) ||
+          (typeMap.get("dynamic") && dynamic === "1")
+      ) {
+          filterRows.push(item);
       }
     }
   } else {
