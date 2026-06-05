@@ -7,6 +7,7 @@ const recurrencePattern = document.querySelector('select[name="recurrencePattern
 const dailyFields = document.getElementById("dailyFields");
 const weeklyFields = document.getElementById("weeklyFields");
 const monthlyFields = document.getElementById("monthlyFields");
+const yearlyFields = document.getElementById("yearlyFields");
 
 const eachRadio = document.getElementById("each");
 const onTheRadio = document.getElementById("onThe");
@@ -34,6 +35,10 @@ recurrencePattern.addEventListener("change", toggleWeeklyFields);
 //monthly
 toggleMonthlyFields();
 recurrencePattern.addEventListener("change", toggleMonthlyFields);
+
+//yearly
+toggleYearlyFields();
+recurrencePattern.addEventListener("change", toggleYearlyFields);
 
 //on the or each
 toggleMonthlyTypeFields();
@@ -72,6 +77,14 @@ function toggleMonthlyFields() {
         monthlyFields.style.display = "block";
     } else {
         monthlyFields.style.display = "none";
+    }
+}
+
+function toggleYearlyFields() {
+    if (recurrencePattern.value === "yearly") {
+        yearlyFields.style.display = "block";
+    } else {
+        yearlyFields.style.display = "none";
     }
 }
 

@@ -75,8 +75,9 @@
                         <div class="every">
                             <label>Every</label>
                             <select name="amountDay">
-                                <option>1</option>
-                                <option>2</option>
+                                <?php for ($i = 1; $i <= 10; $i++): ?>
+                                <option><?= $i ?></option>
+                                <?php endfor; ?>
                             </select>
                             <label>Day(s)</label>
                         </div>
@@ -86,8 +87,9 @@
                         <div class="every">
                             <label>Every</label>
                             <select name="amountWeek">
-                                <option>1</option>
-                                <option>2</option>
+                                <?php for ($i = 1; $i <= 10; $i++): ?>
+                                <option><?= $i ?></option>
+                                <?php endfor; ?>
                             </select>
                             <label>Week(s)</label>
                         </div>
@@ -127,8 +129,9 @@
                         <div class="every">
                             <label>Every</label>
                             <select name="amountMonth">
-                                <option>1</option>
-                                <option>2</option>
+                                <?php for ($i = 1; $i <= 10; $i++): ?>
+                                <option><?= $i ?></option>
+                                <?php endfor; ?>
                             </select>
                             <label>Month(s)</label>
                         </div>
@@ -143,9 +146,16 @@
                         </div>
 
                         <div id="eachFields">
+                            <label>Choose the days of the month</label>
 
-                        //! moet nog
-
+                            <div class="month-days-grid">
+                                <?php for ($day = 1; $day <= 31; $day++): ?>
+                                <label class="day-box">
+                                    <input type="checkbox" name="monthDays[]" value="<?= $day ?>">
+                                    <span><?= $day ?></span>
+                                </label>
+                                <?php endfor; ?>
+                            </div>
                         </div>
                         <div id="onTheFields">
                             <div class="onThe">
@@ -172,6 +182,38 @@
                                 </select>
                             </div>
                         </div>
+                    </div>
+
+                    <div id="yearlyFields">
+                        <div class="every">
+                            <label>Every</label>
+                            <select name="amountYear">
+                                <?php for ($i = 1; $i <= 10; $i++): ?>
+                                <option><?= $i ?></option>
+                                <?php endfor; ?>
+                            </select>
+                            <label>Year(s)</label>
+                        </div>
+
+                        <!-- <label>Choose month(s)</label>
+
+                        <div class="months-grid">
+                            <?php
+                            $months = [
+                                'Jan', 'Feb', 'Mar', 'Apr',
+                                'May', 'Jun', 'Jul', 'Aug',
+                                'Sep', 'Oct', 'Nov', 'Dec'
+                            ];
+
+                            foreach ($months as $month):
+                            ?>
+                                <label class="month-box">
+                                    <input type="checkbox" name="months[]" value="<?= $month ?>">
+                                    <span><?= $month ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div> -->
+                        
                     </div>
                 </div>
 

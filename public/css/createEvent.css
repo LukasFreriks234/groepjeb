@@ -20,3 +20,47 @@
 .onThe {
     display: flex;
 }
+
+.month-days-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.day-box, .month-box {
+    position: relative;
+    cursor: pointer;
+}
+
+.day-box input, .month-box input {
+    display: none;
+}
+
+.day-box span, .month-box span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 45px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    transition: all 0.2s;
+}
+
+.day-box input:checked+span, .month-box input:checked + span {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.day-box span:hover, .month-box span:hover {
+    border-color: #007bff;
+}
+
+.months-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
