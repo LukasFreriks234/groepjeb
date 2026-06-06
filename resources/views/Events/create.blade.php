@@ -219,7 +219,8 @@
                     <div class="label">
                         <label for="endDate">End date</label>
                         <input type="date" id="endDate">
-                        <p class="information">after this date the event will no longer activate.</p>
+                        <p class="informationEnddate">After this date the event will no longer activate.</p>
+                        <p class="information">Want it to never end? Keep this field empty</p>
                     </div>
 
                 </div>
