@@ -13,36 +13,25 @@
 <body>
     <h1>Create Event</h1>
 
-    @if ($errors->any())
-        <div style="color:red;">
-            @foreach ($errors->all() as $error)
-                <p>{{ $error }}</p>
-            @endforeach
-        </div>
-    @endif
-
     <div class="container">
         <div class="form-section">
             <form method="POST" action="{{ route('events.store') }}" enctype="multipart/form-data">
                 @csrf
+
+                @if ($errors->any())
+                    <div style="color:red;">
+                        @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
+                    </div>
+                @endif
+
 
                 <x-formInput name="name" label="Name" :value="old('name')" />
 
                 <label for="image">Image</label>
                 <input type="file" id="image" name="image" accept="image/*" alt="Upload an image for the new function"
                     :value="old('name')">
-
-                <label for="input-length">Length active</label>
-
-                <div class="length-container">
-                    <input id="input-length" name="length" type="number" value="{{ old('length') }}" required>
-
-                    <select name="lengthUnit">
-                        <option value="hours">Hours</option>
-                        <option value="days">Days</option>
-                        <option value="weeks">Weeks</option>
-                    </select>
-                </div>
 
                 <!-- Link to destination -->
 
@@ -73,10 +62,18 @@
                     <label for="recurring">Recurring</label>
                 </div>
 
+                <div id="oneOffFields">
+                    <h2>Date and Time</h2>
+                    <label for="startDateOneOff" class="label">Start date</label>
+                    <input type="date" id="startDateOneOff">
+                    <label for=startTime class="label">start Time</label>
+                    <input type="time" id=startTime>
+                </div>
+
                 <div id="recurringFields">
                     <div>
-                        <label>Frequency</label>
-                        <select name="recurrencePattern">
+                        <label class="label" for="frequency">Frequency</label>
+                        <select name="recurrencePattern" id="frequency">
                             <option value="daily">daily</option>
                             <option value="weekly">weekly</option>
                             <option value="monthly">monthly</option>
@@ -84,28 +81,28 @@
                         </select>
                     </div>
                     <div id="dailyFields">
-                        <div class="every">
-                            <label>Every</label>
-                            <select name="amountDay">
+                        <div class="every label">
+                            <label for="everyDay">Every</label>
+                            <select name="amountDay" id=everyDay>
                                 <?php for ($i = 1; $i <= 10; $i++): ?>
                                 <option><?= $i ?></option>
                                 <?php endfor; ?>
                             </select>
-                            <label>Day(s)</label>
+                            <label for="everyDay">Day(s)</label>
                         </div>
                     </div>
 
                     <div id="weeklyFields">
-                        <div class="every">
-                            <label>Every</label>
-                            <select name="amountWeek">
+                        <div class="every label">
+                            <label for=everyWeek>Every</label>
+                            <select name="amountWeek" id="everyWeek">
                                 <?php for ($i = 1; $i <= 10; $i++): ?>
                                 <option><?= $i ?></option>
                                 <?php endfor; ?>
                             </select>
-                            <label>Week(s)</label>
+                            <label for="everyWeek">Week(s)</label>
                         </div>
-                        <div class="weekDays">
+                        <div class="weekDays label">
                             <div class="containerRadio">
                                 <input type="checkbox" id="monday">
                                 <label for="monday">Monday</label>
@@ -138,32 +135,32 @@
                     </div>
 
                     <div id="monthlyFields">
-                        <div class="every">
-                            <label>Every</label>
-                            <select name="amountMonth">
+                        <div class="every label">
+                            <label for=everyMonth>Every</label>
+                            <select name="amountMonth" id="everyMonth">
                                 <?php for ($i = 1; $i <= 10; $i++): ?>
                                 <option><?= $i ?></option>
                                 <?php endfor; ?>
                             </select>
-                            <label>Month(s)</label>
+                            <label for="everyMonth">Month(s)</label>
                         </div>
 
-                        <div class="containerRadio">
+                        <div class="containerRadio label">
                             <input type="radio" id="each" name="typeMonth" />
                             <label for="each">Each</label>
                         </div>
-                        <div class="containerRadio">
+                        <div class="containerRadio label">
                             <input type="radio" id="onThe" name="typeMonth" />
                             <label for="onThe">On the...</label>
                         </div>
 
-                        <div id="eachFields">
-                            <label>Choose the days of the month</label>
+                        <div id="eachFields" class="label">
+                            <label for="monthdate">Choose the days of the month</label>
 
                             <div class="month-days-grid">
                                 <?php for ($day = 1; $day <= 31; $day++): ?>
                                 <label class="day-box">
-                                    <input type="checkbox" name="monthDays[]" value="<?= $day ?>">
+                                    <input type="checkbox" id="monthdate" name="monthDays[]" value="<?= $day ?>">
                                     <span><?= $day ?></span>
                                 </label>
                                 <?php endfor; ?>
@@ -171,7 +168,7 @@
                         </div>
 
                         <div id="onTheFields">
-                            <div class="onThe">
+                            <div class="onThe label">
                                 <select name="amountMonth">
                                     <option>First</option>
                                     <option>Second</option>
@@ -198,22 +195,50 @@
                     </div>
 
                     <div id="yearlyFields">
-                        <div class="every">
-                            <label>Every</label>
-                            <select name="amountYear">
+                        <div class="every label">
+                            <label for="everyYear">Every</label>
+                            <select name="amountYear" id="everyYear">
                                 <?php for ($i = 1; $i <= 10; $i++): ?>
                                 <option><?= $i ?></option>
                                 <?php endfor; ?>
                             </select>
-                            <label>Year(s)</label>
+                            <label for="everyYear">Year(s)</label>
                         </div>
-
                     </div>
+                    <h2>Date and Time</h2>
+                    <div class="label">
+                        <label for="startDate">Start date</label>
+                        <input type="date" id="startDate">
+                        <p class="information">The system will activate the event on the next possible day accourding to
+                            information before.</p>
+                    </div>
+                    <div class="label">
+                        <label for=startTime>Time</label>
+                        <input type="time" id=startTime>
+                    </div>
+                    <div class="label">
+                        <label for="endDate">End date</label>
+                        <input type="date" id="endDate">
+                        <p class="information">after this date the event will no longer activate.</p>
+                    </div>
+
+                </div>
+
+                <label for="input-length" class="label">Length active</label>
+
+                <div class="length-container">
+                    <input id="input-length" name="length" type="number" value="{{ old('length') }}" required>
+
+                    <select name="lengthUnit">
+                        <option value="hours">Hours</option>
+                        <option value="days">Days</option>
+                        <option value="weeks">Weeks</option>
+                    </select>
                 </div>
 
                 <h2>Dynamic event</h2>
 
-                <div class="containerRadio">
+                <div class="containerRadio label">
                     <input type="checkbox" id="dynamic" name="dynamic" value="1" />
                     <label for="dynamic">Dynamic event</label>
                 </div>

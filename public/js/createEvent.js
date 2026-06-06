@@ -1,6 +1,7 @@
 const oneOff = document.getElementById('oneOff');
 const recurring = document.getElementById('recurring');
 const recurringFields = document.getElementById('recurringFields');
+const oneOffFields = document.getElementById('oneOffFields');
 const dynamic = document.getElementById('dynamic');
 const dynamicEventBox = document.getElementById('dynamicEventBox');
 const recurrencePattern = document.querySelector('select[name="recurrencePattern"]');
@@ -19,6 +20,11 @@ const onTheFields = document.getElementById("onTheFields");
 toggleRecurringFields();
 oneOff.addEventListener('change', toggleRecurringFields);
 recurring.addEventListener('change', toggleRecurringFields);
+
+//one Off
+toggleOneOffFields();
+oneOff.addEventListener('change', toggleOneOffFields);
+recurring.addEventListener('change', toggleOneOffFields);
 
 //dynamic
 dynamic.addEventListener('change', toggleDynamicEvent);
@@ -49,6 +55,11 @@ onTheRadio.addEventListener("change", toggleMonthlyTypeFields);
 function toggleRecurringFields() {
     recurringFields.style.display =
         recurring.checked ? 'block' : 'none';
+}
+
+function toggleOneOffFields() {
+    oneOffFields.style.display =
+        oneOff.checked ? 'block' : 'none';
 }
 
 function toggleDynamicEvent() {

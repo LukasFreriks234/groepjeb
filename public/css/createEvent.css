@@ -83,3 +83,12 @@
 .length-container select {
     width: 200px;
 }
+
+.information {
+    margin: 0;
+    margin-bottom: 1rem;
+}
+
+.label {
+    margin-top: 1.5rem;
+}
