@@ -64,10 +64,12 @@
 
                 <div id="oneOffFields">
                     <h2>Date and Time</h2>
-                    <label for="startDateOneOff" class="label">Start date</label>
-                    <input type="date" id="startDateOneOff" name="startDateOneOff" required>
-                    <label for="startTimeOneOff" class="label">start time</label>
-                    <input type="time" id=startTimeOneOff name="startTimeOneOff" required>
+                    <div class="oneOffdateTime">
+                        <label for="startDateOneOff" class="label">Start date</label>
+                        <input type="date" id="startDateOneOff" name="startDateOneOff">
+                        <label for="startTimeOneOff" class="label">start time</label>
+                        <input type="time" id="startTimeOneOff" name="startTimeOneOff">
+                    </div>
                 </div>
 
                 <div id="recurringFields">
@@ -146,11 +148,11 @@
                         </div>
 
                         <div class="containerRadio label">
-                            <input type="radio" id="each" name="typeMonth" value="each"/>
+                            <input type="radio" id="each" name="typeMonth" value="each" />
                             <label for="each">Each</label>
                         </div>
                         <div class="containerRadio label">
-                            <input type="radio" id="onThe" name="typeMonth" value="onThe"/>
+                            <input type="radio" id="onThe" name="typeMonth" value="onThe" />
                             <label for="onThe">On the...</label>
                         </div>
 
@@ -206,15 +208,18 @@
                         </div>
                     </div>
                     <h2>Date and Time</h2>
-                    <div class="label">
-                        <label for="startDateRecurring">Start date</label>
-                        <input type="date" id="startDateRecurring" name="startDateRecurring" required>
-                        <p class="information">The system will activate the event on the next possible day accourding to
-                            information before.</p>
-                    </div>
-                    <div class="label">
-                        <label for="startTimeRecurring">Time</label>
-                        <input type="time" id="startTimeRecurring" name="startTimeRecurring" required>
+                    <div class="RecurringdateTime">
+                        <div class="label">
+                            <label for="startDateRecurring">Start date</label>
+                            <input type="date" id="startDateRecurring" name="startDateRecurring">
+                            <p class="information">The system will activate the event on the next possible day
+                                accourding to
+                                information before.</p>
+                        </div>
+                        <div class="label">
+                            <label for="startTimeRecurring">Time</label>
+                            <input type="time" id="startTimeRecurring" name="startTimeRecurring">
+                        </div>
                     </div>
                     <div class="label">
                         <label for="endDate">End date</label>

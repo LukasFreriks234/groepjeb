@@ -20,6 +20,20 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
+
+        if ($request->type === 'oneoff') {
+            $request->validate([
+                'startDateOneOff' => 'required',
+                'startTimeOneOff' => 'required'
+            ]);
+        }
+
+        if ($request->type === 'recurring') {
+            $request->validate([
+                'startDateRecurring' => 'required',
+                'startTimeRecurring' => 'required'
+            ]);
+        }
         $request->validate([
             'name' => 'required|string|max:255',
             'image' => 'required|image',
