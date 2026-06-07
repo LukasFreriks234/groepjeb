@@ -9,11 +9,11 @@ class Event extends Model
     protected $fillable = [
         'name', 
         'image_url', 
-        'type', 
-        'recurrence_pattern', 
-        'days_of_week', 
+        'recurring_id', 
         'start_date', 
-        'end_date', 
+        'time', 
+        'length', 
+        'length_unit', 
         'dynamic'
     ];
 

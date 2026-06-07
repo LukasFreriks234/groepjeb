@@ -10,20 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
+        Schema::create('weeklies', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('image_url');
             $table->foreignId('recurring_id')
                 ->nullable()
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->date('start_date');
-            $table->Time('time');
-            $table->integer('length');
-            $table->enum('length_unit', ['hours', 'days', 'weeks']);
-            $table->boolean('dynamic')->default(false);
+            $table->enum('weekday', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
             $table->timestamps();
         });
     }
@@ -33,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('events');
+        Schema::dropIfExists('weeklies');
     }
 };

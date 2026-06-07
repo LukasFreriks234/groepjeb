@@ -54,7 +54,7 @@
 
                 <h2>Event settings</h2>
                 <div class="containerRadio">
-                    <input type="radio" id="oneOff" name="typeEvent" value="oneOff" />
+                    <input type="radio" id="oneOff" name="typeEvent" value="oneOff" checked />
                     <label for="oneOff">One-off</label>
                 </div>
                 <div class="containerRadio">
@@ -65,9 +65,9 @@
                 <div id="oneOffFields">
                     <h2>Date and Time</h2>
                     <label for="startDateOneOff" class="label">Start date</label>
-                    <input type="date" id="startDateOneOff">
-                    <label for=startTime class="label">start Time</label>
-                    <input type="time" id=startTime>
+                    <input type="date" id="startDateOneOff" name="startDateOneOff" required>
+                    <label for="startTimeOneOff" class="label">start time</label>
+                    <input type="time" id=startTimeOneOff name="startTimeOneOff" required>
                 </div>
 
                 <div id="recurringFields">
@@ -104,31 +104,31 @@
                         </div>
                         <div class="weekDays label">
                             <div class="containerRadio">
-                                <input type="checkbox" id="monday">
+                                <input type="checkbox" id="monday" name="weekdays[]" value="monday">
                                 <label for="monday">Monday</label>
                             </div>
                             <div class="containerRadio">
-                                <input type="checkbox" id="tuesday">
+                                <input type="checkbox" id="tuesday" name="weekdays[]" value="tuesday">
                                 <label for="tuesday">Tuesday</label>
                             </div>
                             <div class="containerRadio">
-                                <input type="checkbox" id="wednesday">
+                                <input type="checkbox" id="wednesday" name="weekdays[]" value="wednesday">
                                 <label for="wednesday">Wednesday</label>
                             </div>
                             <div class="containerRadio">
-                                <input type="checkbox" id="thursday">
+                                <input type="checkbox" id="thursday" name="weekdays[]" value="thursday">
                                 <label for="thursday">Thursday</label>
                             </div>
                             <div class="containerRadio">
-                                <input type="checkbox" id="friday">
+                                <input type="checkbox" id="friday" name="weekdays[]" value="friday">
                                 <label for="friday">Friday</label>
                             </div>
                             <div class="containerRadio">
-                                <input type="checkbox" id="saturday">
+                                <input type="checkbox" id="saturday" name="weekdays[]" value="saturday">
                                 <label for="saturday">Saturday</label>
                             </div>
                             <div class="containerRadio">
-                                <input type="checkbox" id="sunday">
+                                <input type="checkbox" id="sunday" name="weekdays[]" value="sunday">
                                 <label for="sunday">Sunday</label>
                             </div>
                         </div>
@@ -146,16 +146,16 @@
                         </div>
 
                         <div class="containerRadio label">
-                            <input type="radio" id="each" name="typeMonth" />
+                            <input type="radio" id="each" name="typeMonth" value="each"/>
                             <label for="each">Each</label>
                         </div>
                         <div class="containerRadio label">
-                            <input type="radio" id="onThe" name="typeMonth" />
+                            <input type="radio" id="onThe" name="typeMonth" value="onThe"/>
                             <label for="onThe">On the...</label>
                         </div>
 
                         <div id="eachFields" class="label">
-                            <label for="monthdate">Choose the days of the month</label>
+                            <label for="monthdate">Choose the days of the month this event will be active.</label>
 
                             <div class="month-days-grid">
                                 <?php for ($day = 1; $day <= 31; $day++): ?>
@@ -169,26 +169,26 @@
 
                         <div id="onTheFields">
                             <div class="onThe label">
-                                <select name="amountMonth">
-                                    <option>First</option>
-                                    <option>Second</option>
-                                    <option>Third</option>
-                                    <option>Fourth</option>
-                                    <option>Fifth</option>
-                                    <option>Next to last</option>
-                                    <option>Last</option>
+                                <select name="ordinalNumber">
+                                    <option value="first">First</option>
+                                    <option value="second">Second</option>
+                                    <option value="third">Third</option>
+                                    <option value="fourth">Fourth</option>
+                                    <option value="fifth">Fifth</option>
+                                    <option value="next to last">Next to last</option>
+                                    <option value="last">Last</option>
                                 </select>
                                 <select name="dayMonth">
-                                    <option>Monday</option>
-                                    <option>Tuesday</option>
-                                    <option>Wednesday</option>
-                                    <option>Thursday</option>
-                                    <option>Friday</option>
-                                    <option>Saturday</option>
-                                    <option>Sunday</option>
-                                    <option>Day</option>
-                                    <option>Weekday</option>
-                                    <option>Weekendday</option>
+                                    <option value="monday">Monday</option>
+                                    <option value="tuesday">Tuesday</option>
+                                    <option value="wednesday">Wednesday</option>
+                                    <option value="thursday">Thursday</option>
+                                    <option value="friday">Friday</option>
+                                    <option value="saturday">Saturday</option>
+                                    <option value="sunday">Sunday</option>
+                                    <option value="day">Day</option>
+                                    <option value="weekday">Weekday</option>
+                                    <option value="weekendday">Weekendday</option>
                                 </select>
                             </div>
                         </div>
@@ -207,20 +207,20 @@
                     </div>
                     <h2>Date and Time</h2>
                     <div class="label">
-                        <label for="startDate">Start date</label>
-                        <input type="date" id="startDate">
+                        <label for="startDateRecurring">Start date</label>
+                        <input type="date" id="startDateRecurring" name="startDateRecurring" required>
                         <p class="information">The system will activate the event on the next possible day accourding to
                             information before.</p>
                     </div>
                     <div class="label">
-                        <label for=startTime>Time</label>
-                        <input type="time" id=startTime>
+                        <label for="startTimeRecurring">Time</label>
+                        <input type="time" id="startTimeRecurring" name="startTimeRecurring" required>
                     </div>
                     <div class="label">
                         <label for="endDate">End date</label>
-                        <input type="date" id="endDate">
+                        <input type="date" id="endDate" name="endDate">
                         <p class="informationEnddate">After this date the event will no longer activate.</p>
-                        <p class="information">Want it to never end? Keep this field empty</p>
+                        <p class="information">Want it to never end? Keep this field empty.</p>
                     </div>
 
                 </div>
