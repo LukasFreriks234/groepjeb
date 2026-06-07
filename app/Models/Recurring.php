@@ -14,4 +14,19 @@ class Recurring extends Model
         'frequency',
         'amount',
     ];
+
+    public function weekly()
+    {
+        return $this->hasOne(Weekly::class);
+    }
+
+    public function monthly()
+    {
+        return $this->hasOne(Monthly::class);
+    }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_recurring', 'recurring_id', 'event_id');
+    }
 }

@@ -16,4 +16,9 @@ class Monthly extends Model
         'ordinal_number',
         'weekday'
     ];
+
+        public function recurring()
+    {
+        return $this->belongsToMany(Recurring::class, 'monthly_recurring', 'monthly_id', 'recurring_id');
+    }
 }
