@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Recurring;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,10 @@ class RecurringSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Recurring::create([
+            'end_date' => now()->addDays(7),
+            'frequency' => 'weekly',
+            'amount' => 1
+        ]);
     }
 }

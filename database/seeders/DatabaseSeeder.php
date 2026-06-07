@@ -20,11 +20,14 @@ class DatabaseSeeder extends Seeder
             FunctionSeeder::class,
             EffectsSeeder::class,
             UserSeeder::class,
-            // EventSeeder::class,
-            // EventGridCellSeeder::class,
-            // EventEffectSeeder::class,
+            RecurringSeeder::class,
+            EventSeeder::class,
+            EventGridCellSeeder::class,
+            EventEffectSeeder::class,
+            WeeklySeeder::class,
+            MonthlySeeder::class
         ]);
     }
 
-    
+
 }
