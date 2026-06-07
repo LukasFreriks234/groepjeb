@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('eventgrid_cells', function (Blueprint $table) {
+        Schema::create('event_grid_cells', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             $table->foreignId('grid_cell_id')->constrained('grid_cells')->cascadeOnDelete();
+            $table->integer('route_order');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('eventgrid_cells');
+        Schema::dropIfExists('event_grid_cells');
     }
 };

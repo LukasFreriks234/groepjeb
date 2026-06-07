@@ -1,3 +1,33 @@
+.topNav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.tabButton {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.tabButton:hover {
+    background: lightgrey;
+}
+
+.tabButton.active {
+    background: rgb(103, 143, 156);
+    color: white;
+    border-color: rgb(103, 143, 156);
+}
+
+.contentSection {
+    width: 100%;
+}
+
 .functionsSection {
     width: 100%;
     margin-right: 0;
@@ -17,7 +47,7 @@
     font-style: italic;
 }
 
-#functionsList {
+#functionsList, #eventsList {
     width: 100%;
     list-style-type: none;
     margin: 0;
@@ -30,7 +60,7 @@
     touch-action: pan-y;
 }
 
-#functionsList .functionItem {
+#functionsList .functionItem, #eventsList .functionItem {
     background-color: lightblue;
     overflow: hidden;
     border-bottom-style: solid;
@@ -90,6 +120,7 @@
 .filterDropdown summary:hover{
     background-color: lightgrey;
 }
+
 
 .sr-only{
     width: 0px; 
