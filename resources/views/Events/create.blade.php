@@ -53,14 +53,17 @@
 
 
                 <h2>Event settings</h2>
-                <div class="containerRadio">
-                    <input type="radio" id="oneOff" name="typeEvent" value="oneOff" checked />
-                    <label for="oneOff">One-off</label>
-                </div>
-                <div class="containerRadio">
-                    <input type="radio" id="recurring" name="typeEvent" value="recurring" />
-                    <label for="recurring">Recurring</label>
-                </div>
+                <fieldset>
+                    <legend>Event type</legend>
+                    <div class="containerRadio">
+                        <input type="radio" id="oneOff" name="typeEvent" value="oneOff" checked />
+                        <label for="oneOff">One-off</label>
+                    </div>
+                    <div class="containerRadio">
+                        <input type="radio" id="recurring" name="typeEvent" value="recurring" />
+                        <label for="recurring">Recurring</label>
+                    </div>
+                </fieldset>
 
                 <!-- Length -->
                 <label for="input-length" class="label">Length active</label>
