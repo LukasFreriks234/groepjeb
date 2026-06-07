@@ -148,13 +148,9 @@ class EventController extends Controller
 
                 'recurring_id' => $recurringId,
 
-                'start_date' => $request->typeEvent === 'oneOff'
-                    ? $request->startDateOneOff
-                    : $request->startDateRecurring,
+                'start_date' => $request->startDate,
 
-                'time' => $request->typeEvent === 'oneOff'
-                    ? $request->startTimeOneOff
-                    : $request->startTimeRecurring,
+                'time' => $request->startTime,
 
                 'length' => $request->length,
                 'length_unit' => $request->lengthUnit,

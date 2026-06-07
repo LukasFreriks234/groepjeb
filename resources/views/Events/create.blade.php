@@ -62,17 +62,40 @@
                     <label for="recurring">Recurring</label>
                 </div>
 
-                <div id="oneOffFields">
-                    <h2>Date and Time</h2>
-                    <div class="oneOffdateTime">
-                        <label for="startDateOneOff" class="label">Start date</label>
-                        <input type="date" id="startDateOneOff" name="startDateOneOff">
-                        <label for="startTimeOneOff" class="label">start time</label>
-                        <input type="time" id="startTimeOneOff" name="startTimeOneOff">
-                    </div>
+                <!-- Length -->
+                <label for="input-length" class="label">Length active</label>
+
+                <div class="length-container">
+                    <input id="input-length" name="length" type="number" value="{{ old('length') }}" required>
+
+                    <select name="lengthUnit">
+                        <option value="hours">Hours</option>
+                        <option value="days">Days</option>
+                        <option value="weeks">Weeks</option>
+                    </select>
                 </div>
 
+                <!-- Date -->
+                <h2>Date and Time</h2>
+                <div class="dateTime">
+                    <label for="startTime" class="label">Start time</label>
+                    <input type="time" id="startTime" name="startTime" required>
+                    <label for="startDate" class="label">Start date</label>
+                    <input type="date" id="startDate" name="startDate" required>
+                </div>
+
+                <!-- Recurring -->
                 <div id="recurringFields">
+                    <p class="information">The system will activate the event on the next possible day
+                        accourding to
+                        information before.</p>
+                    <div class="label">
+                        <label for="endDate">End date</label>
+                        <input type="date" id="endDate" name="endDate">
+                        <p class="informationEnddate">After this date the event will no longer activate.</p>
+                        <p class="information">Want it to never end? Keep this field empty.</p>
+                    </div>
+
                     <div>
                         <label class="label" for="frequency">Frequency</label>
                         <select name="recurrencePattern" id="frequency">
@@ -82,6 +105,7 @@
                             <option value="yearly">yearly</option>
                         </select>
                     </div>
+
                     <div id="dailyFields">
                         <div class="every label">
                             <label for="everyDay">Every</label>
@@ -207,39 +231,6 @@
                             <label for="everyYear">Year(s)</label>
                         </div>
                     </div>
-                    <h2>Date and Time</h2>
-                    <div class="RecurringdateTime">
-                        <div class="label">
-                            <label for="startDateRecurring">Start date</label>
-                            <input type="date" id="startDateRecurring" name="startDateRecurring">
-                            <p class="information">The system will activate the event on the next possible day
-                                accourding to
-                                information before.</p>
-                        </div>
-                        <div class="label">
-                            <label for="startTimeRecurring">Time</label>
-                            <input type="time" id="startTimeRecurring" name="startTimeRecurring">
-                        </div>
-                    </div>
-                    <div class="label">
-                        <label for="endDate">End date</label>
-                        <input type="date" id="endDate" name="endDate">
-                        <p class="informationEnddate">After this date the event will no longer activate.</p>
-                        <p class="information">Want it to never end? Keep this field empty.</p>
-                    </div>
-
-                </div>
-
-                <label for="input-length" class="label">Length active</label>
-
-                <div class="length-container">
-                    <input id="input-length" name="length" type="number" value="{{ old('length') }}" required>
-
-                    <select name="lengthUnit">
-                        <option value="hours">Hours</option>
-                        <option value="days">Days</option>
-                        <option value="weeks">Weeks</option>
-                    </select>
                 </div>
 
                 <h2>Dynamic event</h2>
