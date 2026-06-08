@@ -5,7 +5,7 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\FunctionController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [SessionController::class, 'create']);
+Route::get('/', [SessionController::class, 'create'])->name('login');
 Route::post('/', [SessionController::class, 'store']);
 Route::post('/logout', [SessionController::class, 'destroy']);
 
@@ -27,6 +27,6 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/functions/create', [FunctionController::class, 'create'])->name('functions.create');
     Route::post('/functions/store', [FunctionController::class, 'store'])->name('functions.store');
-
+    Route::post('/functions/restore', [FunctionController::class, 'restore'])->name('functions.restore');
     Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });
