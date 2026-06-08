@@ -25,7 +25,7 @@
             @csrf
             @method('PATCH')
 
-            @if($isAdmin)
+            @if(isset($isAdmin) && $isAdmin)
                 <x-formInput
                     name="name"
                     label="Name"
