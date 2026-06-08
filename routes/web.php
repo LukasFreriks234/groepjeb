@@ -5,7 +5,7 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\FunctionController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [SessionController::class, 'create']);
+Route::get('/', [SessionController::class, 'create'])->name('login');
 Route::post('/', [SessionController::class, 'store']);
 Route::post('/logout', [SessionController::class, 'destroy']);
 
