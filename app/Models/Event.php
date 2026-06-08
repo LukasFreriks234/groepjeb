@@ -24,18 +24,6 @@ class Event extends Model
         'dynamic' => 'boolean',
     ];
 
-    public function categories()
-    {
-        return $this->belongsToMany(
-            Category::class,
-            'event_category',
-            'event_id',
-            'category_name',
-            'id',
-            'category'
-        );
-    }
-
     public function gridCells()
     {
         return $this->belongsToMany(
@@ -48,6 +36,6 @@ class Event extends Model
 
     public function effects()
     {
-        return $this->hasOne(EventEffect::class, 'event_id');
+        return $this->hasMany(EventEffect::class, 'event_id');
     }
 }
