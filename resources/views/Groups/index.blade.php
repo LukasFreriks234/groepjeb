@@ -9,6 +9,9 @@
 </head>
 
 <body>
+
+    <x-navbar />
+
     <div class="group-page">
         <div class="button-container">
             <a href="{{ route('groups.add') }}" class="add-button">

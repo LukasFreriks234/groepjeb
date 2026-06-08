@@ -10,6 +10,9 @@
 </head>
 
 <body>
+
+    <x-navbar />
+
     <h1>Create Event</h1>
 
     @if ($errors->any())
