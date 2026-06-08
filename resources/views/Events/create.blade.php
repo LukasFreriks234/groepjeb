@@ -243,11 +243,37 @@
                     <label for="dynamic">Dynamic event</label>
                 </div>
 
-                <div id="dynamicEventBox">
-                    <!-- HIER KOMT ROUTE -->
-                    Route selector
+                <div id="dynamicEventBox" style="display:none;">
+                <h3>Select route</h3>
+
+                <div 
+                    class="miniGrid"
+                >
+                    @foreach($cells as $cell)
+
+                        <div
+                            class="miniGridCell {{ $cell->is_available ? 'available' : 'occupied' }}"
+                            data-grid-id="{{ $cell->id }}"
+                            data-x="{{ $cell->x_coordinate }}"
+                            data-y="{{ $cell->y_coordinate }}"
+                        >
+
+                            @if(!$cell->is_available)
+
+                                <img
+                                    src="{{ asset($cell->cityFunction->image_url ?? '') }}"
+                                    class="miniGridImage"
+                                >
+
+                            @endif
+
+                        </div>
+
+                    @endforeach
                 </div>
 
+                <input type="hidden" name="route_cells" id="routeCells">
+            </div>
                 <button type="submit">Create event</button>
             </form>
         </div>

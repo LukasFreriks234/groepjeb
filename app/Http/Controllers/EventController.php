@@ -7,6 +7,7 @@ use App\Models\EventEffect;
 use App\Models\Monthly;
 use App\Models\Recurring;
 use App\Models\Weekly;
+use App\Models\GridCell;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +15,11 @@ class EventController extends Controller
 {
     public function create()
     {
-        return view('Events.create');
+        $cells = GridCell::orderBy('y_coordinate')
+            ->orderBy('x_coordinate')
+            ->get();
+
+        return view('Events.create', compact('cells'));
     }
 
 
@@ -40,9 +45,10 @@ class EventController extends Controller
             'typeEvent' => 'required|in:oneOff,recurring',
             'length' => 'required|integer|min:1',
             'lengthUnit' => 'required|in:hours,days,weeks',
+            'route_cells' => 'nullable|string',
         ]);
 
-        DB::transaction(function () use ($request) {
+        $event = DB::transaction(function () use ($request) {
 
             /*
             |--------------------------------------------------------------------------
@@ -142,7 +148,7 @@ class EventController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            Event::create([
+            return Event::create([
                 'name' => $request->name,
                 'image_url' => $imagePath,
 
@@ -158,6 +164,22 @@ class EventController extends Controller
                 'dynamic' => $request->boolean('dynamic'),
             ]);
         });
+
+        if ($request->boolean('dynamic') && $request->filled('route_cells')) {
+
+            $routeCells = json_decode($request->route_cells);
+
+            foreach ($routeCells as $index => $gridCellId) {
+
+                DB::table('event_grid_cells')->insert([
+                    'event_id' => $event->id,
+                    'grid_cell_id' => $gridCellId,
+                    'route_order' => $index + 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
         return redirect()
             ->back()
             ->with('success', 'Event created successfully.');

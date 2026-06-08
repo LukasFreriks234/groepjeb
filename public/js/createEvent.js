@@ -96,3 +96,71 @@ function toggleMonthlyTypeFields() {
         onTheRadio.checked ? "block" : "none";
 }
 
+const selectedRoute = [];
+
+const hiddenRouteInput =
+document.getElementById("routeCells");
+
+document
+.querySelectorAll(".miniGridCell")
+.forEach(cell => {
+
+    cell.addEventListener("click", () => {
+
+        const gridId =
+            cell.dataset.gridId;
+
+        const existingIndex =
+            selectedRoute.indexOf(gridId);
+
+        if(existingIndex > -1){
+
+            selectedRoute.splice(
+                existingIndex,
+                1
+            );
+
+            cell.classList.remove(
+                "selected",
+                "routeSelected"
+            );
+
+            cell.dataset.order = "";
+
+        }else{
+
+            selectedRoute.push(gridId);
+
+            cell.classList.add(
+                "selected",
+                "routeSelected"
+            );
+
+            cell.dataset.order =
+                selectedRoute.length;
+        }
+
+        refreshNumbers();
+
+        hiddenRouteInput.value =
+            JSON.stringify(selectedRoute);
+
+    });
+
+});
+
+function refreshNumbers(){
+
+    document
+    .querySelectorAll(".miniGridCell.routeSelected")
+    .forEach(cell => {
+
+        const index =
+        selectedRoute.indexOf(
+            cell.dataset.gridId
+        );
+
+        cell.dataset.order =
+            index + 1;
+    });
+}

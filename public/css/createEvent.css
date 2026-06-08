@@ -96,3 +96,51 @@
 .label {
     margin-top: 1.5rem;
 }
+
+.miniGrid{
+    display:grid;
+    width:300px;
+    border:2px solid black;
+    margin-top:20px;
+    grid-template-columns: repeat(4, 1fr);"
+}
+
+.miniGridCell{
+    aspect-ratio:1/1;
+    border:1px solid black;
+    background:lightblue;
+    position:relative;
+    cursor:pointer;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.miniGridImage{
+    width:70%;
+    height:70%;
+    object-fit:contain;
+}
+
+.miniGridCell.selected{
+    background:yellow;
+    outline:3px solid black;
+}
+
+.miniGridCell.routeSelected::after{
+    content:attr(data-order);
+    position:absolute;
+    top:2px;
+    right:2px;
+    width:18px;
+    height:18px;
+    background:black;
+    color:white;
+    border-radius:50%;
+    font-size:11px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
