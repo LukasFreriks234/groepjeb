@@ -24,6 +24,7 @@ return new class extends Migration {
             $table->integer('length');
             $table->enum('length_unit', ['hours', 'days', 'weeks']);
             $table->boolean('dynamic')->default(false);
+            $table->unsignedInteger('speed')->nullable();
             $table->timestamps();
         });
     }

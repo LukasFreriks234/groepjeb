@@ -248,6 +248,9 @@
 
                 <div 
                     class="miniGrid"
+                    role="button"
+                    tabindex="0"
+                    aria-pressed="false"
                 >
                     @foreach($cells as $cell)
 
@@ -272,7 +275,10 @@
                     @endforeach
                 </div>
 
-                <input type="hidden" name="route_cells" id="routeCells">
+                <input type="hidden" name="route_cells" id="routeCells" aria-hidden="true">
+
+                <x-formInput name="speed" label="Speed (hours per cell)" 
+                type="number" :value="old('speed', 1)" min="1" />
             </div>
                 <button type="submit">Create event</button>
             </form>

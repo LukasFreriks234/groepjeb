@@ -46,6 +46,7 @@ class EventController extends Controller
             'length' => 'required|integer|min:1',
             'lengthUnit' => 'required|in:hours,days,weeks',
             'route_cells' => 'nullable|string',
+            'speed' => 'nullable|integer|min:1',
         ]);
 
         $event = DB::transaction(function () use ($request) {
@@ -162,6 +163,7 @@ class EventController extends Controller
                 'length_unit' => $request->lengthUnit,
 
                 'dynamic' => $request->boolean('dynamic'),
+                'speed' => $request->boolean('dynamic') ? $request->speed : null, 
             ]);
         });
 
@@ -180,8 +182,7 @@ class EventController extends Controller
                 ]);
             }
         }
-        return redirect()
-            ->back()
+        return redirect('/grid')
             ->with('success', 'Event created successfully.');
     }
 }

@@ -97,70 +97,86 @@ function toggleMonthlyTypeFields() {
 }
 
 const selectedRoute = [];
+const hiddenRouteInput = document.getElementById("routeCells");
 
-const hiddenRouteInput =
-document.getElementById("routeCells");
+document.querySelectorAll(".miniGridCell").forEach((cell) => {
 
-document
-.querySelectorAll(".miniGridCell")
-.forEach(cell => {
+    cell.setAttribute("role", "button");
+    cell.setAttribute("tabindex", "0");
+    cell.setAttribute("aria-pressed", "false");
 
-    cell.addEventListener("click", () => {
-
-        const gridId =
-            cell.dataset.gridId;
-
-        const existingIndex =
-            selectedRoute.indexOf(gridId);
-
-        if(existingIndex > -1){
-
-            selectedRoute.splice(
-                existingIndex,
-                1
-            );
-
-            cell.classList.remove(
-                "selected",
-                "routeSelected"
-            );
-
-            cell.dataset.order = "";
-
-        }else{
-
-            selectedRoute.push(gridId);
-
-            cell.classList.add(
-                "selected",
-                "routeSelected"
-            );
-
-            cell.dataset.order =
-                selectedRoute.length;
+    cell.addEventListener("click", () => toggleCell(cell));
+    cell.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggleCell(cell);
         }
-
-        refreshNumbers();
-
-        hiddenRouteInput.value =
-            JSON.stringify(selectedRoute);
-
     });
-
 });
 
-function refreshNumbers(){
+function toggleCell(cell) {
 
-    document
-    .querySelectorAll(".miniGridCell.routeSelected")
-    .forEach(cell => {
+    const gridId = cell.dataset.gridId;
+    const index = selectedRoute.indexOf(gridId);
 
-        const index =
-        selectedRoute.indexOf(
-            cell.dataset.gridId
+    const isSelected = index > -1;
+
+    if (isSelected) {
+        removeFromRoute(cell, gridId, index);
+    } else {
+        addToRoute(cell, gridId);
+    }
+
+    updateRoute();
+    refreshNumbers();
+}
+
+function addToRoute(cell, gridId) {
+
+    selectedRoute.push(gridId);
+
+    cell.classList.add("selected", "routeSelected");
+
+    cell.setAttribute("aria-pressed", "true");
+    cell.setAttribute(
+        "aria-label",
+        `Grid cell ${gridId} selected as route step ${selectedRoute.length}`
+    );
+
+    cell.dataset.order = selectedRoute.length;
+}
+
+function removeFromRoute(cell, gridId, index) {
+
+    selectedRoute.splice(index, 1);
+
+    cell.classList.remove("selected", "routeSelected");
+
+    cell.setAttribute("aria-pressed", "false");
+    cell.setAttribute(
+        "aria-label",
+        `Grid cell ${gridId} removed from route`
+    );
+
+    cell.dataset.order = "";
+}
+
+function updateRoute() {
+    hiddenRouteInput.value = JSON.stringify(selectedRoute);
+}
+
+function refreshNumbers() {
+
+    document.querySelectorAll(".miniGridCell.routeSelected").forEach((cell) => {
+
+        const id = cell.dataset.gridId;
+        const order = selectedRoute.indexOf(id) + 1;
+
+        cell.dataset.order = order;
+
+        cell.setAttribute(
+            "aria-label",
+            `Grid cell ${id} is step ${order} in route`
         );
-
-        cell.dataset.order =
-            index + 1;
     });
 }

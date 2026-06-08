@@ -102,9 +102,8 @@
 
 
     <?php 
-        $arrEvents = $events->toArray();
-        $arrEventName = array_column($arrEvents, 'name');
-        array_multisort($arrEventName, SORT_ASC, $arrEvents);
+        $arrEvents = $events
+            ->sortBy('name');
     ?>
     <p id="keyboardDragInstructions" class="sr-only">
         Keyboard instructions: use Tab or Shift Tab to move through the event list. Press Enter or Space on an event to select it. Then move to a grid cell and press Enter or Space to place it.
@@ -120,10 +119,9 @@
                 id="event{{ $event['id'] }}" 
                 class="functionItem"
                 data-event-id="{{ $event['id'] }}"
-                data-type="{{ $event['type'] }}"
+                data-type="{{ $event['recurring_id'] ? 'recurring' : 'one-off' }}"
                 role="button"
-                aria-label="Select event {{ $event['name'] }} of type {{ $event['type'] }} to place it in the grid."
-                
+                aria-label="Select event {{ $event['name'] }} of type {{ $event['recurring_id'] ? 'recurring' : 'one-off' }} to place it in the grid."
             >
                 <div class="functionImage">
                     <img 
@@ -134,7 +132,7 @@
 
                 <div>
                     <p class="functionName">{{ $event['name'] }}</p>
-                    <p class="functionCategory">{{ $event['type'] }}</p>
+                    <p class="functionCategory">{{ $event['recurring_id'] ? 'Recurring' : 'One-off' }}</p>
                 </div>
             </li>
         @endforeach
