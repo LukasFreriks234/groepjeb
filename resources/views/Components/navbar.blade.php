@@ -31,6 +31,16 @@
         </li>
 
         <li>
+            <a
+                href="{{ route('events.create') }}"
+                class="navbar-button"
+                @if(request()->routeIs('events.create')) aria-current="page" @endif
+            >
+                Create Event
+            </a>
+        </li>
+
+        <li>
             <form method="POST" action="/logout" class="logout-form">
                 @csrf
 

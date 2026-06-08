@@ -16,7 +16,6 @@
         <div class="group-form-container">
 
             <form method="POST" action="{{ route('groups.update', $group->id) }}">
-
                 @csrf
                 @method('PUT')
 
@@ -35,7 +34,6 @@
                 </div>
 
                 <div class="form-group">
-
                     <label for="function_id">
                         Function
                     </label>
@@ -59,7 +57,6 @@
                 <h2>Group Effects</h2>
 
                 <div class="effects-grid">
-
                     <label for="safety">
                         Safety
                     </label>
@@ -129,7 +126,6 @@
                         value="{{ old('mobility', $group->mobility) }}"
                         class="effect-input"
                     >
-
                 </div>
 
                 <div class="button-group">
@@ -144,30 +140,6 @@
             </form>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const inputs = document.querySelectorAll('.effect-input');
-            function updateColor(input) {
-                const value = parseInt(input.value) || 0;
-                input.style.fontWeight = 'bold';
-                if (value > 0) {
-                    input.style.color = 'green';
-                }
-                else if (value < 0) {
-                    input.style.color = 'red';
-                }
-                else {
-                    input.style.color = 'black';
-                }
-            }
 
-            inputs.forEach(input => {
-                updateColor(input);
-                input.addEventListener('input', function () {
-                    updateColor(input);
-                });
-            });
-        });
-        </script>
 </body>
 </html>

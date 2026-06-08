@@ -6,17 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Groups Overview</title>
     <link href="{{ asset('css/group.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/navbarStyle.css') }}" rel="stylesheet">
 </head>
 
 <body>
-    @include('components.navbar')
+
+    <x-navbar />
+
     <div class="group-page">
         <div class="button-container">
             <a href="{{ route('groups.add') }}" class="add-button">
                 Add Group
             </a>
         </div>
+
         <div class="group-table-container">
             <table class="group-table">
                 <thead>
@@ -41,8 +43,7 @@
                             </td>
 
                             <td>
-                                <a href="{{ route('groups.edit', $group->id) }}"
-                                class="edit-button">
+                                <a href="{{ route('groups.edit', $group->id) }}" class="edit-button">
                                     Edit
                                 </a>
                             </td>
@@ -51,6 +52,8 @@
                 </tbody>
             </table>
         </div>
+    </div>
 
 </body>
+
 </html>
