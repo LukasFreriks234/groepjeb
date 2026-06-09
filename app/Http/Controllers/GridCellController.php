@@ -104,11 +104,11 @@ class GridCellController extends Controller
         $toEventIds = $toCell->events->pluck('id')->toArray();
 
         $toCell->destination_type = $fromFunctionId;
-        $toCell->is_available = $fromFunctionId ? false : true;
+        $toCell->is_available = ($fromFunctionId || count($fromEventIds) > 0) ? false : true;
         $toCell->save();
 
         $fromCell->destination_type = $toFunctionId;
-        $fromCell->is_available = $toFunctionId ? false : true;
+        $fromCell->is_available = ($toFunctionId || count($toEventIds) > 0) ? false : true;
         $fromCell->save();
 
         $fromCell->events()->sync($toEventIds);
@@ -129,10 +129,9 @@ class GridCellController extends Controller
 
         if ($cell) {
             $cell->destination_type = null;
+            $cell->events()->detach();
             $cell->is_available = true;
             $cell->save();
-
-            $cell->events()->detach();
         }
 
         $totals = $this->calculateTotals();
@@ -146,7 +145,7 @@ class GridCellController extends Controller
 
     public function assignEvent(Request $request)
     {
-        $cell = GridCell::with(['cityFunction', 'events'])->find($request->cell_id);
+        $cell = GridCell::find($request->cell_id);
         $event = Event::with('effects')->find($request->event_id);
 
         if (!$cell || !$event) {
@@ -156,18 +155,14 @@ class GridCellController extends Controller
             ], 404);
         }
 
-        if (!$cell->cityFunction) {
-            return response()->json([
-                'success' => false,
-                'message' => 'An event can only be placed on a cell that already has a function.',
-            ], 422);
-        }
-
         $cell->events()->syncWithoutDetaching([
             $event->id => [
                 'route_order' => $request->route_order ?? null,
             ],
         ]);
+
+        $cell->is_available = false;
+        $cell->save();
 
         $totals = $this->calculateTotals();
 
@@ -180,7 +175,7 @@ class GridCellController extends Controller
 
     public function removeEvent(Request $request)
     {
-        $cell = GridCell::find($request->cell_id);
+        $cell = GridCell::with('events')->find($request->cell_id);
 
         if (!$cell) {
             return response()->json([
@@ -193,6 +188,13 @@ class GridCellController extends Controller
             $cell->events()->detach($request->event_id);
         } else {
             $cell->events()->detach();
+        }
+
+        $cell->load('events');
+
+        if (!$cell->destination_type && $cell->events->isEmpty()) {
+            $cell->is_available = true;
+            $cell->save();
         }
 
         $totals = $this->calculateTotals();
