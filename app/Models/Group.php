@@ -13,6 +13,11 @@ class Group extends Model
         'name',
         'is_system',
         'role',
+        'safety',
+        'recreation',
+        'environmental_quality',
+        'services',
+        'mobility',
     ];
 
     protected $casts = [
