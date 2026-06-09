@@ -6,7 +6,6 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\FunctionController;
 use App\Http\Controllers\GroupController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\GroupController;
 
 Route::get('/', [SessionController::class, 'create']);
 Route::post('/', [SessionController::class, 'store']);

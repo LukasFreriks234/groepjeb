@@ -51,6 +51,24 @@
                         @endforeach
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label for="related_group">
+                        Related Group
+                    </label>
+
+                    <select id="related_group" name="related_group">
+                        <option value="">
+                            -- Select Group --
+                        </option>
+
+                        @foreach($groups as $relatedGroup)
+                            <option value="{{ $relatedGroup->id }}">
+                                {{ $relatedGroup->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="form-group">
                     <h2>Group Effects</h2>
 

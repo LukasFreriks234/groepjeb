@@ -56,6 +56,39 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="related_group">
+                        Related Group
+                    </label>
+
+                    <select id="related_group" name="related_group">
+
+                        <option value="">
+                            -- Select Group --
+                        </option>
+
+                        @foreach($groups as $relatedGroup)
+
+                            @if($relatedGroup->id != $group->id)
+
+                                <option
+                                    value="{{ $relatedGroup->id }}"
+                                    {{ isset($selectedRelationship)
+                                        && $selectedRelationship == $relatedGroup->id
+                                        ? 'selected'
+                                        : '' }}
+                                >
+                                    {{ $relatedGroup->name }}
+                                </option>
+
+                            @endif
+
+                        @endforeach
+
+                    </select>
+
+                </div>
+
                 <h2>Group Effects</h2>
 
                 <div class="effects-grid">

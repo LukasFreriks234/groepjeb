@@ -17,6 +17,10 @@
     <div class="overviewContent">
         <div class="topbar">
             <h1>All groups:</h1>
+
+            <a href="{{ route('groups.add') }}" class="addButton">
+                Add Group
+            </a>
         </div>
 
         <div class="category">
@@ -32,8 +36,12 @@
         <ul id="functionsList">
             @foreach($arrGroups as $group)
                 <li class="functionItem groupItem">
+
                     <div class="groupSummary">
-                        <p class="functionName">{{ $group['name'] }}</p>
+                        <p class="functionName">
+                            {{ $group['name'] }}
+                        </p>
+
                         <p class="functionCategory">
                             {{ !empty($group['is_system']) ? 'System group' : 'Custom group' }}
                         </p>
@@ -41,15 +49,27 @@
 
                     <div class="groupFunctions">
                         @forelse($group['functions'] ?? [] as $function)
-                            <span class="functionPill">{{ $function['name'] }}</span>
+                            <span class="functionPill">
+                                {{ $function['name'] }}
+                            </span>
                         @empty
-                            <span class="emptyState">No functions in this group</span>
+                            <span class="emptyState">
+                                No functions in this group
+                            </span>
                         @endforelse
+                    </div>
+
+                    <div class="groupButtons">
+                        <a href="{{ route('groups.edit', $group['id']) }}"
+                           class="editButton">
+                            Edit
+                        </a>
                     </div>
 
                     <div class="groupCount">
                         {{ count($group['functions'] ?? []) }} functions
                     </div>
+
                 </li>
             @endforeach
         </ul>
@@ -64,9 +84,22 @@
                 const filter = input.value.trim().toUpperCase();
 
                 rows.forEach(function (row) {
-                    const name = row.querySelector('.functionName').innerText.toUpperCase();
-                    const functions = row.querySelector('.groupFunctions').innerText.toUpperCase();
-                    row.style.display = (name.indexOf(filter) > -1 || functions.indexOf(filter) > -1) ? '' : 'none';
+
+                    const name =
+                        row.querySelector('.functionName')
+                            .innerText
+                            .toUpperCase();
+
+                    const functions =
+                        row.querySelector('.groupFunctions')
+                            .innerText
+                            .toUpperCase();
+
+                    row.style.display =
+                        (name.indexOf(filter) > -1 ||
+                         functions.indexOf(filter) > -1)
+                            ? ''
+                            : 'none';
                 });
             }
 
