@@ -22,4 +22,14 @@ class Group extends Model
     {
         return $this->belongsToMany(Functions::class, 'function_group', 'group_id', 'function_id');
     }
+
+    public function outgoingRelationships()
+    {
+        return $this->hasMany(GroupRelationship::class, 'group_id', 'id');
+    }
+
+    public function incomingRelationships()
+    {
+        return $this->hasMany(GroupRelationship::class, 'related_group_id', 'id');
+    }
 }

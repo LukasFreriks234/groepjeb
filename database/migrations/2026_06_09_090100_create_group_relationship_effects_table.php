@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('group_relationship_effects', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('group_relationship_id')
+                ->constrained('group_relationships')
+                ->cascadeOnDelete();
+            $table->integer('bonus_effect')->default(0);
+            $table->integer('penalty_effect')->default(0);
+            $table->timestamps();
+
+            $table->unique('group_relationship_id');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('group_relationship_effects');
+    }
+};
