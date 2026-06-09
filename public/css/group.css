@@ -2,7 +2,6 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .group-page {
@@ -148,6 +147,7 @@ body {
     background-color: #2446b5;
     color: white;
 }
+
 .group-table {
     width: 100%;
     border-collapse: collapse;

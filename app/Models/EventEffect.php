@@ -7,12 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class EventEffect extends Model
 {
     protected $fillable = [
-        'event_id', 
-        'Safety', 
-        'Recreation', 
-        'Environmental Quality', 
-        'Services', 
-        'Mobility'
+        'event_id',
+        'category_name',
+        'effect',
     ];
 
     public function event()

@@ -11,19 +11,38 @@ use App\Models\Event;
 
 class GridCellController extends Controller
 {
+    private function cellsWithRelations()
+    {
+        return GridCell::with(['cityFunction', 'events.effects']);
+    }
+
+    private function calculateTotals()
+    {
+        $cells = $this->cellsWithRelations()->get();
+        $categories = Category::all();
+
+        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+        $qualityOfLife = array_sum($effectTotals);
+
+        return [
+            'effectTotals' => $effectTotals,
+            'qualityOfLife' => $qualityOfLife,
+        ];
+    }
+
     public function index()
     {
-        $cells = GridCell::with('cityFunction')
+        $cells = $this->cellsWithRelations()
             ->orderBy('y_coordinate')
             ->orderBy('x_coordinate')
             ->get();
 
         $functions = Functions::with('effects')->get();
         $categories = Category::all();
-        $events = Event::all();
+        $events = Event::with('effects')->get();
 
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
-        $qualityOfLife = Effects::calculateQualityOfLife($cells, $categories);
+        $qualityOfLife = array_sum($effectTotals);
 
         return view('welcome', compact(
             'cells',
@@ -50,23 +69,19 @@ class GridCellController extends Controller
         $cell->is_available = false;
         $cell->save();
 
-        $cells = GridCell::with('cityFunction')->get();
-        $categories = Category::all();
-
-        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
-        $qualityOfLife = Effects::calculateQualityOfLife($cells, $categories);
+        $totals = $this->calculateTotals();
 
         return response()->json([
             'success' => true,
-            'effectTotals' => $effectTotals,
-            'qualityOfLife' => $qualityOfLife,
+            'effectTotals' => $totals['effectTotals'],
+            'qualityOfLife' => $totals['qualityOfLife'],
         ]);
     }
 
     public function moveFunction(Request $request)
     {
-        $fromCell = GridCell::find($request->from_cell_id);
-        $toCell = GridCell::find($request->to_cell_id);
+        $fromCell = GridCell::with('events')->find($request->from_cell_id);
+        $toCell = GridCell::with('events')->find($request->to_cell_id);
 
         if (!$fromCell || !$toCell) {
             return response()->json([
@@ -85,24 +100,26 @@ class GridCellController extends Controller
         $fromFunctionId = $fromCell->destination_type;
         $toFunctionId = $toCell->destination_type;
 
+        $fromEventIds = $fromCell->events->pluck('id')->toArray();
+        $toEventIds = $toCell->events->pluck('id')->toArray();
+
         $toCell->destination_type = $fromFunctionId;
-        $toCell->is_available = false;
+        $toCell->is_available = $fromFunctionId ? false : true;
         $toCell->save();
 
         $fromCell->destination_type = $toFunctionId;
         $fromCell->is_available = $toFunctionId ? false : true;
         $fromCell->save();
 
-        $cells = GridCell::with('cityFunction')->get();
-        $categories = Category::all();
+        $fromCell->events()->sync($toEventIds);
+        $toCell->events()->sync($fromEventIds);
 
-        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
-        $qualityOfLife = Effects::calculateQualityOfLife($cells, $categories);
+        $totals = $this->calculateTotals();
 
         return response()->json([
             'success' => true,
-            'effectTotals' => $effectTotals,
-            'qualityOfLife' => $qualityOfLife,
+            'effectTotals' => $totals['effectTotals'],
+            'qualityOfLife' => $totals['qualityOfLife'],
         ]);
     }
 
@@ -114,18 +131,76 @@ class GridCellController extends Controller
             $cell->destination_type = null;
             $cell->is_available = true;
             $cell->save();
+
+            $cell->events()->detach();
         }
 
-        $cells = GridCell::with('cityFunction')->get();
-        $categories = Category::all();
-
-        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
-        $qualityOfLife = Effects::calculateQualityOfLife($cells, $categories);
+        $totals = $this->calculateTotals();
 
         return response()->json([
             'success' => true,
-            'effectTotals' => $effectTotals,
-            'qualityOfLife' => $qualityOfLife,
+            'effectTotals' => $totals['effectTotals'],
+            'qualityOfLife' => $totals['qualityOfLife'],
+        ]);
+    }
+
+    public function assignEvent(Request $request)
+    {
+        $cell = GridCell::with(['cityFunction', 'events'])->find($request->cell_id);
+        $event = Event::with('effects')->find($request->event_id);
+
+        if (!$cell || !$event) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cell or event not found',
+            ], 404);
+        }
+
+        if (!$cell->cityFunction) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An event can only be placed on a cell that already has a function.',
+            ], 422);
+        }
+
+        $cell->events()->syncWithoutDetaching([
+            $event->id => [
+                'route_order' => $request->route_order ?? null,
+            ],
+        ]);
+
+        $totals = $this->calculateTotals();
+
+        return response()->json([
+            'success' => true,
+            'effectTotals' => $totals['effectTotals'],
+            'qualityOfLife' => $totals['qualityOfLife'],
+        ]);
+    }
+
+    public function removeEvent(Request $request)
+    {
+        $cell = GridCell::find($request->cell_id);
+
+        if (!$cell) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cell not found',
+            ], 404);
+        }
+
+        if ($request->event_id) {
+            $cell->events()->detach($request->event_id);
+        } else {
+            $cell->events()->detach();
+        }
+
+        $totals = $this->calculateTotals();
+
+        return response()->json([
+            'success' => true,
+            'effectTotals' => $totals['effectTotals'],
+            'qualityOfLife' => $totals['qualityOfLife'],
         ]);
     }
 
@@ -140,7 +215,7 @@ class GridCellController extends Controller
             ], 404);
         }
 
-        $cellsToCalculate = GridCell::with('cityFunction')
+        $cellsToCalculate = $this->cellsWithRelations()
             ->where(function ($query) use ($cell) {
                 $query->where('x_coordinate', $cell->x_coordinate)
                     ->where('y_coordinate', $cell->y_coordinate);
@@ -166,10 +241,12 @@ class GridCellController extends Controller
         $categories = Category::all();
 
         $effectTotals = Effects::calculateEffectTotals($cellsToCalculate, $categories);
+        $qualityOfLife = array_sum($effectTotals);
 
         return response()->json([
             'success' => true,
             'effectTotals' => $effectTotals,
+            'qualityOfLife' => $qualityOfLife,
         ]);
     }
 }

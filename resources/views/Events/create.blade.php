@@ -5,11 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Event</title>
+
+    <link rel="stylesheet" href="{{ asset('css/navbarStyle.css') }}">
     <link rel="stylesheet" href="{{ asset('css/editStyle.css') }}">
+
     <script src="{{ asset('js/createEvent.js') }}" defer></script>
 </head>
 
 <body>
+
+    <x-navbar />
+
     <h1>Create Event</h1>
 
     @if ($errors->any())
@@ -20,7 +26,7 @@
         </div>
     @endif
 
-    <div class="container">
+    <div class="event-container">
         <div class="form-section">
             <form method="POST" action="{{ route('events.store') }}" enctype="multipart/form-data">
                 @csrf
@@ -28,33 +34,28 @@
                 <x-formInput name="name" label="Name" :value="old('name')" />
 
                 <label for="image">Image</label>
-                <input type="file" id="image" name="image" accept="image/*" alt="Upload an image for the new function"
-                    :value="old('name')">
-
-                <!-- Link to destination -->
+                <input type="file" id="image" name="image" accept="image/*" alt="Upload an image for the new function">
 
                 <h2>Effect while active</h2>
 
                 <x-formInput name="Safety" label="Safety" type="number" :value="old('Safety', 0)" min="-10" max="10" />
 
-                <x-formInput name="Recreation" label="Recreation" type="number" :value="old('Recreation', 0)" min="-10"
-                    max="10" />
+                <x-formInput name="Recreation" label="Recreation" type="number" :value="old('Recreation', 0)" min="-10" max="10" />
 
                 <x-formInput name="Environmental_Quality" label="Environmental Quality" type="number"
                     :value="old('Environmental_Quality', 0)" min="-10" max="10" />
 
-                <x-formInput name="Services" label="Services" type="number" :value="old('Services', 0)" min="-10"
-                    max="10" />
+                <x-formInput name="Services" label="Services" type="number" :value="old('Services', 0)" min="-10" max="10" />
 
-                <x-formInput name="Mobility" label="Mobility" type="number" :value="old('Mobility', 0)" min="-10"
-                    max="10" />
-
+                <x-formInput name="Mobility" label="Mobility" type="number" :value="old('Mobility', 0)" min="-10" max="10" />
 
                 <h2>Event settings</h2>
+
                 <div class="containerRadio">
                     <input type="radio" id="oneOff" name="typeEvent" value="oneOff" />
                     <label for="oneOff">One-off</label>
                 </div>
+
                 <div class="containerRadio">
                     <input type="radio" id="recurring" name="typeEvent" value="recurring" />
                     <label for="recurring">Recurring</label>
@@ -68,7 +69,7 @@
                             <option value="daily">daily</option>
                             <option value="weekly">weekly</option>
                             <option value="monthly">monthly</option>
-                            <option>custom</option>
+                            <option value="custom">custom</option>
                         </select>
                     </div>
 
@@ -87,7 +88,6 @@
                 </div>
 
                 <div id="dynamicEventBox">
-                    <!-- HIER KOMT ROUTE -->
                     Route selector
                 </div>
 

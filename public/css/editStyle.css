@@ -1,8 +1,6 @@
 body {
-    font-family: Arial, sans-serif;
     background: #f5f6f8;
     margin: 0;
-    padding: 20px;
     color: #1a1a1a;
 }
 
@@ -11,7 +9,7 @@ h1 {
     margin: 0 auto 20px auto;
 }
 
-.container {
+.event-container {
     max-width: 1000px;
     margin: 0 auto;
     display: flex;
@@ -99,7 +97,7 @@ select[aria-invalid="true"] {
     border-color: #b42318;
 }
 
-button {
+button:not(.navbar-button) {
     margin-top: 20px;
     background: #1d4ed8;
     color: white;

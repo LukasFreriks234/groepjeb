@@ -252,3 +252,44 @@
     white-space: nowrap;
     border: 0;
 }
+
+.gridEvents {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    max-width: calc(100% - 12px);
+    pointer-events: none;
+}
+
+.gridEventImage {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border: 2px solid black;
+    background: white;
+    box-sizing: border-box;
+}
+
+.draggableGridEvent.selectedMobileCell,
+.draggableGridEvent.keyboardSelected {
+    outline: 3px solid yellow;
+    outline-offset: 2px;
+}
+
+@media (hover: none), (max-width: 768px) {
+    .draggableGridEvent.selectedMobileCell,
+    .draggableGridEvent.keyboardSelected {
+        outline: 3px solid yellow;
+        outline-offset: 2px;
+    }
+}
+
+@media (hover: hover) and (min-width: 769px) {
+    .draggableGridEvent.keyboardSelected {
+        outline: 3px solid yellow;
+        outline-offset: 2px;
+    }
+}
