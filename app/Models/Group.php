@@ -12,11 +12,7 @@ class Group extends Model
     protected $fillable = [
         'name',
         'is_system',
-        'safety',
-        'recreation',
-        'environmental_quality',
-        'services',
-        'mobility',
+        'role',
     ];
 
     protected $casts = [
