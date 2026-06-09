@@ -20,7 +20,6 @@ class CreateFunctionTest extends DuskTestCase
             ->press('Create function')
             ->assertSee('Create Function')
             ->type('#input-name', 'test function')
-            ->attach('image', public_path('images/GasStation.png'))
             ->select('category', 'Mobility')
             ->select('related_function', '7')
             ->type('relationship_recreation', '3')
