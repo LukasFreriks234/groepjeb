@@ -12,6 +12,7 @@ class Group extends Model
     protected $fillable = [
         'name',
         'is_system',
+        'role',
     ];
 
     protected $casts = [
