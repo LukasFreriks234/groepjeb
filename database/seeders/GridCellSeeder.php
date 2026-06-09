@@ -26,6 +26,14 @@ class GridCellSeeder extends Seeder
             }
         }
 
-        GridCell::insert($data);
+        foreach ($data as $cell) {
+            GridCell::updateOrCreate(
+                [
+                    'x_coordinate' => $cell['x_coordinate'],
+                    'y_coordinate' => $cell['y_coordinate'],
+                ],
+                $cell
+            );
+        }
     }
 }

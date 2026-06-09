@@ -4,6 +4,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\GridCellController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\FunctionController;
+use App\Http\Controllers\GroupController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GroupController;
 
@@ -18,6 +19,8 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::get('/overview/{id}', [FunctionController::class, 'show'])->name('functions.show');
     Route::get('/functions/{id}/edit', [FunctionController::class, 'edit'])->name('functions.edit');
     Route::patch('/functions/{id}/update', [FunctionController::class, 'update'])->name('functions.update');
+
+    Route::get('/groups', [GroupController::class, 'index'])->name('groups.index');
 
     Route::post('/grid/assign-function', [GridCellController::class, 'assignFunction']);
     Route::post('/grid/move-function', [GridCellController::class, 'moveFunction']);
