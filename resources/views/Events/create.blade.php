@@ -26,7 +26,7 @@
         </div>
     @endif
 
-    <div class="container">
+    <div class="event-container">
         <div class="form-section">
             <form method="POST" action="{{ route('events.store') }}" enctype="multipart/form-data">
                 @csrf

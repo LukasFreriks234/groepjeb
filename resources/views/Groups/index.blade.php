@@ -8,6 +8,7 @@
 
     <link href="{{ asset('css/navbarStyle.css') }}" rel="stylesheet">
     <link href="{{ asset('css/group.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/layout.css') }}" rel="stylesheet">
 </head>
 
 <body>
