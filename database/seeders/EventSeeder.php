@@ -13,23 +13,23 @@ class EventSeeder extends Seeder
     {
         Event::create([
             'name' => 'Zomerfestival',
-            'image_url' => 'images/PoliceStation.png',
-            'type' => 'recurring',
-            'recurrence_pattern' => 'weekly',
-            'days_of_week' => ['Friday', 'Saturday'],
+            'image_url' => 'festival.jpg',
+            'recurring_id' => 1,
             'start_date' => now(),
-            'end_date' => now()->addDays(7),
+            'time' => now(),
+            'length' => 5,
+            'length_unit' => 'hours',
             'dynamic' => false,
         ]);
 
         Event::create([
             'name' => 'Food Truck Markt',
-            'image_url' => 'images/PoliceStation.png',
-            'type' => 'one-off',
-            'recurrence_pattern' => null,
-            'days_of_week' => null,
+            'image_url' => 'foodmarket.jpg',
+            'recurring_id' => null,
             'start_date' => now()->addDays(3),
-            'end_date' => now()->addDays(3)->addHours(5),
+            'time' => now(),
+            'length' => 2,
+            'length_unit' => 'days',
             'dynamic' => false,
         ]);
     }

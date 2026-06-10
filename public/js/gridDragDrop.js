@@ -1,7 +1,6 @@
 let selectedEventId = null;
 let selectedEventImage = null;
-let routeOrder = 1;
-let routeMode = false;
+let eventPlacementMode = false;
 
 let selectedMobileElement = null;
 let selectedMobileData = null;
@@ -25,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateCellLabel(cell);
 
         cell.addEventListener("click", function () {
-            if (!routeMode || !selectedEventId || !selectedEventImage) {
+            if (!eventPlacementMode || !selectedEventId || !selectedEventImage) {
                 return;
             }
 
@@ -33,11 +32,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 source: "eventLibrary",
                 eventId: selectedEventId,
                 imageSrc: selectedEventImage.src,
-                imageAlt: selectedEventImage.alt || "Event",
-                routeOrder: routeOrder
+                imageAlt: selectedEventImage.alt || "Event"
             });
-
-            routeOrder++;
         });
 
         cell.addEventListener("dragover", function (ev) {
@@ -91,8 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 alt: image.alt || getEventNameFromItem(eventItem)
             };
 
-            routeOrder = 1;
-            routeMode = true;
+            eventPlacementMode = true;
 
             announceKeyboardStatus(`${selectedEventImage.alt} selected. Click a grid cell to place this event.`);
         });
@@ -283,8 +278,7 @@ function enableDrag() {
                     itemId: ev.currentTarget.id || "",
                     eventId: ev.currentTarget.dataset.eventId,
                     imageSrc: image ? image.src : "",
-                    imageAlt: eventName,
-                    routeOrder: routeOrder
+                    imageAlt: eventName
                 })
             );
         });
@@ -339,8 +333,7 @@ function enableDrag() {
                     eventId: ev.currentTarget.dataset.eventId,
                     fromCellId: ev.currentTarget.dataset.fromCellId,
                     imageSrc: ev.currentTarget.src,
-                    imageAlt: getGridEventName(ev.currentTarget),
-                    routeOrder: routeOrder
+                    imageAlt: getGridEventName(ev.currentTarget)
                 })
             );
         });
@@ -537,7 +530,7 @@ function saveEventInGrid(cell, dragData) {
         body: JSON.stringify({
             event_id: dragData.eventId,
             cell_id: cell.dataset.id,
-            route_order: dragData.routeOrder || routeOrder
+            route_order: 1
         })
     })
         .then(response => response.json())
@@ -893,8 +886,7 @@ function buildSelectedData(item) {
             eventId: item.dataset.eventId,
             fromCellId: item.dataset.fromCellId,
             imageSrc: item.src,
-            imageAlt: getGridEventName(item),
-            routeOrder: routeOrder
+            imageAlt: getGridEventName(item)
         };
     }
 
@@ -907,8 +899,7 @@ function buildSelectedData(item) {
             itemId: item.id || "",
             eventId: item.dataset.eventId,
             imageSrc: image ? image.src : "",
-            imageAlt: eventName,
-            routeOrder: routeOrder
+            imageAlt: eventName
         };
     }
 
