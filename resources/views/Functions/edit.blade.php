@@ -9,17 +9,11 @@
 
     <link rel="stylesheet"
           href="{{ asset('css/editStyle.css') }}">
-
-    <script src="{{ asset('js/functionForm.js') }}" defer></script>
 </head>
 
 <body>
 
 <h1>Edit Function</h1>
-
-@php
-    $isAdmin = auth()->user() && auth()->user()->role === 'admin';
-@endphp
 
 <div class="container">
 
@@ -31,7 +25,7 @@
             @csrf
             @method('PATCH')
 
-            @if($isAdmin)
+            @if(isset($isAdmin) && $isAdmin)
                 <x-formInput
                     name="name"
                     label="Name"
@@ -46,16 +40,15 @@
             @endif
 
             <label for="image">Change image</label>
-            <input
-                type="file"
-                id="image"
-                name="image"
+            <input 
+                type="file" 
+                id="image" 
+                name="image" 
                 accept="image/*"
-                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <label for="category">Category</label>
-            <select id="category" name="category" autocomplete="off" {{ !$isAdmin ? 'disabled' : '' }}>
+            <select id="category" name="category" autocomplete="off">
                 @foreach($categories as $category)
                     <option value="{{ $category->category }}"
                         {{ old('category', $function->category) == $category->category ? 'selected' : '' }}>
@@ -66,13 +59,8 @@
 
             <h2>Add Relationship</h2>
 
-            <label for="related_function">Select Function</label>
-            <select
-                id="related_function"
-                name="related_function"
-                aria-label="Select a function to create a relationship with"
-                {{ !$isAdmin ? 'disabled' : '' }}
-            >
+                <label for="related_function">Select Function</label>
+                <select id="related_function" name="related_function" aria-label="Select a function to create a relationship with">
                 <option value="">-- Select Function --</option>
 
                 @foreach($functions as $relatedFunction)
@@ -96,7 +84,6 @@
                 max="10"
                 value="{{ old('relationship_safety', $function->relationship_safety ?? 0) }}"
                 class="relationship-effect-input {{ (old('relationship_safety', $function->relationship_safety ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_safety', $function->relationship_safety ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
-                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <label for="relationship_recreation">Recreation</label>
@@ -108,7 +95,6 @@
                 max="10"
                 value="{{ old('relationship_recreation', $function->relationship_recreation ?? 0) }}"
                 class="relationship-effect-input {{ (old('relationship_recreation', $function->relationship_recreation ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_recreation', $function->relationship_recreation ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
-                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <label for="relationship_environmental">Environmental Quality</label>
@@ -120,7 +106,6 @@
                 max="10"
                 value="{{ old('relationship_environmental', $function->relationship_environmental ?? 0) }}"
                 class="relationship-effect-input {{ (old('relationship_environmental', $function->relationship_environmental ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_environmental', $function->relationship_environmental ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
-                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <label for="relationship_services">Services</label>
@@ -132,7 +117,6 @@
                 max="10"
                 value="{{ old('relationship_services', $function->relationship_services ?? 0) }}"
                 class="relationship-effect-input {{ (old('relationship_services', $function->relationship_services ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_services', $function->relationship_services ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
-                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <label for="relationship_mobility">Mobility</label>
@@ -144,7 +128,6 @@
                 max="10"
                 value="{{ old('relationship_mobility', $function->relationship_mobility ?? 0) }}"
                 class="relationship-effect-input {{ (old('relationship_mobility', $function->relationship_mobility ?? 0) > 0) ? 'positiveEffect' : ((old('relationship_mobility', $function->relationship_mobility ?? 0) < 0) ? 'negativeEffect' : 'neutralEffect') }}"
-                {{ !$isAdmin ? 'disabled' : '' }}
             >
 
             <!-- EFFECTS -->
@@ -224,6 +207,38 @@
     </div>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const relatedFunctionSelect = document.getElementById('related_function');
+        const relationshipInputs = document.querySelectorAll('.relationship-effect-input');
+
+        function toggleRelationshipInputs() {
+            const hasRelationship = relatedFunctionSelect.value !== '';
+
+            relationshipInputs.forEach(function (input) {
+                input.disabled = !hasRelationship;
+
+                if (!hasRelationship) {
+                    input.value = 0;
+                    input.setAttribute('aria-disabled', 'true');
+                    input.style.pointerEvents = 'none';
+                    input.style.opacity = '0.5';
+                    input.readOnly = true;
+                } else {
+                    input.removeAttribute('aria-disabled');
+                    input.style.pointerEvents = 'auto';
+                    input.style.opacity = '1';
+                    input.readOnly = false;
+                }
+            });
+        }
+
+        relatedFunctionSelect.addEventListener('change', toggleRelationshipInputs);
+
+        toggleRelationshipInputs();
+    });
+</script>
 
 </body>
 </html>

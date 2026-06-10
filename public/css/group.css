@@ -1,0 +1,234 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.group-page {
+    padding: 30px;
+}
+
+.group-page h1 {
+    margin-bottom: 25px;
+    font-size: 36px;
+    color: #1f2937;
+}
+
+.group-page h2 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 24px;
+    color: #1f2937;
+}
+
+.group-form-container {
+    width: 700px;
+    max-width: 700px;
+    padding: 30px;
+    background-color: #ffffff;
+    border: 1px solid #d0d0d0;
+    border-radius: 12px;
+}
+
+.button-container {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    height: 50px;
+    padding: 0 15px;
+    font-size: 16px;
+    border: 1px solid #bfc7d1;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.form-group input[type="text"]:focus {
+    outline: none;
+    border-color: #2f55d4;
+}
+
+.form-group select {
+    width: 100%;
+    height: 50px;
+    padding: 0 15px;
+    font-size: 16px;
+    border: 1px solid #bfc7d1;
+    border-radius: 8px;
+    background-color: white;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #2f55d4;
+}
+
+.effects-grid label {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.effect-positive {
+    color: green;
+}
+
+.effect-negative {
+    color: red;
+}
+
+.effect-neutral {
+    color: black;
+}
+
+.button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.add-button,
+.edit-button,
+.save-button,
+.back-button {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: #2f55d4;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.add-button:hover,
+.edit-button:hover,
+.save-button:hover,
+.back-button:hover {
+    background-color: #2446b5;
+    color: white;
+}
+
+.group-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.group-table th {
+    background-color: #f0f0f0;
+    text-align: left;
+    padding: 12px;
+    border: 1px solid #d0d0d0;
+}
+
+.group-table td {
+    padding: 12px;
+    border: 1px solid #d0d0d0;
+}
+
+.group-table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.group-table tr:hover {
+    background-color: #f2f6ff;
+}
+
+.function-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.function-row select {
+    flex: 1;
+}
+
+.remove-function {
+    padding: 10px 16px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.remove-function:hover {
+    background-color: #c82333;
+}
+
+#functionContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+fieldset {
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 8px 0;
+}
+
+legend {
+    font-weight: bold;
+    padding: 0 6px;
+}
+
+label {
+    font-weight: 600;
+}
+
+input {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    border: 1px solid #98a2b3;
+    border-radius: 6px;
+    font-size: 16px;
+
+    box-sizing: border-box;
+}
+
+select {
+    width: 100%;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 10px;
+    border: 1px solid #98a2b3;
+    border-radius: 6px;
+    font-size: 16px;
+
+    box-sizing: border-box;
+}
+
+select {
+    display: block;
+    cursor: pointer;
+}
+
+.relationship-effect-input:disabled {
+    background-color: #e5e7eb;
+    color: #6b7280;
+    cursor: not-allowed;
+    opacity: 0.8;
+}

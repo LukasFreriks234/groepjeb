@@ -15,6 +15,11 @@ class GroupRelationshipEffects extends Model
         'group_relationship_id',
         'bonus_effect',
         'penalty_effect',
+        'safety',
+        'recreation',
+        'environmental_quality',
+        'services',
+        'mobility',
     ];
 
     public function relationship()

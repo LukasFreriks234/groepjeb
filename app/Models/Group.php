@@ -13,6 +13,11 @@ class Group extends Model
         'name',
         'is_system',
         'role',
+        'safety',
+        'recreation',
+        'environmental_quality',
+        'services',
+        'mobility',
     ];
 
     protected $casts = [
@@ -21,7 +26,12 @@ class Group extends Model
 
     public function functions()
     {
-        return $this->belongsToMany(Functions::class, 'function_group', 'group_id', 'function_id');
+        return $this->belongsToMany(
+            Functions::class,
+            'function_group',
+            'group_id',
+            'function_id'
+        );
     }
 
     public function outgoingRelationships()

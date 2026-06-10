@@ -1,8 +1,6 @@
 body {
-    font-family: Arial, sans-serif;
     background: #f5f6f8;
     margin: 0;
-    padding: 20px;
     color: #1a1a1a;
 }
 
@@ -11,7 +9,7 @@ h1 {
     margin: 0 auto 20px auto;
 }
 
-.container {
+.event-container {
     max-width: 1000px;
     margin: 0 auto;
     display: flex;
@@ -58,7 +56,17 @@ label {
     font-weight: 600;
 }
 
-input,
+input {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    border: 1px solid #98a2b3;
+    border-radius: 6px;
+    font-size: 16px;
+
+    box-sizing: border-box;
+}
+
 select {
     width: 100%;
     max-width: 100%;
@@ -67,6 +75,7 @@ select {
     border: 1px solid #98a2b3;
     border-radius: 6px;
     font-size: 16px;
+
     box-sizing: border-box;
 }
 
@@ -88,7 +97,7 @@ select[aria-invalid="true"] {
     border-color: #b42318;
 }
 
-button {
+button:not(.navbar-button) {
     margin-top: 20px;
     background: #1d4ed8;
     color: white;
@@ -187,4 +196,35 @@ img {
     button {
         width: 100%;
     }
+}
+
+.delete {
+    background-color: red
+}
+
+.containerRadio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.containerRadio input[type="radio"], .containerRadio input[type="checkbox"] {
+    width: auto;
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.containerRadio label {
+    margin: 0;
+    padding-left: 30px;
+}
+
+.input-with-unit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#recurringFields, #dynamicEvent {
+    display: none;
 }
