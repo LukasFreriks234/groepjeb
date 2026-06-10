@@ -39,7 +39,12 @@ class GridCellController extends Controller
 
         $functions = Functions::with('effects')->get();
         $categories = Category::all();
-        $events = Event::with('effects')->get();
+
+        $events = Event::with([
+            'effects',
+            'recurring.weekly',
+            'recurring.monthly',
+        ])->get();
 
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
         $qualityOfLife = array_sum($effectTotals);

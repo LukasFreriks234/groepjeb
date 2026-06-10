@@ -4,77 +4,185 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\EventEffect;
+use App\Models\Monthly;
+use App\Models\Recurring;
+use App\Models\Weekly;
+use App\Models\GridCell;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
     public function create()
     {
-        return view('Events.create');
+        $cells = GridCell::orderBy('y_coordinate')
+            ->orderBy('x_coordinate')
+            ->get();
+
+        return view('Events.create', compact('cells'));
     }
 
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|max:255',
-            'image' => 'required|image',
 
-            'Safety' => 'required|integer|min:-10|max:10',
-            'Recreation' => 'required|integer|min:-10|max:10',
-            'Environmental_Quality' => 'required|integer|min:-10|max:10',
-            'Services' => 'required|integer|min:-10|max:10',
-            'Mobility' => 'required|integer|min:-10|max:10',
-
-            'typeEvent' => 'required|in:oneOff,recurring',
-
-            'recurrence_pattern' => 'nullable|in:daily,weekly,monthly',
-        ]);
-
-        // image upload
-        $imagePath = $request->file('image')->store('events', 'public');
-
-        // create event
-        $event = Event::create([
-            'name' => $validated['name'],
-            'image_url' => $imagePath,
-
-            'type' => $validated['typeEvent'] === 'oneOff'
-                ? 'one-off'
-                : 'recurring',
-
-            'recurrence_pattern' => $validated['typeEvent'] === 'recurring'
-                ? $validated['recurrence_pattern']
-                : null,
-
-            'dynamic' => $request->boolean('dynamic'),
-        ]);
-
-        // effects insert (IMPORTANT FIX)
-        $effects = [
-            'Safety' => $validated['Safety'],
-            'Recreation' => $validated['Recreation'],
-            'Environmental Quality' => $validated['Environmental_Quality'],
-            'Services' => $validated['Services'],
-            'Mobility' => $validated['Mobility'],
-        ];
-
-        $insertData = [];
-
-        foreach ($effects as $category => $value) {
-            $insertData[] = [
-                'event_id' => $event->id,
-                'category_name' => $category,
-                'effect' => $value,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+        if ($request->type === 'oneoff') {
+            $request->validate([
+                'startDateOneOff' => 'required',
+                'startTimeOneOff' => 'required'
+            ]);
         }
 
-        EventEffect::insert($insertData);
+        if ($request->type === 'recurring') {
+            $request->validate([
+                'startDateRecurring' => 'required',
+                'startTimeRecurring' => 'required'
+            ]);
+        }
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'required|image',
+            'typeEvent' => 'required|in:oneOff,recurring',
+            'length' => 'required|integer|min:1',
+            'lengthUnit' => 'required|in:hours,days,weeks',
+            'route_cells' => 'nullable|string',
+            'speed' => 'nullable|integer|min:1',
+        ]);
 
-        return redirect()
-            ->back()
+        $event = DB::transaction(function () use ($request) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Upload image
+            |--------------------------------------------------------------------------
+            */
+
+            $imagePath = null;
+
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')
+                    ->store('events', 'public');
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create recurring record
+            |--------------------------------------------------------------------------
+            */
+
+            $recurringId = null;
+
+            if ($request->typeEvent === 'recurring') {
+
+                $amount = match ($request->recurrencePattern) {
+                    'daily' => $request->amountDay,
+                    'weekly' => $request->amountWeek,
+                    'monthly' => $request->amountMonth,
+                    'yearly' => $request->amountYear,
+                    default => 1,
+                };
+
+                $recurring = Recurring::create([
+                    'frequency' => $request->recurrencePattern,
+                    'amount' => $amount,
+                    'end_date' => $request->endDate,
+                ]);
+
+                $recurringId = $recurring->id;
+
+                /*
+                |--------------------------------------------------------------------------
+                | Weekly recurrence
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    $request->recurrencePattern === 'weekly'
+                    && $request->filled('weekdays')
+                ) {
+
+                    foreach ($request->weekdays as $weekday) {
+
+                        Weekly::create([
+                            'recurring_id' => $recurring->id,
+                            'weekday' => $weekday,
+                        ]);
+                    }
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Monthly recurrence
+                |--------------------------------------------------------------------------
+                */
+
+                if ($request->recurrencePattern === 'monthly') {
+
+                    if (
+                        $request->typeMonth === 'each'
+                        && $request->filled('monthDays')
+                    ) {
+
+                        foreach ($request->monthDays as $day) {
+
+                            Monthly::create([
+                                'recurring_id' => $recurring->id,
+                                'day_of_month' => $day,
+                            ]);
+                        }
+                    }
+
+                    if ($request->typeMonth === 'onThe') {
+
+                        Monthly::create([
+                            'recurring_id' => $recurring->id,
+                            'ordinal_number' => $request->ordinalNumber,
+                            'weekday' => $request->dayMonth,
+                        ]);
+                    }
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create event
+            |--------------------------------------------------------------------------
+            */
+
+            return Event::create([
+                'name' => $request->name,
+                'image_url' => $imagePath,
+
+                'recurring_id' => $recurringId,
+
+                'start_date' => $request->startDate,
+
+                'time' => $request->startTime,
+
+                'length' => $request->length,
+                'length_unit' => $request->lengthUnit,
+
+                'dynamic' => $request->boolean('dynamic'),
+                'speed' => $request->boolean('dynamic') ? $request->speed : null, 
+            ]);
+        });
+
+        if ($request->boolean('dynamic') && $request->filled('route_cells')) {
+
+            $routeCells = json_decode($request->route_cells);
+
+            foreach ($routeCells as $index => $gridCellId) {
+
+                DB::table('event_grid_cells')->insert([
+                    'event_id' => $event->id,
+                    'grid_cell_id' => $gridCellId,
+                    'route_order' => $index + 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+        return redirect('/grid')
             ->with('success', 'Event created successfully.');
     }
 }

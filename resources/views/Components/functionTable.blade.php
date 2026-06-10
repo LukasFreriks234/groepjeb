@@ -17,12 +17,12 @@
                 aria-label="Search functions"
             ><br>
 
-            <?php 
-            $arrCategories = $categories->toArray();
-            $arrCategorie = array_column($arrCategories, 'category');
-            array_multisort($arrCategorie, SORT_ASC, $arrCategories);
-            $i = 1;
-            ?>
+            @php
+                $arrCategories = $categories->toArray();
+                $arrCategorie = array_column($arrCategories, 'category');
+                array_multisort($arrCategorie, SORT_ASC, $arrCategories);
+                $i = 1;
+            @endphp
 
             @foreach($arrCategories as $category)
                 <input 
@@ -33,19 +33,22 @@
                     value="{{ $category['category'] }}"
                 >
                 <label for="category{{ $i }}">{{ $category['category'] }}</label><br>
-                <?php $i++; ?>
+
+                @php
+                    $i++;
+                @endphp
             @endforeach
         </div>
     </div>
 
-    <?php 
-    $arrFunctions = $functions->toArray();
-    $arrFunctionName = array_column($arrFunctions, 'name');
-    $arrFunctionCategory = array_column($arrFunctions, 'category');
-    array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arrFunctions);
-    ?>
+    @php
+        $arrFunctions = $functions->toArray();
+        $arrFunctionName = array_column($arrFunctions, 'name');
+        $arrFunctionCategory = array_column($arrFunctions, 'category');
+        array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arrFunctions);
+    @endphp
 
-    <p id="keyboardDragInstructions" class="sr-only">
+    <p id="functionKeyboardDragInstructions" class="sr-only">
         Keyboard instructions: use Tab or Shift Tab to move through the function list. Press Enter or Space on a function to select it. Then move to a grid cell and press Enter or Space to place it.
     </p>
 
@@ -53,7 +56,7 @@
         id="functionsList" 
         tabindex="-1" 
         aria-label="functions"
-        aria-describedby="keyboardDragInstructions"
+        aria-describedby="functionKeyboardDragInstructions"
     >
         @foreach($arrFunctions as $function)
             <li 
@@ -88,56 +91,82 @@
 <div id="eventsTable" class="tabContent" style="display:none;">
     <div class="filters">
         <div>
-            <input type="text" id="eventSearch" placeholder="Search events.." aria-label="Search events"><br>
+            <input 
+                type="text" 
+                id="eventSearch" 
+                placeholder="Search events.." 
+                aria-label="Search events"
+            ><br>
 
-            <input type="checkbox" id="typeOneOff" class="eventFilter" value="one-off">
+            <input 
+                type="checkbox" 
+                id="typeOneOff" 
+                class="eventFilter" 
+                value="one-off"
+            >
             <label for="typeOneOff">One-off</label><br>
 
-            <input type="checkbox" id="typeRecurring" class="eventFilter" value="recurring">
+            <input 
+                type="checkbox" 
+                id="typeRecurring" 
+                class="eventFilter" 
+                value="recurring"
+            >
             <label for="typeRecurring">Recurring</label><br>
 
-            <input type="checkbox" id="typeDynamic" class="eventFilter" value="dynamic">
+            <input 
+                type="checkbox" 
+                id="typeDynamic" 
+                class="eventFilter" 
+                value="dynamic"
+            >
             <label for="typeDynamic">Dynamic</label><br>
         </div>
-</div>
+    </div>
 
-    
+    @php
+        $arrEvents = $events->sortBy('name');
+    @endphp
 
-
-    <?php 
-        $arrEvents = $events->toArray();
-        $arrEventName = array_column($arrEvents, 'name');
-        array_multisort($arrEventName, SORT_ASC, $arrEvents);
-    ?>
-    <p id="keyboardDragInstructions" class="sr-only">
+    <p id="eventKeyboardDragInstructions" class="sr-only">
         Keyboard instructions: use Tab or Shift Tab to move through the event list. Press Enter or Space on an event to select it. Then move to a grid cell and press Enter or Space to place it.
     </p>
 
-    <ul id="eventsList"
+    <ul 
+        id="eventsList"
         tabindex="-1" 
         aria-label="events"
-        aria-describedby="keyboardDragInstructions">
+        aria-describedby="eventKeyboardDragInstructions"
+    >
         @foreach($arrEvents as $event)
+            @php
+                $eventType = $event->recurring_id ? 'recurring' : 'one-off';
+                $eventTypeLabel = $event->recurring_id ? 'Recurring' : 'One-off';
+                $isDynamic = $event->dynamic ? '1' : '0';
+            @endphp
+
             <li 
                 tabindex="0"
-                id="event{{ $event['id'] }}" 
+                id="event{{ $event->id }}" 
                 class="functionItem"
-                data-event-id="{{ $event['id'] }}"
-                data-type="{{ $event['type'] }}"
-                data-dynamic="{{ $event['dynamic'] ? '1' : '0' }}"
+                data-event-id="{{ $event->id }}"
+                data-type="{{ $eventType }}"
+                data-dynamic="{{ $isDynamic }}"
                 role="button"
-                aria-label="Select event {{ $event['name'] }} of type {{ $event['type'] }} to place it in the grid."
+                aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
             >
                 <div class="functionImage">
                     <img 
-                        src="{{ asset($event['image_url']) }}" 
-                        alt="{{ $event['name'] }}"
+                        src="{{ asset($event->image_url) }}" 
+                        alt="{{ $event->name }}"
                     >
                 </div>
 
                 <div>
-                    <p class="functionName">{{ $event['name'] }}</p>
-                    <p class="functionCategory">{{ $event['type'] }}</p>
+                    <p class="functionName">{{ $event->name }}</p>
+                    <p class="functionCategory">
+                        {{ $eventTypeLabel }}{{ $event->dynamic ? ' / Dynamic' : '' }}
+                    </p>
                 </div>
             </li>
         @endforeach
