@@ -21,11 +21,7 @@
         </li>
 
         <li>
-            <a
-                href="{{ route('groups.index') }}"
-                class="navbar-button"
-                @if(request()->routeIs('groups.index')) aria-current="page" @endif
-            >
+            <a href="{{ route('groups.index') }}" class="navbar-button">
                 Groups
             </a>
         </li>

@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Effects as EffectsModel;
+use Illuminate\Database\Seeder;
 
 class EffectsSeeder extends Seeder
 {
@@ -24,7 +23,6 @@ class EffectsSeeder extends Seeder
             ['id' => '11', 'Safety' => -4, 'Recreation' => 2, 'Environmental Quality' => -4, 'Services' => 3, 'Mobility' => 5],
             ['id' => '12', 'Safety' => 0, 'Recreation' => 3, 'Environmental Quality' => 3, 'Services' => 3, 'Mobility' => 4],
             ['id' => '13', 'Safety' => -2, 'Recreation' => 0, 'Environmental Quality' => -4, 'Services' => 1, 'Mobility' => 4],
-
         ];
 
         foreach ($effects as $effect) {

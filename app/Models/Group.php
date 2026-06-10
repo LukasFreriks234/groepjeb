@@ -12,6 +12,7 @@ class Group extends Model
     protected $fillable = [
         'name',
         'is_system',
+        'role',
         'safety',
         'recreation',
         'environmental_quality',
@@ -31,5 +32,15 @@ class Group extends Model
             'group_id',
             'function_id'
         );
+    }
+
+    public function outgoingRelationships()
+    {
+        return $this->hasMany(GroupRelationship::class, 'group_id', 'id');
+    }
+
+    public function incomingRelationships()
+    {
+        return $this->hasMany(GroupRelationship::class, 'related_group_id', 'id');
     }
 }

@@ -1,0 +1,116 @@
+.groupItem {
+    justify-content: space-between;
+    gap: 16px;
+    padding-right: 18px;
+}
+
+.groupSummary {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.groupFunctions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex: 1;
+    justify-content: flex-start;
+}
+
+.functionPill {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid #8fb6c2;
+    background: white;
+}
+
+.groupCount {
+    align-self: center;
+    white-space: nowrap;
+    background: #d9edf3;
+    border: 1px solid #8fb6c2;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight: 700;
+}
+
+.emptyState {
+    color: #5f6d73;
+}
+
+/* Add Group knop bovenaan */
+.button-container {
+    margin-bottom: 20px;
+}
+
+/* Add en Edit knop styling */
+.addButton,
+.editButton {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 120px;
+    height: 50px;
+
+    background-color: white;
+    color: black;
+
+    text-decoration: none;
+
+    border: 1px solid #bdbdbd;
+    border-radius: 999px;
+
+    font-weight: bold;
+    font-size: 16px;
+
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.addButton:hover,
+.editButton:hover {
+    background-color: #f3f3f3;
+}
+
+/* Edit knop positie */
+.groupButtons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Titel + Add knop */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+    #functionsList .groupItem {
+        display: flex;
+        align-items: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .groupItem {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-right: 20px;
+    }
+
+    .groupSummary {
+        gap: 4px;
+    }
+
+    .groupCount,
+    .groupFunctions,
+    .groupButtons {
+        align-self: flex-start;
+    }
+}

@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Functions;
+use App\Models\GroupRelationship;
+use App\Models\GroupRelationshipEffects;
 use App\Models\Group;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -12,14 +14,17 @@ class GroupsSeeder extends Seeder
     public function run(): void
     {
         $groups = [
-            ['name' => 'Polluting', 'is_system' => true],
-            ['name' => 'Sensitive', 'is_system' => true],
+            ['name' => 'Polluting', 'is_system' => true, 'role' => 'polluting'],
+            ['name' => 'Sensitive', 'is_system' => true, 'role' => 'sensitive'],
         ];
 
         foreach ($groups as $group) {
             Group::updateOrCreate(
                 ['name' => $group['name']],
-                ['is_system' => $group['is_system']]
+                [
+                    'is_system' => $group['is_system'],
+                    'role' => $group['role'],
+                ]
             );
         }
 
@@ -44,5 +49,22 @@ class GroupsSeeder extends Seeder
                 return $membership['group_id'] && $membership['function_id'];
             }))
         );
+
+        $relationship = GroupRelationship::updateOrCreate(
+            [
+                'group_id' => $groupIds['Sensitive'] ?? null,
+                'related_group_id' => $groupIds['Polluting'] ?? null,
+            ]
+        );
+
+        if ($relationship->id) {
+            GroupRelationshipEffects::updateOrCreate(
+                ['group_relationship_id' => $relationship->id],
+                [
+                    'bonus_effect' => 0,
+                    'penalty_effect' => 2,
+                ]
+            );
+        }
     }
 }
