@@ -21,6 +21,12 @@
         </li>
 
         <li>
+            <a href="{{ route('groups.index') }}" class="navbar-button">
+                Groups
+            </a>
+        </li>
+
+        <li>
             <form method="POST" action="/logout" class="logout-form">
                 @csrf
 

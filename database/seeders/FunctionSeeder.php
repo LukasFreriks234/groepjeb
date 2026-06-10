@@ -27,7 +27,10 @@ class FunctionSeeder extends Seeder
         ];
 
         foreach ($functions as $function){
-            Functions::create($function);
+            Functions::updateOrCreate(
+                ['name' => $function['name']],
+                $function
+            );
         }
     }
 }
