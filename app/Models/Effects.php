@@ -189,20 +189,37 @@ class Effects extends Model
                         if (array_key_exists($cellCategory, $effectTotals)) {
                             $effectTotals[$cellCategory] += 2;
                         }
-                    }
+                        }
                 }
 
-                $neighborGroupIds = self::getFunctionGroupIds($neighborCell->cityFunction, $functionGroupsCache);
-                $relationship = self::getGroupRelationship($functionGroupIds, $neighborGroupIds);
+                    $neighborGroupIds = self::getFunctionGroupIds($neighborCell->cityFunction, $functionGroupsCache);
+                    $relationship = self::getGroupRelationship($functionGroupIds, $neighborGroupIds);
 
-                if ($relationship && $relationship->effects) {
-                    $pairKey = self::pairKey($cell->id, $neighborCell->id);
+                    if ($relationship && $relationship->effects) {
+                        $pairKey = self::pairKey($cell->id, $neighborCell->id);
 
-                    if (!in_array($pairKey, $groupEffectPairs)) {
-                        $groupEffectPairs[] = $pairKey;
+                        if ($relationship && $relationship->effects) {
+        $pairKey = self::pairKey($cell->id, $neighborCell->id);
 
-                        $bonus = (int) ($relationship->effects->bonus_effect ?? 0);
-                        $penalty = (int) ($relationship->effects->penalty_effect ?? 0);
+        if (!in_array($pairKey, $groupEffectPairs)) {
+            $groupEffectPairs[] = $pairKey;
+
+            $bonus = (int) ($relationship->effects->bonus_effect ?? 0);
+            $penalty = (int) ($relationship->effects->penalty_effect ?? 0);
+
+            $relationshipEffects = [
+                'Safety' => $relationship->effects->safety ?? 0,
+                'Recreation' => $relationship->effects->recreation ?? 0,
+                'Environmental Quality' => $relationship->effects->environmental_quality ?? 0,
+                'Services' => $relationship->effects->services ?? 0,
+                'Mobility' => $relationship->effects->mobility ?? 0,
+            ];
+
+            foreach ($relationshipEffects as $category => $value) {
+                if (array_key_exists($category, $effectTotals)) {
+                    $effectTotals[$category] += (int) $value;
+                }
+            }
 
                         $isSensitivePollutingPair = (
                             self::hasAnyGroup($functionGroupIds, $sensitiveGroupIds)
@@ -245,6 +262,7 @@ class Effects extends Model
                         }
                     }
                 }
+                    }
 
                 if (!$function->related_function_id) {
                     continue;
