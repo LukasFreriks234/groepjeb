@@ -34,12 +34,6 @@ class GroupController extends Controller
         $group = Group::create([
             'name' => $request->name,
             'is_system' => false,
-
-            'safety' => $request->safety,
-            'recreation' => $request->recreation,
-            'environmental_quality' => $request->environmental_quality,
-            'services' => $request->services,
-            'mobility' => $request->mobility,
         ]);
 
         if ($request->filled('function_ids')) {
@@ -153,11 +147,6 @@ class GroupController extends Controller
     {
         $group->update([
             'name' => $request->name,
-            'safety' => $request->safety,
-            'recreation' => $request->recreation,
-            'environmental_quality' => $request->environmental_quality,
-            'services' => $request->services,
-            'mobility' => $request->mobility,
         ]);
 
         if ($request->filled('function_ids')) {
