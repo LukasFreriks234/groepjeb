@@ -104,7 +104,10 @@ class FunctionController extends Controller
         $categories = Category::all();
         $functions = Functions::where('id', '!=', $id)->get();
 
-        return view('Functions.edit', compact('function', 'categories', 'functions'));
+        $isAdmin = auth()->user() && auth()->user()->role === 'admin';
+        $isSpatialPlanner = auth()->user() && auth()->user()->role === 'spatial_planner';
+
+        return view('Functions.edit', compact('function', 'categories', 'functions', 'isAdmin', 'isSpatialPlanner'));
     }
 
     public function update(Request $request, $id)
