@@ -8,12 +8,14 @@ use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
 use App\Models\Event;
-<<<<<<< HEAD
 use Illuminate\Support\Facades\DB;
+<<<<<<< HEAD
 use App\Models\EventgridCell;
 
 =======
 >>>>>>> parent of 991f29f (Merge remote-tracking branch 'origin/time-event' into submain)
+=======
+>>>>>>> parent of b994d93 (dynamic)
 
 class GridCellController extends Controller
 {
@@ -52,8 +54,6 @@ class GridCellController extends Controller
             'recurring.monthly',
         ])->get();
 
-        $eventGridCells = EventgridCell::all();
-
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
         $qualityOfLife = array_sum($effectTotals);
 
@@ -63,8 +63,7 @@ class GridCellController extends Controller
             'events',
             'categories',
             'effectTotals',
-            'qualityOfLife',
-            'eventGridCells',
+            'qualityOfLife'
         ));
     }
 
