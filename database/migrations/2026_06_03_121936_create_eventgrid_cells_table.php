@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             $table->foreignId('grid_cell_id')->constrained('grid_cells')->cascadeOnDelete();
             $table->integer('route_order');
+             $table->unsignedInteger('expires_at_minute')->nullable();
             $table->timestamps();
         });
     }
