@@ -37,8 +37,24 @@ class FunctionController extends Controller
 
         $categories = Category::all();
         $functions = Functions::all();
+        $deletedFunctions = Functions::onlyTrashed()->get();
 
-        return view('Functions.create', compact('categories', 'functions'));
+        return view('Functions.create', compact('categories', 'functions', 'deletedFunctions'));
+    }
+
+    public function restore(Request $request)
+    {
+       if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $request->validate(['deleted_function' => 'required|exists:functions,id']);
+
+        $function = Functions::onlyTrashed()->findOrFail($request->deleted_function);
+
+        $function->restore();
+
+        return redirect()->route('functions.index');
     }
 
     public function store(Request $request)
