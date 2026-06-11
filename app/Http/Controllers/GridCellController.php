@@ -154,15 +154,6 @@ class GridCellController extends Controller
         $cell = GridCell::find($request->cell_id);
         $event = Event::with('effects')->find($request->event_id);
 
-        $durationMinutes = match ($event->length_unit) {
-            'hours' => $event->length * 60,
-            'days'  => $event->length * 60 * 24,
-            'weeks' => $event->length * 60 * 24 * 7,
-        };
-
-        $currentMinute = $request->simulation_minute;
-
-
         if (!$cell || !$event) {
             return response()->json([
                 'success' => false,
@@ -170,10 +161,24 @@ class GridCellController extends Controller
             ], 404);
         }
 
+        // 1 simulatie-minuut = 1 seconde, klok springt 24 per tick
+        // dus 1 echt seconde = 24 simulatie-minuten
+        $simulationMinutesPerRealSecond = 24;
+
+        $durationInSimulationMinutes = match ($event->length_unit) {
+            'hours' => $event->length * 60,
+            'days'  => $event->length * 60 * 24,
+            'weeks' => $event->length * 60 * 24 * 7,
+        };
+
+        $durationInRealSeconds = $durationInSimulationMinutes / $simulationMinutesPerRealSecond;
+
+        $expiresAt = now()->addSeconds($durationInRealSeconds);
+
         $cell->events()->syncWithoutDetaching([
             $event->id => [
                 'route_order' => $request->route_order ?? null,
-                'expires_at_minute' => $currentMinute + $durationMinutes,
+                'expires_at'  => $expiresAt,
             ],
         ]);
 
@@ -191,23 +196,18 @@ class GridCellController extends Controller
 
     public function checkExpiredEvents(Request $request)
     {
-        $currentMinute = (int) $request->minute;
-
-        // pak alle events die verlopen zijn
         $expired = DB::table('event_grid_cells')
-            ->whereNotNull('expires_at_minute')
-            ->where('expires_at_minute', '<=', $currentMinute)
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', now())
             ->get();
 
         foreach ($expired as $row) {
-            // verwijder relatie
             DB::table('event_grid_cells')
                 ->where('grid_cell_id', $row->grid_cell_id)
                 ->where('event_id', $row->event_id)
                 ->delete();
         }
 
-        // herbereken effecten na cleanup
         $cells = GridCell::with(['cityFunction', 'events.effects'])->get();
         $categories = Category::all();
 
@@ -217,7 +217,7 @@ class GridCellController extends Controller
         return response()->json([
             'success' => true,
             'expiredEvents' => $expired,
-            'effectTotals' => $effectTotals,
+            'effectTotals'  => $effectTotals,
             'qualityOfLife' => $qualityOfLife,
         ]);
     }
