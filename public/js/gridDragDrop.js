@@ -530,7 +530,8 @@ function saveEventInGrid(cell, dragData) {
         body: JSON.stringify({
             event_id: dragData.eventId,
             cell_id: cell.dataset.id,
-            route_order: 1
+            route_order: 1,
+            simulation_minute: window.simulationClock.minute
         })
     })
         .then(response => response.json())
@@ -1357,6 +1358,40 @@ document.addEventListener("touchmove", function (ev) {
 document.addEventListener("dragend", stopAutoScroll);
 document.addEventListener("drop", stopAutoScroll);
 document.addEventListener("touchend", stopAutoScroll);
+
+window.addEventListener('simulation:tick', (event) => {
+    fetch('/grid/check-expired-events', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector(
+                'meta[name="csrf-token"]'
+            ).content
+        },
+        body: JSON.stringify({
+            minute: event.detail.minute
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (!data.success) {
+            return;
+        }
+
+        data.expiredEvents.forEach(expired => {
+            removeGridEventImage(
+                expired.grid_cell_id,
+                expired.event_id
+            );
+        });
+
+        updateEffectTable(
+            data.effectTotals,
+            data.qualityOfLife
+        );
+    });
+});
 
 function announceKeyboardStatus(message) {
     let status = document.getElementById("keyboardDragStatus");
