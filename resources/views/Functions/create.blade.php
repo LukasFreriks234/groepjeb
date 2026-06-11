@@ -13,7 +13,7 @@
 <body>
     <h1>Create Function</h1>
 
-    <div class="container">
+    <div class="event-container">
         <div class="form-section">
             <form method="POST" action="{{ route('functions.store') }}" enctype="multipart/form-data" novalidate>
                 @csrf

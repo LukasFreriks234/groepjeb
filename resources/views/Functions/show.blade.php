@@ -13,7 +13,7 @@
 
     <h1>{{ $function->name }}</h1>
 
-    <div class="container">
+    <div class="event-container">
 
         <div class="form-section">
 
