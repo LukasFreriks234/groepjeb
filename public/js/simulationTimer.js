@@ -51,7 +51,7 @@
     }
 
     function advanceClock() {
-        elapsedMinutes = (elapsedMinutes + 24) % CYCLE_LENGTH_MINUTES;
+        elapsedMinutes = (elapsedMinutes + 1) % CYCLE_LENGTH_MINUTES;
 
         if (elapsedMinutes === 0) {
             dayCount += 1;
