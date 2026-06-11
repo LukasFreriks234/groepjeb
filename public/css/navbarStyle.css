@@ -124,6 +124,34 @@ body {
     font-size: 11px;
 }
 
+.navbar-day-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    min-width: 40px;
+    padding: 4px 8px;
+    border: 2px solid black;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #ffffff 0%, #eef6ff 100%);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.navbar-day-counter-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #333;
+}
+
+.navbar-day-counter-value {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+    color: #2563eb;
+}
+
 @media (max-width: 1100px) {
     .navbar-menu {
         flex-wrap: wrap;
