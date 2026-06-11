@@ -39,14 +39,22 @@
                 </div>
             @endif
 
+            @if(isset($isAdmin) && $isAdmin)
             <label for="image">Change image</label>
             <input 
                 type="file" 
                 id="image" 
                 name="image" 
                 accept="image/*"
-            >
+            > @else
+                <div class="form-group-readonly">
+                    <label>Image</label>
+                    <p class="readonly-text">{{ $function->image }}</p>
+                    <input type="hidden" name="image" value="{{ $function->image }}">
+                </div>
+            @endif
 
+            @if(isset($isAdmin) && $isAdmin)
             <label for="category">Category</label>
             <select id="category" name="category" autocomplete="off">
                 @foreach($categories as $category)
@@ -55,8 +63,15 @@
                         {{ $category->category }}
                     </option>
                 @endforeach
-            </select>
+            </select> @else
+                <div class="form-group-readonly">
+                    <label>Category</label>
+                    <p class="readonly-text">{{ $function->category }}</p>
+                    <input type="hidden" name="category" value="{{ $function->category }}">
+                </div>
+            @endif
 
+            @if(isset($isAdmin) && $isAdmin)
             <h2>Add Relationship</h2>
 
                 <label for="related_function">Select Function</label>
@@ -71,7 +86,13 @@
                         </option>
                     @endif
                 @endforeach
-            </select>
+            </select> @else
+                <div class="form-group-readonly">
+                    <label>Select Function</label>
+                    <p class="readonly-text">{{ $function->related_function_id->name }}</p>
+                    <input type="hidden" name="related_funciton" value="{{ $function->related_function_id->name }}">
+                </div>
+            @endif
 
             <h2>Relationship Effects</h2>
 
