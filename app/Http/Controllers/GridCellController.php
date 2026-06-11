@@ -10,6 +10,7 @@ use App\Models\Effects;
 use App\Models\Event;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 use Illuminate\Support\Facades\DB;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -29,6 +30,8 @@ use App\Models\EventgridCell;
 use App\Models\EventgridCell;
 
 >>>>>>> parent of 1e23ca4 (Revert "Merge branch 'frontend-dynamic-event' into submain")
+=======
+>>>>>>> parent of 019c764 (Merge branch 'frontend-dynamic-event' into submain)
 
 class GridCellController extends Controller
 {
@@ -67,8 +70,6 @@ class GridCellController extends Controller
             'recurring.monthly',
         ])->get();
 
-        $eventGridCells = EventgridCell::all();
-
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
         $qualityOfLife = array_sum($effectTotals);
 
@@ -78,8 +79,7 @@ class GridCellController extends Controller
             'events',
             'categories',
             'effectTotals',
-            'qualityOfLife',
-            'eventGridCells',
+            'qualityOfLife'
         ));
     }
 
