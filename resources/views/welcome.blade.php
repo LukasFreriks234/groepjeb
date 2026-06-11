@@ -9,6 +9,7 @@
     <script src="{{ asset('js/gridDragDrop.js') }}" defer></script>
     <script src="{{ asset('js/delete.js') }}" defer></script>
     <script src="{{ asset('js/switchFunctionEvent.js') }}" defer></script>
+    <script src="{{ asset('js/dynamicEvent.js') }}" defer></script>
 
     <link href="{{ asset('css/functionTableStyle.css') }}" type="text/css" rel="stylesheet"/>
     <link href="{{ asset('css/gridStyle.css') }}" type="text/css" rel="stylesheet"/>
@@ -24,7 +25,7 @@
 
     <div class="container">
         <div class="gridSection">
-            <x-grid :cells="$cells" :categories="$categories" />
+            <x-grid :cells="$cells" :categories="$categories" :eventGridCells="$eventGridCells"/>
         </div>
 
         <div class="sidebar">
@@ -37,7 +38,7 @@
             </div>
 
             <div class="functionsSection">
-                <x-functionTable :functions="$functions" :categories="$categories" :events="$events" />
+                <x-functionTable :functions="$functions" :categories="$categories" :events="$events" :eventGridCells="$eventGridCells"/>
             </div>
         </div>
     </div>
