@@ -8,6 +8,7 @@ use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
 use App\Models\Event;
+use Illuminate\Support\Facades\DB;
 
 class GridCellController extends Controller
 {
@@ -160,9 +161,24 @@ class GridCellController extends Controller
             ], 404);
         }
 
+        // 1 simulatie-minuut = 1 seconde, klok springt 24 per tick
+        // dus 1 echt seconde = 24 simulatie-minuten
+        $simulationMinutesPerRealSecond = 24;
+
+        $durationInSimulationMinutes = match ($event->length_unit) {
+            'hours' => $event->length * 60,
+            'days'  => $event->length * 60 * 24,
+            'weeks' => $event->length * 60 * 24 * 7,
+        };
+
+        $durationInRealSeconds = $durationInSimulationMinutes / $simulationMinutesPerRealSecond;
+
+        $expiresAt = now()->addSeconds($durationInRealSeconds);
+
         $cell->events()->syncWithoutDetaching([
             $event->id => [
                 'route_order' => $request->route_order ?? null,
+                'expires_at'  => $expiresAt,
             ],
         ]);
 
@@ -175,6 +191,34 @@ class GridCellController extends Controller
             'success' => true,
             'effectTotals' => $totals['effectTotals'],
             'qualityOfLife' => $totals['qualityOfLife'],
+        ]);
+    }
+
+    public function checkExpiredEvents(Request $request)
+    {
+        $expired = DB::table('event_grid_cells')
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', now())
+            ->get();
+
+        foreach ($expired as $row) {
+            DB::table('event_grid_cells')
+                ->where('grid_cell_id', $row->grid_cell_id)
+                ->where('event_id', $row->event_id)
+                ->delete();
+        }
+
+        $cells = GridCell::with(['cityFunction', 'events.effects'])->get();
+        $categories = Category::all();
+
+        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+        $qualityOfLife = array_sum($effectTotals);
+
+        return response()->json([
+            'success' => true,
+            'expiredEvents' => $expired,
+            'effectTotals'  => $effectTotals,
+            'qualityOfLife' => $qualityOfLife,
         ]);
     }
 
