@@ -90,6 +90,7 @@
                                     tabindex="-1"
                                     class="gridEventImage draggableGridEvent"
                                     draggable="true"
+                                    recurring="{{ $event->recurring_id }}"
                                     data-event-id="{{ $event->id }}"
                                     data-event-name="{{ $event->name }}"
                                     data-from-cell-id="{{ $cell->id }}"

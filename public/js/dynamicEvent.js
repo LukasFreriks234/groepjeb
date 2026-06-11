@@ -1,3 +1,5 @@
+const timerSpeed = 60000;
+
 let events = document.querySelectorAll(".gridEventImage");
 let allIDs = [];
 events.forEach((event) =>{
@@ -13,17 +15,28 @@ function onlyUnique(value, index, array) {
 
 var eventIDs = allIDs.filter(onlyUnique);
 
-function nextEvent(ev,len){
+function nextEvent(ev,recurr,len){
     let eventId = ev.getAttribute("data-event-id");
     let routeState = parseInt(ev.getAttribute("route-state"));
-    let followUp = document.querySelector(`.gridEventImage[data-event-id="${eventId}"][route-state="${routeState+1}"]`);
+    let followUp = document.querySelector(`.gridEventImage[data-event-id="${eventId}"][route-state="${routeState%len+1}"]`);
     ev.style.visibility = 'hidden';
     followUp.style.visibility = 'visible';
+    if (routeState == len && !recurr){
+        followUp.style.visibility = 'hidden';
+    }
+}
+
+function routeAnimation (path, recurr){
+    path.forEach((point) =>{
+        setTimeout(() => nextEvent(point,recurr,path.length),timerSpeed*parseFloat(point.getAttribute("event-speed"))*parseInt(point.getAttribute("route-state")));
+    });
 }
 
 eventIDs.forEach((event) =>{
     let route = document.querySelectorAll(`.gridEventImage[data-event-id="${event}"]`);
-    route.forEach((point) =>{
-        setTimeout(() => nextEvent(point,route.length),60000*parseFloat(point.getAttribute("event-speed"))*parseInt(point.getAttribute("route-state")));
-    });
+    let recurrence = route[0].getAttribute('recurring') != '';
+    setTimeout(() => routeAnimation(route,recurrence), 0);
+    if (recurrence){
+        setInterval(() => routeAnimation(route,recurrence), timerSpeed*route[0].getAttribute("event-speed")*route.length);
+    }
 });
