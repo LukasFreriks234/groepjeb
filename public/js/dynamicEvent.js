@@ -35,7 +35,7 @@ function routeAnimation (path, recurr){
 eventIDs.forEach((event) =>{
     let route = document.querySelectorAll(`.gridEventImage[data-event-id="${event}"]`);
     let recurrence = route[0].getAttribute('recurring') != '';
-    setTimeout(() => routeAnimation(route,recurrence), 0);
+    routeAnimation(route,recurrence);
     if (recurrence){
         setInterval(() => routeAnimation(route,recurrence), timerSpeed*route[0].getAttribute("event-speed")*route.length);
     }
