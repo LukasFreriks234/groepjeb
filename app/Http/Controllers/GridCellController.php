@@ -8,8 +8,6 @@ use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
 use App\Models\Event;
-use App\Models\EventgridCell;
-
 
 class GridCellController extends Controller
 {
@@ -48,8 +46,6 @@ class GridCellController extends Controller
             'recurring.monthly',
         ])->get();
 
-        $eventGridCells = EventgridCell::all();
-
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
         $qualityOfLife = array_sum($effectTotals);
 
@@ -59,8 +55,7 @@ class GridCellController extends Controller
             'events',
             'categories',
             'effectTotals',
-            'qualityOfLife',
-            'eventGridCells',
+            'qualityOfLife'
         ));
     }
 
