@@ -126,6 +126,7 @@
 
     @php
         $arrEvents = $events->sortBy('name');
+        $arrEventGridCells = $eventGridCells->sortBy('route_order');
     @endphp
 
     <p id="eventKeyboardDragInstructions" class="sr-only">
@@ -143,8 +144,15 @@
                 $eventType = $event->recurring_id ? 'recurring' : 'one-off';
                 $eventTypeLabel = $event->recurring_id ? 'Recurring' : 'One-off';
                 $isDynamic = $event->dynamic ? '1' : '0';
+                $routeOrder = [];
             @endphp
-
+            @foreach ($arrEventGridCells as $gridCell)
+                @if($gridCell->event_id == $event->id)
+                    @php
+                    $routeOrder[] = $gridCell->grid_cell_id;
+                    @endphp
+                @endif
+            @endforeach
             <li 
                 tabindex="0"
                 id="event{{ $event->id }}" 
@@ -153,6 +161,7 @@
                 data-type="{{ $eventType }}"
                 data-dynamic="{{ $isDynamic }}"
                 role="button"
+                event-route="{{ json_encode($routeOrder) }}"
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
             >
                 <div class="functionImage">
