@@ -44,7 +44,7 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/functions/create', [FunctionController::class, 'create'])->name('functions.create');
     Route::post('/functions/store', [FunctionController::class, 'store'])->name('functions.store');
-
+    Route::post('/functions/restore', [FunctionController::class, 'restore'])->name('functions.restore');
     Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });
 
