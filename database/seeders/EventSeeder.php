@@ -13,7 +13,7 @@ class EventSeeder extends Seeder
     {
         Event::create([
             'name' => 'Zomerfestival',
-            'image_url' => 'festival.jpg',
+            'image_url' => 'images/zomerfestival.png',
             'recurring_id' => 1,
             'start_date' => now(),
             'time' => now(),
@@ -24,7 +24,7 @@ class EventSeeder extends Seeder
 
         Event::create([
             'name' => 'Food Truck Markt',
-            'image_url' => 'foodmarket.jpg',
+            'image_url' => 'images/foodtruck.jpg',
             'recurring_id' => null,
             'start_date' => now()->addDays(3),
             'time' => now(),

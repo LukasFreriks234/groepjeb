@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Event;
 use App\Models\EventEffect;
 use App\Models\Monthly;
@@ -19,26 +20,27 @@ class EventController extends Controller
             ->orderBy('x_coordinate')
             ->get();
 
-        return view('Events.create', compact('cells'));
-    }
+        $categories = Category::all();
 
+        return view('Events.create', compact('cells', 'categories'));
+    }
 
     public function store(Request $request)
     {
-
         if ($request->type === 'oneoff') {
             $request->validate([
                 'startDateOneOff' => 'required',
-                'startTimeOneOff' => 'required'
+                'startTimeOneOff' => 'required',
             ]);
         }
 
         if ($request->type === 'recurring') {
             $request->validate([
                 'startDateRecurring' => 'required',
-                'startTimeRecurring' => 'required'
+                'startTimeRecurring' => 'required',
             ]);
         }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'image' => 'required|image',
@@ -49,31 +51,16 @@ class EventController extends Controller
             'speed' => 'nullable|integer|min:1',
         ]);
 
-        $event = DB::transaction(function () use ($request) {
-
-            /*
-            |--------------------------------------------------------------------------
-            | Upload image
-            |--------------------------------------------------------------------------
-            */
-
+        DB::transaction(function () use ($request) {
             $imagePath = null;
 
             if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')
-                    ->store('events', 'public');
+                $imagePath = $request->file('image')->store('events', 'public');
             }
-
-            /*
-            |--------------------------------------------------------------------------
-            | Create recurring record
-            |--------------------------------------------------------------------------
-            */
 
             $recurringId = null;
 
             if ($request->typeEvent === 'recurring') {
-
                 $amount = match ($request->recurrencePattern) {
                     'daily' => $request->amountDay,
                     'weekly' => $request->amountWeek,
@@ -90,19 +77,11 @@ class EventController extends Controller
 
                 $recurringId = $recurring->id;
 
-                /*
-                |--------------------------------------------------------------------------
-                | Weekly recurrence
-                |--------------------------------------------------------------------------
-                */
-
                 if (
                     $request->recurrencePattern === 'weekly'
                     && $request->filled('weekdays')
                 ) {
-
                     foreach ($request->weekdays as $weekday) {
-
                         Weekly::create([
                             'recurring_id' => $recurring->id,
                             'weekday' => $weekday,
@@ -110,21 +89,12 @@ class EventController extends Controller
                     }
                 }
 
-                /*
-                |--------------------------------------------------------------------------
-                | Monthly recurrence
-                |--------------------------------------------------------------------------
-                */
-
                 if ($request->recurrencePattern === 'monthly') {
-
                     if (
                         $request->typeMonth === 'each'
                         && $request->filled('monthDays')
                     ) {
-
                         foreach ($request->monthDays as $day) {
-
                             Monthly::create([
                                 'recurring_id' => $recurring->id,
                                 'day_of_month' => $day,
@@ -133,7 +103,6 @@ class EventController extends Controller
                     }
 
                     if ($request->typeMonth === 'onThe') {
-
                         Monthly::create([
                             'recurring_id' => $recurring->id,
                             'ordinal_number' => $request->ordinalNumber,
@@ -143,46 +112,105 @@ class EventController extends Controller
                 }
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Create event
-            |--------------------------------------------------------------------------
-            */
-
-            return Event::create([
+            $event = Event::create([
                 'name' => $request->name,
                 'image_url' => $imagePath,
-
                 'recurring_id' => $recurringId,
-
                 'start_date' => $request->startDate,
-
                 'time' => $request->startTime,
-
                 'length' => $request->length,
                 'length_unit' => $request->lengthUnit,
-
                 'dynamic' => $request->boolean('dynamic'),
-                'speed' => $request->boolean('dynamic') ? $request->speed : null, 
+                'speed' => $request->boolean('dynamic') ? $request->speed : null,
             ]);
+
+            $this->storeEventEffects($event, $request);
+
+            if ($request->boolean('dynamic') && $request->filled('route_cells')) {
+                $routeCells = json_decode($request->route_cells);
+
+                if (is_array($routeCells)) {
+                    foreach ($routeCells as $index => $gridCellId) {
+                        DB::table('event_grid_cells')->insert([
+                            'event_id' => $event->id,
+                            'grid_cell_id' => $gridCellId,
+                            'route_order' => $index + 1,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                }
+            }
         });
 
-        if ($request->boolean('dynamic') && $request->filled('route_cells')) {
-
-            $routeCells = json_decode($request->route_cells);
-
-            foreach ($routeCells as $index => $gridCellId) {
-
-                DB::table('event_grid_cells')->insert([
-                    'event_id' => $event->id,
-                    'grid_cell_id' => $gridCellId,
-                    'route_order' => $index + 1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-        }
         return redirect('/grid')
             ->with('success', 'Event created successfully.');
+    }
+
+    private function storeEventEffects(Event $event, Request $request)
+    {
+        $categories = Category::all();
+
+        foreach ($categories as $category) {
+            $categoryName = $category->category;
+            $effectValue = $this->getEffectValueFromRequest($request, $categoryName);
+
+            EventEffect::updateOrCreate(
+                [
+                    'event_id' => $event->id,
+                    'category_name' => $categoryName,
+                ],
+                [
+                    'effect' => $effectValue,
+                ]
+            );
+        }
+    }
+
+    private function getEffectValueFromRequest(Request $request, string $categoryName): int
+    {
+        $normalizedCategoryName = $this->normalizeCategoryName($categoryName);
+
+        $arrayInputs = [
+            'effects',
+            'event_effects',
+            'effect',
+        ];
+
+        foreach ($arrayInputs as $arrayInput) {
+            $values = $request->input($arrayInput, []);
+
+            if (is_array($values)) {
+                if (array_key_exists($categoryName, $values)) {
+                    return (int) $values[$categoryName];
+                }
+
+                if (array_key_exists($normalizedCategoryName, $values)) {
+                    return (int) $values[$normalizedCategoryName];
+                }
+            }
+        }
+
+        $directInputs = [
+            $categoryName,
+            $normalizedCategoryName,
+            'effect_' . $normalizedCategoryName,
+        ];
+
+        foreach ($directInputs as $inputName) {
+            if ($request->has($inputName)) {
+                return (int) $request->input($inputName);
+            }
+        }
+
+        return 0;
+    }
+
+    private function normalizeCategoryName(string $categoryName): string
+    {
+        $normalized = strtolower($categoryName);
+        $normalized = preg_replace('/[^a-z0-9]+/', '_', $normalized);
+
+        return trim($normalized, '_');
     }
 }
