@@ -15,7 +15,7 @@
 
 <h1>Edit Function</h1>
 
-<div class="container">
+<div class="event-container">
 
     <div class="form-section">
 
@@ -89,8 +89,8 @@
             </select> @else
                 <div class="form-group-readonly">
                     <label>Select Function</label>
-                    <p class="readonly-text">{{ $function->related_function_id->name }}</p>
-                    <input type="hidden" name="related_funciton" value="{{ $function->related_function_id->name }}">
+                    <p class="readonly-text">{{ $function->relatedFunction?->name ?? 'No relationship' }}</p>
+                    <input type="hidden" id="related_function" name="related_function" value="{{ $function->related_function_id }}">
                 </div>
             @endif
 
@@ -235,7 +235,7 @@
         const relationshipInputs = document.querySelectorAll('.relationship-effect-input');
 
         function toggleRelationshipInputs() {
-            const hasRelationship = relatedFunctionSelect.value !== '';
+            const hasRelationship = relatedFunctionSelect && relatedFunctionSelect.value !== '';
 
             relationshipInputs.forEach(function (input) {
                 input.disabled = !hasRelationship;
