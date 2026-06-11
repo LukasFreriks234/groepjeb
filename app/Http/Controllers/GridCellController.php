@@ -8,7 +8,9 @@ use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
 use App\Models\Event;
+<<<<<<< HEAD
 use Illuminate\Support\Facades\DB;
+<<<<<<< HEAD
 <<<<<<< HEAD
 use App\Models\EventgridCell;
 
@@ -16,6 +18,12 @@ use App\Models\EventgridCell;
 >>>>>>> parent of 991f29f (Merge remote-tracking branch 'origin/time-event' into submain)
 =======
 >>>>>>> parent of b994d93 (dynamic)
+=======
+=======
+use App\Models\EventgridCell;
+
+>>>>>>> parent of 1e23ca4 (Revert "Merge branch 'frontend-dynamic-event' into submain")
+>>>>>>> parent of 194b036 (fix)
 
 class GridCellController extends Controller
 {
