@@ -8,6 +8,7 @@ use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
 use App\Models\Event;
+use Illuminate\Support\Facades\DB;
 
 class GridCellController extends Controller
 {
@@ -154,9 +155,9 @@ class GridCellController extends Controller
         $event = Event::with('effects')->find($request->event_id);
 
         $durationMinutes = match ($event->length_unit) {
-            'hours' => $event->length,
-            'days' => $event->length * 24,
-            'weeks' => $event->length * 24 * 7,
+            'hours' => $event->length * 60,
+            'days'  => $event->length * 60 * 24,
+            'weeks' => $event->length * 60 * 24 * 7,
         };
 
         $currentMinute = $request->simulation_minute;
