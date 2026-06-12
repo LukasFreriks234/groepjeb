@@ -90,9 +90,9 @@
                     max="10"
                 />
 
-                <h2 class="hidden">Event settings</h2>
+                <h2>Event settings</h2>
 
-                <fieldset class="hidden">
+                <fieldset>
                     <legend>Event type</legend>
 
                     <div class="containerRadio">
@@ -136,7 +136,7 @@
                     </select>
                 </div>
 
-                <div id="recurringFields" class="hidden">
+                <div id="recurringFields">
 
                     <h2>Date and Time</h2>
 
@@ -402,9 +402,9 @@
                     </div>
                 </div>
 
-                <h2 class="hidden">Dynamic event</h2>
+                <h2>Dynamic event</h2>
 
-                <div class="containerRadio label hidden">
+                <div class="containerRadio label">
                     <input
                         type="checkbox"
                         id="dynamic"
@@ -415,7 +415,7 @@
                     <label for="dynamic">Dynamic event</label>
                 </div>
 
-                <div id="dynamicEventBox" style="display:none;" class="hidden">
+                <div id="dynamicEventBox" style="display:none;">
                     <h3>Select route</h3>
 
                     <div
