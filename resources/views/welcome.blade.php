@@ -37,7 +37,7 @@
             </div>
 
             <div class="functionsSection">
-                <x-functionTable :functions="$functions" :categories="$categories" :events="$events" :eventGridCells="$eventGridCells"/>
+                <x-functionTable :functions="$functions" :categories="$categories" :events="$events" />
             </div>
         </div>
     </div>

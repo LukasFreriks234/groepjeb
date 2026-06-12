@@ -58,6 +58,11 @@
 
                     <span class="navbar-clock-range">/ 24:00</span>
                 </div>
+
+                <div class="navbar-day-counter" aria-live="polite" aria-atomic="true">
+                    <span class="navbar-day-counter-label">Days</span>
+                    <span class="navbar-day-counter-value" data-simulation-day-counter>0</span>
+                </div>
             </div>
         </li>
 

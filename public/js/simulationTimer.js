@@ -11,8 +11,10 @@
 
     const timeDisplay = clockRoot.querySelector('[data-simulation-clock-time]');
     const progressBar = clockRoot.querySelector('[data-simulation-clock-progress]');
+    const dayCounter = clockRoot.querySelector('[data-simulation-day-counter]');
 
     let elapsedMinutes = 0;
+    let dayCount = 0;
     let timerId = null;
 
     function formatTime(totalMinutes) {
@@ -49,12 +51,19 @@
     }
 
     function advanceClock() {
-        elapsedMinutes = (elapsedMinutes + 1) % CYCLE_LENGTH_MINUTES;
+        elapsedMinutes = (elapsedMinutes + 24) % CYCLE_LENGTH_MINUTES;
 
         if (elapsedMinutes === 0) {
+            dayCount += 1;
+
+            if (dayCounter) {
+                dayCounter.textContent = String(dayCount);
+            }
+
             window.dispatchEvent(new CustomEvent('simulation:loop', {
                 detail: {
                     cycleLength: CYCLE_LENGTH_MINUTES,
+                    day: dayCount,
                 },
             }));
         }
@@ -109,8 +118,15 @@
         get progress() {
             return (elapsedMinutes % CYCLE_LENGTH_MINUTES) / CYCLE_LENGTH_MINUTES;
         },
+        get day() {
+            return dayCount;
+        },
         reset() {
             elapsedMinutes = 0;
+            dayCount = 0;
+            if (dayCounter) {
+                dayCounter.textContent = '0';
+            }
             updateClock();
         },
         setMinute(minute) {
