@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class EventgridCell extends Model
 {
     protected $table = 'event_grid_cells';
-    protected $fillable = ['event_id', 'grid_cell_id', 'route_order'];
+    protected $fillable = ['event_id', 'grid_dynamics_id', 'route_order'];
 
     public function event()
     {
@@ -16,6 +16,7 @@ class EventgridCell extends Model
 
     public function gridCell()
     {
-        return $this->belongsTo(GridCell::class, 'grid_cell_id');
+        return $this->belongsTo(GridDynamic::class,
+        'grid_dynamics_id');
     }
 }

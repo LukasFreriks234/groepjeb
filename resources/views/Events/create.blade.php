@@ -431,13 +431,6 @@
                                 data-x="{{ $cell->x_coordinate }}"
                                 data-y="{{ $cell->y_coordinate }}"
                             >
-                                @if(!$cell->is_available)
-                                    <img
-                                        src="{{ asset($cell->cityFunction->image_url ?? '') }}"
-                                        class="miniGridImage"
-                                        alt=""
-                                    >
-                                @endif
                             </div>
                         @endforeach
                     </div>
