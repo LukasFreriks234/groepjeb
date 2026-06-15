@@ -75,7 +75,6 @@
     display: none;
 }
 
-
 .delete-btn {
     position: absolute;
     top: 6px;
@@ -83,8 +82,8 @@
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    border: none;
-    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid black;
+    background: rgba(0, 0, 0, 0.75);
     color: white;
     font-size: 16px;
     display: flex;
@@ -98,15 +97,18 @@
 }
 
 .gridCell:hover .delete-btn,
-.gridCell:focus-within .delete-btn {
+.gridCell:focus-within .delete-btn,
+.delete-btn:focus,
+.delete-btn:focus-visible {
     opacity: 1;
     transform: scale(1);
 }
 
 .delete-btn:hover,
-.delete-btn:focus {
+.delete-btn:focus,
+.delete-btn:focus-visible {
     background: red;
-    transform: scale(1.1);
+    color: white;
     outline: 3px solid black;
     outline-offset: 2px;
 }
@@ -160,7 +162,6 @@
     background-color: transparent;
 }
 
-/* SELECTIE MOBIEL + KEYBOARD */
 .gridCell.selectedMobileCell,
 .gridCell.keyboardSelected {
     background-color: yellow !important;
@@ -179,7 +180,6 @@
     outline: 3px solid yellow;
     outline-offset: 2px;
 }
-
 
 .gridEvents {
     position: absolute;
@@ -206,6 +206,7 @@
     z-index: 1001;
     user-select: none;
     -webkit-user-drag: element;
+    touch-action: none;
 }
 
 .gridEventImage:focus,
@@ -223,7 +224,6 @@
     outline: 3px solid yellow;
     outline-offset: 2px;
 }
-
 
 @media (hover: none), (max-width: 768px) {
     .gridCell.selectedMobileCell,
@@ -266,7 +266,6 @@
     }
 }
 
-/* DESKTOP */
 @media (hover: hover) and (min-width: 769px) {
     .gridCell.keyboardSelected {
         background-color: yellow !important;

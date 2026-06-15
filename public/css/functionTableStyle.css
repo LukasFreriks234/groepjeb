@@ -127,3 +127,20 @@
     height: 0px; 
     overflow: hidden;
 }
+
+.eventItem {
+    background-color: transparent;
+    cursor: grab;
+}
+
+.eventItem:focus,
+.eventItem:focus-visible {
+    outline: 3px solid black;
+    outline-offset: 2px;
+}
+
+.eventItem.selectedMobileCell,
+.eventItem.keyboardSelected {
+    background-color: yellow !important;
+    color: black !important;
+}

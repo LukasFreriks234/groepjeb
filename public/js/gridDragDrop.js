@@ -11,16 +11,26 @@ let selectedKeyboardElement = null;
 let selectedKeyboardData = null;
 
 let scrollInterval = null;
+let focusInsideGrid = false;
+let pointerGridEventData = null;
+let pointerGridEventStart = null;
+let nativeGridEventDragStarted = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     enableDrag();
     enableGridEventMouseDrag();
+    enablePointerGridEventMove();
     enableMobileDrag();
     enableKeyboardDragDrop();
     enableArrowKeyGridNavigation();
     enableTooltip();
+    prepareGridAccessibility();
     prepareDeleteButtonsForKeyboard();
     updateEffectsAccessibilityLabelForReader();
+
+    if (typeof window.refreshDeleteButtons === "function") {
+        window.refreshDeleteButtons();
+    }
 
     document.querySelectorAll(".gridCell").forEach((cell) => {
         updateCellLabel(cell);
@@ -40,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         cell.addEventListener("dragover", function (ev) {
             ev.preventDefault();
+            ev.dataTransfer.dropEffect = "move";
         });
 
         cell.addEventListener("drop", function (ev) {
@@ -145,6 +156,83 @@ function markCellAvailable(cell) {
     delete cell.dataset.category;
 }
 
+
+function prepareGridAccessibility() {
+    const grid = document.querySelector(".metropolisGrid");
+
+    if (grid) {
+        if (!grid.getAttribute("role")) {
+            grid.setAttribute("role", "grid");
+        }
+
+        if (grid.dataset.gridInstructionEnabled !== "true") {
+            grid.dataset.gridInstructionEnabled = "true";
+
+            grid.addEventListener("focusin", function (event) {
+                const focusedCell = event.target.closest(".gridCell");
+
+                if (!focusedCell || focusInsideGrid) {
+                    return;
+                }
+
+                focusInsideGrid = true;
+
+                announceKeyboardStatus(
+                    "Grid instructions. Use arrow keys to move between grid cells. Select a function or event first, then press Enter or Space on a grid cell to place it. Use Tab to focus an event or delete button."
+                );
+            });
+
+            grid.addEventListener("focusout", function () {
+                setTimeout(function () {
+                    if (!grid.contains(document.activeElement)) {
+                        focusInsideGrid = false;
+                    }
+                }, 0);
+            });
+        }
+    }
+
+    document.querySelectorAll(".gridCell").forEach((cell) => {
+        if (!cell.getAttribute("tabindex")) {
+            cell.setAttribute("tabindex", "0");
+        }
+
+        if (!cell.getAttribute("role")) {
+            cell.setAttribute("role", "gridcell");
+        }
+
+        updateCellLabel(cell);
+    });
+
+    prepareGridEventElements();
+}
+
+function prepareGridEventElements() {
+    document.querySelectorAll(".gridEvents").forEach((container) => {
+        container.removeAttribute("aria-hidden");
+        container.style.pointerEvents = "auto";
+        container.style.zIndex = "1000";
+    });
+
+    document.querySelectorAll(".gridEventImage, .draggableGridEvent").forEach((image) => {
+        image.classList.add("gridEventImage", "draggableGridEvent");
+        image.setAttribute("draggable", "true");
+        image.setAttribute("tabindex", "0");
+        image.setAttribute("role", "button");
+        image.removeAttribute("aria-hidden");
+        image.alt = image.alt || getGridEventName(image);
+
+        image.style.pointerEvents = "auto";
+        image.style.cursor = "grab";
+        image.style.position = "relative";
+        image.style.zIndex = "1001";
+        image.style.userSelect = "none";
+        image.style.webkitUserDrag = "element";
+
+        image.setAttribute("aria-label", `Move event ${getGridEventName(image)} from this grid cell`);
+    });
+}
+
 function prepareDeleteButtonsForKeyboard() {
     document.querySelectorAll(".delete-btn").forEach((button) => {
         button.setAttribute("tabindex", "0");
@@ -165,6 +253,7 @@ function refreshDeleteButtonsIfAvailable() {
     }
 
     prepareDeleteButtonsForKeyboard();
+    prepareGridEventElements();
 }
 
 function createGridImage(data) {
@@ -259,6 +348,7 @@ function enableDrag() {
             const image = ev.currentTarget.querySelector("img");
             const functionName = getFunctionNameFromItem(ev.currentTarget);
 
+            ev.dataTransfer.effectAllowed = "move";
             ev.dataTransfer.setData(
                 "text/plain",
                 JSON.stringify({
@@ -290,6 +380,7 @@ function enableDrag() {
             const image = ev.currentTarget.querySelector("img");
             const eventName = getEventNameFromItem(ev.currentTarget);
 
+            ev.dataTransfer.effectAllowed = "move";
             ev.dataTransfer.setData(
                 "text/plain",
                 JSON.stringify({
@@ -317,6 +408,11 @@ function enableDrag() {
         image.dataset.dragEnabled = "true";
 
         image.addEventListener("dragstart", function (ev) {
+            nativeGridEventDragStarted = true;
+            pointerGridEventData = null;
+            pointerGridEventStart = null;
+            ev.stopPropagation();
+            ev.dataTransfer.effectAllowed = "move";
             ev.dataTransfer.setData(
                 "text/plain",
                 JSON.stringify({
@@ -331,9 +427,7 @@ function enableDrag() {
         });
     });
 
-    document.querySelectorAll(".gridEvents").forEach((container) => {
-        container.removeAttribute("aria-hidden");
-    });
+    prepareGridEventElements();
 
     const gridEvents = document.querySelectorAll(".draggableGridEvent");
 
@@ -376,6 +470,10 @@ function enableGridEventMouseDrag() {
 
         ev.stopPropagation();
 
+        nativeGridEventDragStarted = true;
+        pointerGridEventData = null;
+        pointerGridEventStart = null;
+
         eventImage.setAttribute("draggable", "true");
 
         ev.dataTransfer.effectAllowed = "move";
@@ -390,6 +488,80 @@ function enableGridEventMouseDrag() {
             })
         );
     }, true);
+}
+
+
+function enablePointerGridEventMove() {
+    if (document.body.dataset.pointerGridEventMoveEnabled === "true") {
+        return;
+    }
+
+    document.body.dataset.pointerGridEventMoveEnabled = "true";
+
+    document.addEventListener("pointerdown", function (ev) {
+        const eventImage = ev.target.closest(".draggableGridEvent");
+
+        if (!eventImage) {
+            return;
+        }
+
+        nativeGridEventDragStarted = false;
+        pointerGridEventData = buildSelectedData(eventImage);
+        pointerGridEventStart = {
+            x: ev.clientX,
+            y: ev.clientY,
+            sourceCell: eventImage.closest(".gridCell")
+        };
+
+        const parentCell = eventImage.closest(".gridCell");
+
+        if (parentCell) {
+            parentCell.classList.add("keyboardSelected");
+        }
+    }, { passive: true });
+
+    document.addEventListener("pointerup", function (ev) {
+        if (!pointerGridEventData || !pointerGridEventStart || nativeGridEventDragStarted) {
+            pointerGridEventData = null;
+            pointerGridEventStart = null;
+            nativeGridEventDragStarted = false;
+            return;
+        }
+
+        const movedX = Math.abs(ev.clientX - pointerGridEventStart.x);
+        const movedY = Math.abs(ev.clientY - pointerGridEventStart.y);
+        const movedEnough = movedX > 8 || movedY > 8;
+
+        const targetElement = document.elementFromPoint(ev.clientX, ev.clientY);
+        const targetCell = targetElement ? targetElement.closest(".gridCell") : null;
+
+        document.querySelectorAll(".gridCell.keyboardSelected").forEach((cell) => {
+            cell.classList.remove("keyboardSelected");
+        });
+
+        if (
+            movedEnough &&
+            targetCell &&
+            targetCell.dataset.id !== pointerGridEventData.fromCellId
+        ) {
+            ev.preventDefault();
+            placeEventInCell(targetCell, pointerGridEventData);
+        }
+
+        pointerGridEventData = null;
+        pointerGridEventStart = null;
+        nativeGridEventDragStarted = false;
+    }, { passive: false });
+
+    document.addEventListener("pointercancel", function () {
+        pointerGridEventData = null;
+        pointerGridEventStart = null;
+        nativeGridEventDragStarted = false;
+
+        document.querySelectorAll(".gridCell.keyboardSelected").forEach((cell) => {
+            cell.classList.remove("keyboardSelected");
+        });
+    });
 }
 
 function placeLibraryFunctionInCell(cell, originalItem, dragData) {
@@ -527,6 +699,8 @@ function addEventImageToCell(cell, dragData) {
 
     if (alreadyExists) {
         alreadyExists.dataset.fromCellId = cell.dataset.id;
+        prepareGridEventElements();
+        refreshDeleteButtonsIfAvailable();
         return;
     }
 
@@ -542,6 +716,8 @@ function addEventImageToCell(cell, dragData) {
     markCellOccupied(cell, null);
     updateCellLabel(cell);
     enableDrag();
+    prepareGridEventElements();
+    refreshDeleteButtonsIfAvailable();
 }
 
 function removeGridEventImage(fromCellId, eventId) {
@@ -572,6 +748,7 @@ function removeGridEventImage(fromCellId, eventId) {
     }
 
     updateCellLabel(fromCell);
+    refreshDeleteButtonsIfAvailable();
 }
 
 function saveEventInGrid(cell, dragData) {
@@ -613,6 +790,12 @@ function saveEventInGrid(cell, dragData) {
                 updateEffectTable(data.effectTotals, data.qualityOfLife);
             }
 
+            if (dragData.source === "eventLibrary") {
+                selectedEventId = null;
+                selectedEventImage = null;
+                eventPlacementMode = false;
+            }
+
             refreshDeleteButtonsIfAvailable();
 
             setTimeout(() => {
@@ -624,6 +807,7 @@ function saveEventInGrid(cell, dragData) {
         })
         .catch(error => {
             console.error("Event save error:", error);
+            announceKeyboardStatus("Could not place this event.");
         });
 }
 
@@ -1074,8 +1258,6 @@ function getCellLabelText(cell) {
     if (!image && eventImages.length === 0) {
         label += "Empty cell. ";
     }
-
-    label += "Press Enter or Space on this grid cell to select or place a function. Press Tab to focus an event or delete button.";
 
     return label;
 }

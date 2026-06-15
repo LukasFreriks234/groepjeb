@@ -63,6 +63,7 @@
                 tabindex="0"
                 id="function{{ $function['id'] }}" 
                 class="functionItem keyboardDraggableFunction"
+                draggable="true"
                 data-function-id="{{ $function['id'] }}"
                 data-category="{{ $function['category'] }}"
                 role="button"
@@ -148,8 +149,10 @@
             <li 
                 tabindex="0"
                 id="event{{ $event->id }}" 
-                class="functionItem"
+                class="functionItem eventItem draggableEventItem"
+                draggable="true"
                 data-event-id="{{ $event->id }}"
+                data-event-name="{{ $event->name }}"
                 data-type="{{ $eventType }}"
                 data-dynamic="{{ $isDynamic }}"
                 role="button"
@@ -163,7 +166,7 @@
                 </div>
 
                 <div>
-                    <p class="functionName">{{ $event->name }}</p>
+                    <p class="functionName eventName">{{ $event->name }}</p>
                     <p class="functionCategory">
                         {{ $eventTypeLabel }}{{ $event->dynamic ? ' / Dynamic' : '' }}
                     </p>
