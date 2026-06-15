@@ -9,6 +9,7 @@ use App\Models\Monthly;
 use App\Models\Recurring;
 use App\Models\Weekly;
 use App\Models\GridCell;
+use App\Models\GridDynamic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,7 +17,7 @@ class EventController extends Controller
 {
     public function create()
     {
-        $cells = GridCell::orderBy('y_coordinate')
+        $cells = GridDynamic::orderBy('y_coordinate')
             ->orderBy('x_coordinate')
             ->get();
 
