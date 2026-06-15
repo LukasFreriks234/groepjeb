@@ -14,6 +14,7 @@ use App\Models\EventgridCell;
 
 class GridCellController extends Controller
 {
+    
     private function cellsWithRelations()
     {
         return GridCell::with(['cityFunction', 'events.effects']);

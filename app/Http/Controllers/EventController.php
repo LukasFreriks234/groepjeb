@@ -134,7 +134,7 @@ class EventController extends Controller
                     foreach ($routeCells as $index => $gridCellId) {
                         DB::table('event_grid_cells')->insert([
                             'event_id' => $event->id,
-                            'grid_cell_id' => $gridCellId,
+                            'grid_dynamics_id' => $gridCellId,
                             'route_order' => $index + 1,
                             'created_at' => now(),
                             'updated_at' => now(),

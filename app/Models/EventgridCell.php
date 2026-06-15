@@ -16,6 +16,7 @@ class EventgridCell extends Model
 
     public function gridCell()
     {
-        return $this->belongsTo(GridCell::class, 'grid_dynamics_id');
+        return $this->belongsTo(GridDynamic::class,
+        'grid_dynamics_id');
     }
 }
