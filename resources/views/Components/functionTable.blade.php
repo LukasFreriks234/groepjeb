@@ -114,11 +114,11 @@
                         <p class="functionCategory">
                             {{ $eventTypeLabel }}{{ $event->dynamic ? ' / Dynamic' : '' }}
                         </p>
-                    </div>`
+                    </div>
                 </div>
 
                 <label class="switch">
-                    <input type="checkbox">
+                    <input type="checkbox" aria-label="Activate {{ $event->name }}">
                     <span class="slider round"></span>
                 </label>
             </li>
