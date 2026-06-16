@@ -133,11 +133,13 @@
     cursor: grab;
 }
 
-.eventItem:focus,
+
+/* ! this causes a weird bug, not sure why. It look fine without this code */
+/* .eventItem:focus,
 .eventItem:focus-visible {
     outline: 3px solid black;
     outline-offset: 2px;
-}
+} */
 
 .eventItem.selectedMobileCell,
 .eventItem.keyboardSelected {
