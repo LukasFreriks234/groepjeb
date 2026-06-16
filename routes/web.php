@@ -48,12 +48,3 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/functions/restore', [FunctionController::class, 'restore'])->name('functions.restore');
     Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });
-
-Route::post('/event/route',[EventController::class, 'saveRoute']);
-
-Route::get('/groups', [GroupController::class, 'index'])->name('groups.index');
-Route::get('/groups/add', [GroupController::class, 'add'])->name('groups.add');
-Route::post('/groups/add', [GroupController::class, 'store'])->name('groups.store');
-
-Route::get('/groups/{group}/edit', [GroupController::class, 'edit'])->name('groups.edit');
-Route::put('/groups/{group}', [GroupController::class, 'update'])->name('groups.update');
