@@ -127,3 +127,22 @@
     height: 0px; 
     overflow: hidden;
 }
+
+.eventItem {
+    background-color: transparent;
+    cursor: grab;
+}
+
+
+/* ! this causes a weird bug, not sure why. It look fine without this code */
+/* .eventItem:focus,
+.eventItem:focus-visible {
+    outline: 3px solid black;
+    outline-offset: 2px;
+} */
+
+.eventItem.selectedMobileCell,
+.eventItem.keyboardSelected {
+    background-color: yellow !important;
+    color: black !important;
+}

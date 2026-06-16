@@ -11,17 +11,121 @@ use App\Models\Event;
 use Illuminate\Support\Facades\DB;
 use App\Models\EventgridCell;
 
-
 class GridCellController extends Controller
 {
     private function cellsWithRelations()
     {
-        return GridCell::with(['cityFunction', 'events.effects']);
+        return GridCell::with(['cityFunction']);
+    }
+
+    private function gridDynamicIdForCell(GridCell $cell)
+    {
+        $dynamicId = DB::table('grid_dynamics')
+            ->where('grid_cell_id', $cell->id)
+            ->value('id');
+
+        if ($dynamicId) {
+            return $dynamicId;
+        }
+
+        return DB::table('grid_dynamics')->insertGetId([
+            'x_coordinate' => $cell->x_coordinate,
+            'y_coordinate' => $cell->y_coordinate,
+            'is_available' => $cell->is_available,
+            'grid_cell_id' => $cell->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    private function attachEventsToCells($cells)
+    {
+        if ($cells->isEmpty()) {
+            return $cells;
+        }
+
+        $cellIds = $cells->pluck('id')->values();
+
+        $dynamicRows = DB::table('grid_dynamics')
+            ->whereIn('grid_cell_id', $cellIds)
+            ->get(['id', 'grid_cell_id']);
+
+        if ($dynamicRows->isEmpty()) {
+            $cells->each(function ($cell) {
+                $cell->setRelation('events', collect());
+            });
+
+            return $cells;
+        }
+
+        $dynamicToCell = $dynamicRows->pluck('grid_cell_id', 'id');
+
+        $eventRows = DB::table('event_grid_cells')
+            ->whereIn('grid_dynamics_id', $dynamicRows->pluck('id'))
+            ->get(['event_id', 'grid_dynamics_id', 'route_order', 'expires_at']);
+
+        if ($eventRows->isEmpty()) {
+            $cells->each(function ($cell) {
+                $cell->setRelation('events', collect());
+            });
+
+            return $cells;
+        }
+
+        $events = Event::with('effects')
+            ->whereIn('id', $eventRows->pluck('event_id')->unique())
+            ->get()
+            ->keyBy('id');
+
+        $eventsByCellId = [];
+
+        foreach ($eventRows as $eventRow) {
+            $cellId = $dynamicToCell[$eventRow->grid_dynamics_id] ?? null;
+            $event = $events->get($eventRow->event_id);
+
+            if (!$cellId || !$event) {
+                continue;
+            }
+
+            if (!array_key_exists($cellId, $eventsByCellId)) {
+                $eventsByCellId[$cellId] = collect();
+            }
+
+            $eventsByCellId[$cellId]->push($event);
+        }
+
+        $cells->each(function ($cell) use ($eventsByCellId) {
+            $events = $eventsByCellId[$cell->id] ?? collect();
+
+            $cell->setRelation(
+                'events',
+                $events->unique('id')->values()
+            );
+        });
+
+        return $cells;
+    }
+
+    private function cellHasEvents(GridCell $cell)
+    {
+        $dynamicId = $this->gridDynamicIdForCell($cell);
+
+        return DB::table('event_grid_cells')
+            ->where('grid_dynamics_id', $dynamicId)
+            ->exists();
+    }
+
+    private function updateCellAvailability(GridCell $cell)
+    {
+        $cell->is_available = !$cell->destination_type && !$this->cellHasEvents($cell);
+        $cell->save();
     }
 
     private function calculateTotals()
     {
         $cells = $this->cellsWithRelations()->get();
+        $this->attachEventsToCells($cells);
+
         $categories = Category::all();
 
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
@@ -39,6 +143,8 @@ class GridCellController extends Controller
             ->orderBy('y_coordinate')
             ->orderBy('x_coordinate')
             ->get();
+
+        $this->attachEventsToCells($cells);
 
         $functions = Functions::with('effects')->get();
         $categories = Category::all();
@@ -88,8 +194,8 @@ class GridCellController extends Controller
 
     public function moveFunction(Request $request)
     {
-        $fromCell = GridCell::with('events')->find($request->from_cell_id);
-        $toCell = GridCell::with('events')->find($request->to_cell_id);
+        $fromCell = GridCell::find($request->from_cell_id);
+        $toCell = GridCell::find($request->to_cell_id);
 
         if (!$fromCell || !$toCell) {
             return response()->json([
@@ -108,19 +214,14 @@ class GridCellController extends Controller
         $fromFunctionId = $fromCell->destination_type;
         $toFunctionId = $toCell->destination_type;
 
-        $fromEventIds = $fromCell->events->pluck('id')->toArray();
-        $toEventIds = $toCell->events->pluck('id')->toArray();
-
         $toCell->destination_type = $fromFunctionId;
-        $toCell->is_available = ($fromFunctionId || count($fromEventIds) > 0) ? false : true;
         $toCell->save();
 
         $fromCell->destination_type = $toFunctionId;
-        $fromCell->is_available = ($toFunctionId || count($toEventIds) > 0) ? false : true;
         $fromCell->save();
 
-        $fromCell->events()->sync($toEventIds);
-        $toCell->events()->sync($fromEventIds);
+        $this->updateCellAvailability($fromCell);
+        $this->updateCellAvailability($toCell);
 
         $totals = $this->calculateTotals();
 
@@ -133,11 +234,16 @@ class GridCellController extends Controller
 
     public function removeFunction(Request $request)
     {
-        $cell = GridCell::find($request->id);
+        $cell = GridCell::find($request->id ?? $request->cell_id);
 
         if ($cell) {
+            $dynamicId = $this->gridDynamicIdForCell($cell);
+
+            DB::table('event_grid_cells')
+                ->where('grid_dynamics_id', $dynamicId)
+                ->delete();
+
             $cell->destination_type = null;
-            $cell->events()->detach();
             $cell->is_available = true;
             $cell->save();
         }
@@ -163,26 +269,43 @@ class GridCellController extends Controller
             ], 404);
         }
 
-        // 1 simulatie-minuut = 1 seconde, klok springt 24 per tick
-        // dus 1 echt seconde = 24 simulatie-minuten
+        $dynamicId = $this->gridDynamicIdForCell($cell);
+
         $simulationMinutesPerRealSecond = 24;
+        $eventLength = (int) ($event->length ?: 1);
 
         $durationInSimulationMinutes = match ($event->length_unit) {
-            'hours' => $event->length * 60,
-            'days'  => $event->length * 60 * 24,
-            'weeks' => $event->length * 60 * 24 * 7,
+            'hours' => $eventLength * 60,
+            'days'  => $eventLength * 60 * 24,
+            'weeks' => $eventLength * 60 * 24 * 7,
+            default => $eventLength * 60,
         };
 
-        $durationInRealSeconds = $durationInSimulationMinutes / $simulationMinutesPerRealSecond;
-
+        $durationInRealSeconds = max(1, $durationInSimulationMinutes / $simulationMinutesPerRealSecond);
         $expiresAt = now()->addSeconds($durationInRealSeconds);
 
-        $cell->events()->syncWithoutDetaching([
-            $event->id => [
-                'route_order' => $request->route_order ?? null,
-                'expires_at'  => $expiresAt,
-            ],
-        ]);
+        $existingRow = DB::table('event_grid_cells')
+            ->where('event_id', $event->id)
+            ->where('grid_dynamics_id', $dynamicId)
+            ->first();
+
+        $payload = [
+            'route_order' => $request->route_order ?? 1,
+            'expires_at' => $expiresAt,
+            'updated_at' => now(),
+        ];
+
+        if ($existingRow) {
+            DB::table('event_grid_cells')
+                ->where('id', $existingRow->id)
+                ->update($payload);
+        } else {
+            DB::table('event_grid_cells')->insert(array_merge($payload, [
+                'event_id' => $event->id,
+                'grid_dynamics_id' => $dynamicId,
+                'created_at' => now(),
+            ]));
+        }
 
         $cell->is_available = false;
         $cell->save();
@@ -199,34 +322,42 @@ class GridCellController extends Controller
     public function checkExpiredEvents(Request $request)
     {
         $expired = DB::table('event_grid_cells')
-            ->whereNotNull('expires_at')
-            ->where('expires_at', '<=', now())
+            ->join('grid_dynamics', 'event_grid_cells.grid_dynamics_id', '=', 'grid_dynamics.id')
+            ->whereNotNull('event_grid_cells.expires_at')
+            ->where('event_grid_cells.expires_at', '<=', now())
+            ->select(
+                'event_grid_cells.id',
+                'event_grid_cells.event_id',
+                'event_grid_cells.grid_dynamics_id',
+                'grid_dynamics.grid_cell_id'
+            )
             ->get();
 
-        foreach ($expired as $row) {
+        if ($expired->isNotEmpty()) {
             DB::table('event_grid_cells')
-                ->where('grid_cell_id', $row->grid_cell_id)
-                ->where('event_id', $row->event_id)
+                ->whereIn('id', $expired->pluck('id'))
                 ->delete();
+
+            $expiredCellIds = $expired->pluck('grid_cell_id')->filter()->unique();
+
+            GridCell::whereIn('id', $expiredCellIds)->get()->each(function ($cell) {
+                $this->updateCellAvailability($cell);
+            });
         }
 
-        $cells = GridCell::with(['cityFunction', 'events.effects'])->get();
-        $categories = Category::all();
-
-        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
-        $qualityOfLife = array_sum($effectTotals);
+        $totals = $this->calculateTotals();
 
         return response()->json([
             'success' => true,
             'expiredEvents' => $expired,
-            'effectTotals'  => $effectTotals,
-            'qualityOfLife' => $qualityOfLife,
+            'effectTotals'  => $totals['effectTotals'],
+            'qualityOfLife' => $totals['qualityOfLife'],
         ]);
     }
 
     public function removeEvent(Request $request)
     {
-        $cell = GridCell::with('events')->find($request->cell_id);
+        $cell = GridCell::find($request->cell_id);
 
         if (!$cell) {
             return response()->json([
@@ -235,18 +366,18 @@ class GridCellController extends Controller
             ], 404);
         }
 
+        $dynamicId = $this->gridDynamicIdForCell($cell);
+
+        $query = DB::table('event_grid_cells')
+            ->where('grid_dynamics_id', $dynamicId);
+
         if ($request->event_id) {
-            $cell->events()->detach($request->event_id);
-        } else {
-            $cell->events()->detach();
+            $query->where('event_id', $request->event_id);
         }
 
-        $cell->load('events');
+        $query->delete();
 
-        if (!$cell->destination_type && $cell->events->isEmpty()) {
-            $cell->is_available = true;
-            $cell->save();
-        }
+        $this->updateCellAvailability($cell);
 
         $totals = $this->calculateTotals();
 
@@ -290,6 +421,8 @@ class GridCellController extends Controller
                     ->where('y_coordinate', $cell->y_coordinate);
             })
             ->get();
+
+        $this->attachEventsToCells($cellsToCalculate);
 
         $categories = Category::all();
 
