@@ -26,6 +26,7 @@ body {
     display: flex;
     align-items: center;
     margin-left: auto;
+    gap: 12px;
 }
 
 .navbar-logout-item {
@@ -150,6 +151,133 @@ body {
     font-weight: 800;
     line-height: 1;
     color: #2563eb;
+}
+
+.navbar-clock-divider {
+    width: 2px;
+    height: 54px;
+    background-color: black;
+    flex-shrink: 0;
+}
+
+.navbar-speed-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 60px;
+}
+
+.navbar-speed-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #333;
+}
+
+.navbar-speed-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.navbar-speed-input {
+    width: 52px;
+    padding: 4px 4px;
+    border: 2px solid black;
+    border-radius: 4px;
+    background: white;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    color: #2563eb;
+    -moz-appearance: textfield;
+}
+
+.navbar-speed-input::-webkit-inner-spin-button,
+.navbar-speed-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.navbar-speed-input:focus {
+    outline: 3px solid black;
+    outline-offset: 2px;
+    background-color: #fffde7;
+}
+
+.navbar-speed-unit {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #555;
+    white-space: nowrap;
+}
+
+.navbar-speed-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border: 2px solid black;
+    border-radius: 4px;
+    background: white;
+    color: black;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.navbar-speed-button:hover {
+    background-color: #e0f2fe;
+    color: #1e40af;
+}
+
+.navbar-speed-button:focus,
+.navbar-speed-button:focus-visible {
+    outline: 3px solid black;
+    outline-offset: 2px;
+    background-color: yellow;
+}
+
+.navbar-speed-button:active {
+    background-color: #bfdbfe;
+}
+
+.navbar-pause-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 2px solid black;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #ffffff 0%, #eef6ff 100%);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.navbar-pause-button:hover {
+    background-color: #e0f2fe;
+}
+
+.navbar-pause-button:focus,
+.navbar-pause-button:focus-visible {
+    outline: 3px solid black;
+    outline-offset: 2px;
+    background-color: yellow;
+}
+
+.navbar-pause-button:active {
+    background-color: #bfdbfe;
 }
 
 @media (max-width: 1100px) {
