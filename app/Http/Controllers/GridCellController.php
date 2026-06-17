@@ -28,6 +28,21 @@ class GridCellController extends Controller
             return $dynamicId;
         }
 
+        // Fallback: misschien bestaat de rij al op coördinaten, maar zonder koppeling
+        $existing = DB::table('grid_dynamics')
+            ->where('x_coordinate', $cell->x_coordinate)
+            ->where('y_coordinate', $cell->y_coordinate)
+            ->whereNull('grid_cell_id')
+            ->first();
+
+        if ($existing) {
+            DB::table('grid_dynamics')
+                ->where('id', $existing->id)
+                ->update(['grid_cell_id' => $cell->id, 'updated_at' => now()]);
+
+            return $existing->id;
+        }
+
         return DB::table('grid_dynamics')->insertGetId([
             'x_coordinate' => $cell->x_coordinate,
             'y_coordinate' => $cell->y_coordinate,
