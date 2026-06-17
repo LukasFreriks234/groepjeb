@@ -22,8 +22,148 @@ body {
     width: 100%;
 }
 
-.navbar-menu li:last-child {
+.navbar-clock-item {
+    display: flex;
+    align-items: center;
     margin-left: auto;
+}
+
+.navbar-logout-item {
+    margin-left: 18px;
+}
+
+.navbar-clock {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 2px solid black;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #ffffff 0%, #eef6ff 100%);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.navbar-clock-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.navbar-clock-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-clock-time {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.navbar-clock-range {
+    font-size: 12px;
+    font-weight: 700;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+.navbar-clock-ring {
+    position: relative;
+    width: 72px;
+    height: 72px;
+}
+
+.navbar-clock-ring-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.navbar-clock-ring-track {
+    fill: #d8e7f7;
+    stroke: black;
+    stroke-width: 8;
+}
+
+.navbar-clock-ring-fill {
+    fill: none;
+    stroke: #2563eb;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: calc(100 - (100 * var(--simulation-progress, 0)));
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.2s linear;
+}
+
+.navbar-clock-ring-core {
+    position: absolute;
+    inset: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.94);
+    border: 2px solid black;
+    text-align: center;
+}
+
+.navbar-clock-ring-core .navbar-clock-time {
+    font-size: 16px;
+}
+
+.navbar-clock-ring-core .navbar-clock-range {
+    font-size: 11px;
+}
+
+.navbar-day-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    min-width: 40px;
+    padding: 4px 8px;
+    border: 2px solid black;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #ffffff 0%, #eef6ff 100%);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.navbar-day-counter-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #333;
+}
+
+.navbar-day-counter-value {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+    color: #2563eb;
+}
+
+@media (max-width: 1100px) {
+    .navbar-menu {
+        flex-wrap: wrap;
+    }
+
+    .navbar-clock-item {
+        margin-left: 0;
+    }
+
+    .navbar-clock {
+        padding: 8px;
+    }
 }
 
 .logout-form {

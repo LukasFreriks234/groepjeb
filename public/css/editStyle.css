@@ -17,6 +17,10 @@ h1 {
     align-items: flex-start;
 }
 
+.restore-section{
+    margin-bottom: 10px;
+}
+
 .form-section,
 .image-section {
     flex: 1;

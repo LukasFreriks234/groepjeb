@@ -1,4 +1,4 @@
-@props(['cells', 'categories','eventGridCells'])
+@props(['cells', 'categories'])
 
 <div class="simulationContainer">
     <main class="citySection">
@@ -13,12 +13,6 @@
             role="grid"
             aria-describedby="gridKeyboardInstructions"
         >
-
-        @php
-        $arrEventGridCells = $eventGridCells->sortBy('route_order');
-        @endphp
-
-
             @foreach($cells as $cell)
                 @php
                     $readableRow = $cell->y_coordinate + 1;
@@ -72,17 +66,10 @@
                             data-category="{{ $cell->cityFunction->category }}"
                         >
                     @endif
-    
+
                     @if($hasEvents)
                         <div class="gridEvents" aria-hidden="true">
                             @foreach($cell->events as $event)
-                                @foreach ($arrEventGridCells as $gridCell)
-                                    @if($gridCell->grid_cell_id == $cell->id && $gridCell->event_id == $event->id)
-                                    @php
-                                        $order = $gridCell->route_order;
-                                        @endphp
-                                    @endif
-                                @endforeach
                                 <img
                                     src="{{ asset($event->image_url) }}"
                                     alt=""
@@ -94,8 +81,6 @@
                                     data-event-id="{{ $event->id }}"
                                     data-event-name="{{ $event->name }}"
                                     data-from-cell-id="{{ $cell->id }}"
-                                    event-speed="{{ $event->speed }}"
-                                    route-state="{{ $order }}"
                                 >
                             @endforeach
                         </div>

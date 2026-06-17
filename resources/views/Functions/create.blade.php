@@ -13,8 +13,33 @@
 <body>
     <h1>Create Function</h1>
 
-    <div class="container">
+    <div class="event-container">
         <div class="form-section">
+            @if ($deletedFunctions->count() > 0)
+            <div class="restore-section">
+            <h2>Restore Function</h2>
+
+            <form method="POST" action="{{ route('functions.restore') }}">
+                @csrf
+
+                <select name="deleted_function">
+                    <option value="" disabled selected>Select a function</option>
+
+                    @foreach($deletedFunctions as $function)
+                        <option value="{{ $function->id }}">
+                            {{ $function->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <button type="submit">Restore Function</button>
+            </form>
+            </div>
+
+            <h2>Create New Function</h2>
+            
+            @endif
+
             <form method="POST" action="{{ route('functions.store') }}" enctype="multipart/form-data" novalidate>
                 @csrf
 

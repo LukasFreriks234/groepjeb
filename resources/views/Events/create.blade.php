@@ -136,29 +136,28 @@
                     </select>
                 </div>
 
-                <h2>Date and Time</h2>
-
-                <div class="dateTime">
-                    <label for="startTime" class="label">Start time</label>
-                    <input
-                        type="time"
-                        id="startTime"
-                        name="startTime"
-                        value="{{ old('startTime') }}"
-                        required
-                    >
-
-                    <label for="startDate" class="label">Start date</label>
-                    <input
-                        type="date"
-                        id="startDate"
-                        name="startDate"
-                        value="{{ old('startDate') }}"
-                        required
-                    >
-                </div>
-
                 <div id="recurringFields">
+
+                    <h2>Date and Time</h2>
+
+                    <div class="dateTime">
+                        <label for="startTime" class="label">Start time</label>
+                        <input
+                            type="time"
+                            id="startTime"
+                            name="startTime"
+                            value="{{ old('startTime') }}"
+                        >
+
+                        <label for="startDate" class="label">Start date</label>
+                        <input
+                            type="date"
+                            id="startDate"
+                            name="startDate"
+                            value="{{ old('startDate') }}"
+                        >
+                    </div>
+
                     <p class="information">
                         The system will activate the event on the next possible day according to the information before.
                     </p>

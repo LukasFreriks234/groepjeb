@@ -37,8 +37,24 @@ class FunctionController extends Controller
 
         $categories = Category::all();
         $functions = Functions::all();
+        $deletedFunctions = Functions::onlyTrashed()->get();
 
-        return view('Functions.create', compact('categories', 'functions'));
+        return view('Functions.create', compact('categories', 'functions', 'deletedFunctions'));
+    }
+
+    public function restore(Request $request)
+    {
+       if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $request->validate(['deleted_function' => 'required|exists:functions,id']);
+
+        $function = Functions::onlyTrashed()->findOrFail($request->deleted_function);
+
+        $function->restore();
+
+        return redirect()->route('functions.index');
     }
 
     public function store(Request $request)
@@ -104,14 +120,22 @@ class FunctionController extends Controller
         $categories = Category::all();
         $functions = Functions::where('id', '!=', $id)->get();
 
-        return view('Functions.edit', compact('function', 'categories', 'functions'));
+        $isAdmin = auth()->user() && auth()->user()->role === 'admin';
+        $isSpatialPlanner = auth()->user() && auth()->user()->role === 'cityplanner';
+
+        return view('Functions.edit', compact('function', 'categories', 'functions', 'isAdmin', 'isSpatialPlanner'));
     }
 
     public function update(Request $request, $id)
     {
+            $user = auth()->user();
+        if (!$user || !in_array($user->role, ['admin', 'cityplanner'])) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $function = Functions::with('effects')->findOrFail($id);
 
-        $isAdmin = auth()->user() && auth()->user()->role === 'admin';
+        $isAdmin = $user->role === 'admin';
 
         $rules = [
             'Safety'                => 'required|numeric|between:-10,10',
@@ -119,27 +143,31 @@ class FunctionController extends Controller
             'Environmental_Quality' => 'required|numeric|between:-10,10',
             'Services'              => 'required|numeric|between:-10,10',
             'Mobility'              => 'required|numeric|between:-10,10',
+
+            'relationship_safety'        => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_recreation'    => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_environmental' => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_services'      => 'required_with:related_function|nullable|integer|between:-10,10',
+            'relationship_mobility'      => 'required_with:related_function|nullable|integer|between:-10,10',
         ];
 
         if ($isAdmin) {
             $rules = array_merge($rules, [
-                'name'                       => 'required|string|max:255|unique:functions,name,' . $id,
-                'category'                   => 'required|exists:categories,category',
-                'image'                      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-                'related_function'           => 'nullable|exists:functions,id',
-                'relationship_safety'        => 'required_with:related_function|nullable|integer|between:-10,10',
-                'relationship_recreation'    => 'required_with:related_function|nullable|integer|between:-10,10',
-                'relationship_environmental' => 'required_with:related_function|nullable|integer|between:-10,10',
-                'relationship_services'      => 'required_with:related_function|nullable|integer|between:-10,10',
-                'relationship_mobility'      => 'required_with:related_function|nullable|integer|between:-10,10',
+                'name'             => 'required|string|max:255|unique:functions,name,' . $id,
+                'category'         => 'required|exists:categories,category',
+                'image'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'related_function' => 'nullable|exists:functions,id',
+            ]);
+        } else {
+            $rules = array_merge($rules, [
+                'related_function' => 'nullable|integer',
             ]);
         }
 
         $request->validate($rules);
 
+        $hasRelationship = !empty($request->related_function);
         if ($isAdmin) {
-            $hasRelationship = !empty($request->related_function);
-
             $functionData = [
                 'name'                       => $request->name,
                 'category'                   => $request->category,
@@ -156,6 +184,14 @@ class FunctionController extends Controller
             }
 
             $function->update($functionData);
+        } else { 
+            $function->update([
+                'relationship_safety'        => $hasRelationship ? $request->relationship_safety : 0,
+                'relationship_recreation'    => $hasRelationship ? $request->relationship_recreation : 0,
+                'relationship_environmental' => $hasRelationship ? $request->relationship_environmental : 0,
+                'relationship_services'      => $hasRelationship ? $request->relationship_services : 0,
+                'relationship_mobility'      => $hasRelationship ? $request->relationship_mobility : 0,
+            ]);
         }
 
         $function->effects()->update([

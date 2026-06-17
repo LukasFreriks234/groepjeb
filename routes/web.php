@@ -24,6 +24,7 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::post('/grid/assign-function', [GridCellController::class, 'assignFunction']);
     Route::post('/grid/move-function', [GridCellController::class, 'moveFunction']);
     Route::post('/grid/assign-event', [GridCellController::class, 'assignEvent']);
+    Route::post('/grid/check-expired-events',[GridCellController::class, 'checkExpiredEvents']);
     Route::post('/grid/remove-event', [GridCellController::class, 'removeEvent']);
     Route::post('/grid/neighbor-effects', [GridCellController::class, 'neighborEffects']);
 
@@ -44,6 +45,6 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/functions/create', [FunctionController::class, 'create'])->name('functions.create');
     Route::post('/functions/store', [FunctionController::class, 'store'])->name('functions.store');
-
+    Route::post('/functions/restore', [FunctionController::class, 'restore'])->name('functions.restore');
     Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });

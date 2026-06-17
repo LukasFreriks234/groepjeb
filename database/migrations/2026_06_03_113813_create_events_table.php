@@ -19,8 +19,8 @@ return new class extends Migration {
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->date('start_date');
-            $table->Time('time');
+            $table->date('start_date')->nullable();
+            $table->Time('time')->nullable();
             $table->integer('length');
             $table->enum('length_unit', ['hours', 'days', 'weeks']);
             $table->boolean('dynamic')->default(false);
