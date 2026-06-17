@@ -1,5 +1,10 @@
 @props(['cells', 'categories'])
 
+@php
+    $columns = $cells->max('x_coordinate') + 1;
+    $rows = $cells->max('y_coordinate') + 1;
+@endphp
+
 <div class="simulationContainer">
     <main class="citySection">
         <h2>City area</h2>
@@ -10,8 +15,11 @@
 
         <div 
             class="metropolisGrid" 
-            role="grid"
+            tabindex="0"
             aria-describedby="gridKeyboardInstructions"
+            aria-rowcount="{{ $rows }}"
+            aria-colcount="{{ $columns }}"
+            aria-label="The grid exist out of {{ $columns }} columns, {{ $rows }} rows"
         >
             @foreach($cells as $cell)
                 @php
@@ -51,6 +59,8 @@
                     role="gridcell"
                     tabindex="0"
                     aria-label="{{ $cellLabel }}"
+                    aria-rowindex="{{ $readableRow }}"
+                    aria-colindex="{{ $readableColumn }}"
                 >
                     @if($hasFunction)
                         <img
@@ -102,7 +112,7 @@
         aria-atomic="true"
     ></div>
 
-    <ul id="tooltipEffectsList">
+    <ul id="tooltipEffectsList" >
         @foreach($categories as $category)
             <li>
                 {{ $category->category }}:
