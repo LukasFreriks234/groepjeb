@@ -44,7 +44,6 @@ class EventController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'image' => 'required|image',
             'typeEvent' => 'required|in:oneOff,recurring',
             'length' => 'required|integer|min:1',
             'lengthUnit' => 'required|in:hours,days,weeks',
@@ -53,11 +52,8 @@ class EventController extends Controller
         ]);
 
         DB::transaction(function () use ($request) {
-            $imagePath = null;
 
-            if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('events', 'public');
-            }
+            $imagePath = $this->saveUploadedFunctionImage($request);
 
             $recurringId = null;
 
@@ -213,5 +209,29 @@ class EventController extends Controller
         $normalized = preg_replace('/[^a-z0-9]+/', '_', $normalized);
 
         return trim($normalized, '_');
+    }
+
+    private function saveUploadedFunctionImage(Request $request)
+    {
+        $imageName = $request->file('image')->hashName();
+
+        $relativeFolder = 'images/events';
+        $imageFolder = public_path($relativeFolder);
+
+        if (!is_dir($imageFolder)) {
+            mkdir($imageFolder, 0777, true);
+        }
+
+        if (!is_writable($imageFolder)) {
+            chmod($imageFolder, 0777);
+        }
+
+        if (!is_writable($imageFolder)) {
+            abort(500, 'De map public/images/events is not writable. Move the project outside OneDrive or check the folder permissions.');
+        }
+
+        $request->file('image')->move($imageFolder, $imageName);
+
+        return $relativeFolder . '/' . $imageName;
     }
 }
