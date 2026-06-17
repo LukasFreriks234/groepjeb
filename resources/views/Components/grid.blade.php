@@ -1,5 +1,10 @@
 @props(['cells', 'categories'])
 
+@php
+    $columns = $cells->max('x_coordinate') + 1;
+    $rows = $cells->max('y_coordinate') + 1;
+@endphp
+
 <div class="simulationContainer">
     <main class="citySection">
         <h2>City area</h2>
@@ -8,10 +13,13 @@
             Keyboard instructions: use Tab or Shift Tab to enter the grid. Inside the grid, use the arrow keys to move between cells. Select a function or event first, then press Enter or Space on a grid cell to place it. Use Tab to focus events or remove buttons inside a filled cell.
         </p>
 
-        <div
-            class="metropolisGrid"
-            role="grid"
+        <div 
+            class="metropolisGrid" 
+            tabindex="0"
             aria-describedby="gridKeyboardInstructions"
+            aria-rowcount="{{ $rows }}"
+            aria-colcount="{{ $columns }}"
+            aria-label="The grid exist out of {{ $columns }} columns, {{ $rows }} rows"
         >
             @foreach($cells as $cell)
                 @php
@@ -50,6 +58,8 @@
                     role="gridcell"
                     tabindex="0"
                     aria-label="{{ $cellLabel }}"
+                    aria-rowindex="{{ $readableRow }}"
+                    aria-colindex="{{ $readableColumn }}"
                 >
                     @if($hasFunction)
                         <img
@@ -102,7 +112,7 @@
         aria-atomic="true"
     ></div>
 
-    <ul id="tooltipEffectsList">
+    <ul id="tooltipEffectsList" >
         @foreach($categories as $category)
             <li>
                 {{ $category->category }}:
