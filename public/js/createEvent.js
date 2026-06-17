@@ -101,9 +101,9 @@ const hiddenRouteInput = document.getElementById("routeCells");
 
 document.querySelectorAll(".miniGridCell").forEach((cell) => {
 
-    cell.setAttribute("role", "button");
+    cell.setAttribute("role", "gridcell");
     cell.setAttribute("tabindex", "0");
-    cell.setAttribute("aria-pressed", "false");
+    cell.setAttribute("aria-selected", "false");
 
     cell.addEventListener("click", () => toggleCell(cell));
     cell.addEventListener("keydown", (e) => {
@@ -137,7 +137,7 @@ function addToRoute(cell, gridId) {
 
     cell.classList.add("selected", "routeSelected");
 
-    cell.setAttribute("aria-pressed", "true");
+    cell.setAttribute("aria-selected", "true");
     cell.setAttribute(
         "aria-label",
         `Grid cell ${gridId} selected as route step ${selectedRoute.length}`
@@ -152,7 +152,7 @@ function removeFromRoute(cell, gridId, index) {
 
     cell.classList.remove("selected", "routeSelected");
 
-    cell.setAttribute("aria-pressed", "false");
+    cell.setAttribute("aria-selected", "false");
     cell.setAttribute(
         "aria-label",
         `Grid cell ${gridId} removed from route`

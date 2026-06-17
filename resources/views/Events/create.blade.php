@@ -17,7 +17,7 @@
 
     <x-navbar />
 
-    <h1>Create Event</h1>
+    <h1 tabindex="0">Create Event</h1>
 
     <div class="container event-container">
         <div class="form-section">
@@ -25,7 +25,7 @@
                 @csrf
 
                 @if ($errors->any())
-                    <div style="color:red;">
+                    <div style="color:red;" role="alert" aria-live="assertive" tabindex="-1">
                         @foreach ($errors->all() as $error)
                             <p>{{ $error }}</p>
                         @endforeach
@@ -40,10 +40,12 @@
                     id="image"
                     name="image"
                     accept="image/*"
-                    alt="Upload an image for the new event"
+                    aria-label="Upload an image for the new event"
+                    required
+                    aria-required="true"
                 >
 
-                <h2>Effect while active</h2>
+                <h2 tabindex="0">Effect while active</h2>
 
                 <x-formInput
                     name="Safety"
@@ -90,7 +92,7 @@
                     max="10"
                 />
 
-                <h2>Event settings</h2>
+                <h2 tabindex="0">Event settings</h2>
 
                 <fieldset>
                     <legend>Event type</legend>
@@ -127,6 +129,8 @@
                         type="number"
                         value="{{ old('length') }}"
                         required
+                        aria-required="true"
+                        min="1"
                     >
 
                     <select name="lengthUnit">
@@ -138,24 +142,27 @@
 
                 <div id="recurringFields">
 
-                    <h2>Date and Time</h2>
+                <h2 tabindex="0">Date and Time</h2>
 
                     <div class="dateTime">
-                        <label for="startTime" class="label">Start time</label>
-                        <input
-                            type="time"
-                            id="startTime"
-                            name="startTime"
-                            value="{{ old('startTime') }}"
-                        >
+                        <label>
+                            Start time
+                            <input
+                                type="time"
+                                id="startTime"
+                                name="startTime"
+                            >
+                        </label>
 
-                        <label for="startDate" class="label">Start date</label>
-                        <input
-                            type="date"
-                            id="startDate"
-                            name="startDate"
-                            value="{{ old('startDate') }}"
-                        >
+                        <label>
+                            Start date
+                            <input
+                                type="date"
+                                id="startDate"
+                                name="startDate"
+                                value="{{ old('startDate') }}"
+                            >
+                        </label>
                     </div>
 
                     <p class="information">
@@ -339,8 +346,8 @@
                             <label for="onThe">On the...</label>
                         </div>
 
-                        <div id="eachFields" class="label">
-                            <p>Choose the days of the month this event will be active.</p>
+                        <fieldset id="eachFields">
+                            <legend>Choose the days of the month this event will be active.</legend>
 
                             <div class="month-days-grid">
                                 <?php for ($day = 1; $day <= 31; $day++): ?>
@@ -349,13 +356,14 @@
                                             type="checkbox"
                                             name="monthDays[]"
                                             value="<?= $day ?>"
+                                            aria-label="Day <?= $day ?>"
                                             {{ in_array((string) $day, old('monthDays', [])) ? 'checked' : '' }}
                                         >
-                                        <span><?= $day ?></span>
+                                        <span aria-hidden="true"><?= $day ?></span>
                                     </label>
                                 <?php endfor; ?>
                             </div>
-                        </div>
+                        </fieldset>
 
                         <div id="onTheFields">
                             <div class="onThe label">
@@ -402,7 +410,7 @@
                     </div>
                 </div>
 
-                <h2>Dynamic event</h2>
+                <h2 tabindex="0">Dynamic event</h2>
 
                 <div class="containerRadio label">
                     <input
@@ -416,17 +424,20 @@
                 </div>
 
                 <div id="dynamicEventBox" style="display:none;">
-                    <h3>Select route</h3>
+                    <h3 id="routeHeading" tabindex="0">Select route</h3>
 
                     <div
                         class="miniGrid"
-                        role="button"
-                        tabindex="0"
-                        aria-pressed="false"
+                        role="grid"
+                        aria-labelledby="routeHeading"
                     >
                         @foreach($cells as $cell)
                             <div
                                 class="miniGridCell {{ $cell->is_available ? 'available' : 'occupied' }}"
+                                role="gridcell"
+                                tabindex="0"
+                                aria-label="Cell {{ $cell->x_coordinate }}, {{ $cell->y_coordinate }}"
+                                aria-selected="false"
                                 data-grid-id="{{ $cell->id }}"
                                 data-x="{{ $cell->x_coordinate }}"
                                 data-y="{{ $cell->y_coordinate }}"
@@ -434,13 +445,12 @@
                             </div>
                         @endforeach
                     </div>
-
                     <input
                         type="hidden"
                         name="route_cells"
                         id="routeCells"
-                        aria-hidden="true"
                         value="{{ old('route_cells') }}"
+                        aria-hidden="true"
                     >
 
                     <x-formInput
@@ -456,6 +466,52 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.querySelectorAll('input[type="number"]').forEach((input) => {
+            const liveRegion =
+                document.getElementById(
+                    input.id.replace('input-', '') + '-value'
+                );
+            function updateReader() {
+                const value = Number(input.value);
+                if (value < 0) {
+                    liveRegion.textContent =
+                        `minus ${Math.abs(value)}`;
+                } else {
+                    liveRegion.textContent =
+                        `${value}`;
+                }
+            }
+
+            updateReader();
+            input.addEventListener('input', updateReader);
+            input.addEventListener('change', updateReader);
+            input.addEventListener('focus', updateReader);
+        });
+        
+        const startDate = document.getElementById('startDate');
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Tab' && !event.shiftKey) {
+                const active = document.activeElement;
+                if (active.closest('.timepicker') || active.closest('[role="dialog"]')) {
+                    event.preventDefault();
+                    startDate.focus();
+                }
+            }
+        });
+
+
+        document.querySelectorAll(".miniGridCell").forEach((cell) => {
+            cell.addEventListener("click", () => toggleCell(cell));
+            cell.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleCell(cell);
+                }
+            });
+        });
+    </script>
 
 </body>
 

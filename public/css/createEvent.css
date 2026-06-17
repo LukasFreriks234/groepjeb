@@ -36,7 +36,10 @@
 
 .day-box input,
 .month-box input {
-    display: none;
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
 }
 
 .day-box span,
@@ -102,7 +105,7 @@
     width:300px;
     border:2px solid black;
     margin-top:20px;
-    grid-template-columns: repeat(4, 1fr);"
+    grid-template-columns: repeat(4, 1fr);
 }
 
 .miniGridCell{
