@@ -217,9 +217,9 @@ function prepareGridEventElements() {
     document.querySelectorAll(".gridEventImage, .draggableGridEvent").forEach((image) => {
         image.classList.add("gridEventImage", "draggableGridEvent");
         image.setAttribute("draggable", "true");
-        image.setAttribute("tabindex", "-1");
-        image.setAttribute("aria-hidden", "true");
-        image.removeAttribute("role");
+        image.setAttribute("tabindex", "0");
+        image.setAttribute("role", "button");
+        image.removeAttribute("aria-hidden");
         image.alt = image.alt || getGridEventName(image);
 
         image.style.pointerEvents = "auto";
@@ -278,11 +278,12 @@ function createGridEventImage(data) {
     const image = document.createElement("img");
 
     image.src = data.imageSrc;
-    image.alt = "";
+    image.alt = data.imageAlt || "Event";
     image.classList.add("gridEventImage", "draggableGridEvent");
     image.setAttribute("draggable", "true");
-    image.setAttribute("tabindex", "-1");
-    image.setAttribute("aria-hidden", "true");
+    image.setAttribute("tabindex", "0");
+    image.setAttribute("role", "button");
+    image.setAttribute("aria-label", `Move event ${data.imageAlt || "Event"} from this grid cell`);
 
     image.dataset.eventId = data.eventId;
     image.dataset.eventName = data.imageAlt || "Event";
