@@ -7,9 +7,11 @@
     <title>{{ $function->name }}</title>
     <link href="{{ asset('css/overviewFunctionStyle.css') }}" type="text/css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/editStyle.css') }}">
+    <link href="{{ asset('css/navbarStyle.css') }}" type="text/css" rel="stylesheet" />
 </head>
 
 <body>
+    <x-navbar />
 
     <h1>{{ $function->name }}</h1>
 
