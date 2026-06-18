@@ -974,7 +974,7 @@ function getReadableCellPosition(cell) {
 }
 
 function announceCurrentGridCell(cell) {
-    announceKeyboardStatus(getCellLabelText(cell));
+    announceKeyboardStatus(getCellLabelText(cell), 150);
 }
 
 function getCellLabelText(cell) {
@@ -1015,7 +1015,7 @@ function setCellLabel(cell, name = null, category = null) {
     updateCellLabel(cell);
 }
 
-function showEffectsTooltip(cell, clientX, clientY, autoHide = false) {
+function showEffectsTooltip(cell, clientX, clientY, autoHide = false, announceTooltip = true) {
     const tooltip = document.getElementById("functionTooltip");
 
     if (!tooltip) {
@@ -1053,16 +1053,18 @@ function showEffectsTooltip(cell, clientX, clientY, autoHide = false) {
     tooltip.style.left = left + "px";
     tooltip.style.top = top + "px";
 
-    const announcement = document.getElementById("tooltipAnnouncement");
+    if (announceTooltip) {
+        const announcement = document.getElementById("tooltipAnnouncement");
 
-    if (announcement) {
-        const tooltipText = tooltip.innerText.replace(/\s+/g, " ").trim();
+        if (announcement) {
+            const tooltipText = tooltip.innerText.replace(/\s+/g, " ").trim();
 
-        announcement.textContent = "";
+            announcement.textContent = "";
 
-        setTimeout(() => {
-            announcement.textContent = tooltipText;
-        }, 100);
+            setTimeout(() => {
+                announcement.textContent = tooltipText;
+            }, 600);
+        }
     }
 
     if (autoHide) {
@@ -1087,7 +1089,7 @@ function enableTooltip() {
         cell.setAttribute("aria-describedby", "functionTooltip");
 
         cell.addEventListener("mousemove", function (ev) {
-            showEffectsTooltip(cell, ev.clientX, ev.clientY);
+            showEffectsTooltip(cell, ev.clientX, ev.clientY, false, true);
         });
 
         cell.addEventListener("mouseleave", function () {
@@ -1096,12 +1098,15 @@ function enableTooltip() {
         });
 
         cell.addEventListener("focus", function () {
+            announceKeyboardStatus(getCellLabelText(cell), 150);
             const rect = cell.getBoundingClientRect();
 
             showEffectsTooltip(
                 cell,
                 rect.left + rect.width / 2,
-                rect.top + rect.height / 2
+                rect.top + rect.height / 2,
+                false,
+                false
             );
         });
 
@@ -1378,25 +1383,34 @@ window.addEventListener('simulation:tick', (event) => {
     });
 });
 
-function announceKeyboardStatus(message) {
-    let status = document.getElementById("keyboardDragStatus");
+let keyboardStatusTimeout = null;
+let keyboardStatusElement = null;
 
-    if (status) {
-        status.remove();
+function getKeyboardStatusElement() {
+    if (keyboardStatusElement && document.body.contains(keyboardStatusElement)) {
+        return keyboardStatusElement;
     }
 
-    status = document.createElement("div");
+    keyboardStatusElement = document.createElement("div");
+    keyboardStatusElement.id = "keyboardDragStatus";
+    keyboardStatusElement.className = "sr-only";
+    keyboardStatusElement.setAttribute("role", "status");
+    keyboardStatusElement.setAttribute("aria-live", "assertive");
+    keyboardStatusElement.setAttribute("aria-atomic", "true");
 
-    status.id = "keyboardDragStatus";
-    status.className = "sr-only";
+    document.body.appendChild(keyboardStatusElement);
 
-    status.setAttribute("role", "status");
-    status.setAttribute("aria-live", "assertive");
-    status.setAttribute("aria-atomic", "true");
+    return keyboardStatusElement;
+}
 
-    document.body.appendChild(status);
+function announceKeyboardStatus(message, delay = 100) {
+    const status = getKeyboardStatusElement();
 
-    setTimeout(() => {
+    clearTimeout(keyboardStatusTimeout);
+
+    status.textContent = "";
+
+    keyboardStatusTimeout = setTimeout(() => {
         status.textContent = message;
-    }, 50);
+    }, delay);
 }
