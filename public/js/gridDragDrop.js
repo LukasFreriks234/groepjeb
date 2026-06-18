@@ -1216,13 +1216,12 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
     });
 };
 
+let lastEffectsAnnouncement = "";
+
 function updateEffectsAccessibilityLabelForReader() {
     const effectsList = document.getElementById("effectsList");
     const effectsReader = document.getElementById("effectsReader");
-
-    if (!effectsList || !effectsReader) {
-        return;
-    }
+    if (!effectsList || !effectsReader) return;
 
     const effectSpans = effectsList.querySelectorAll("[data-effect-category]");
     const effectsText = [];
@@ -1230,37 +1229,23 @@ function updateEffectsAccessibilityLabelForReader() {
     effectSpans.forEach((span) => {
         const category = span.dataset.effectCategory;
         const numericValue = Number(span.textContent.trim());
-
-        const readableValue =
-            numericValue < 0
-                ? `minus ${Math.abs(numericValue)}`
-                : `${numericValue}`;
-
+        const readableValue = numericValue < 0 ? `minus ${Math.abs(numericValue)}` : `${numericValue}`;
         effectsText.push(`${category} ${readableValue}`);
     });
 
     const qualityElement = document.getElementById("qualityOfLifeValue");
-
     if (qualityElement) {
         const total = Number(qualityElement.textContent.trim());
-
-        const readableTotal =
-            total < 0
-                ? `minus ${Math.abs(total)}`
-                : `${total}`;
-
+        const readableTotal = total < 0 ? `minus ${Math.abs(total)}` : `${total}`;
         effectsText.push(`Quality of Life ${readableTotal}`);
     }
 
     const fullText = `Effects updated. ${effectsText.join(". ")}.`;
 
-    effectsReader.textContent = "";
+    if (fullText === lastEffectsAnnouncement) return;
+    lastEffectsAnnouncement = fullText;
 
-    setTimeout(() => {
-        effectsReader.textContent = fullText;
-    }, 100);
-
-    effectsList.setAttribute("aria-label", fullText);
+    effectsReader.textContent = fullText;
 }
 
 function loadNeighborEffects(cell) {
