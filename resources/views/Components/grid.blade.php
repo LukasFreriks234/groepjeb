@@ -1,17 +1,25 @@
 @props(['cells', 'categories','eventGridCells'])
 
+@php
+    $columns = $cells->max('x_coordinate') + 1;
+    $rows = $cells->max('y_coordinate') + 1;
+@endphp
+
 <div class="simulationContainer">
     <main class="citySection">
         <h2>City area</h2>
 
         <p id="gridKeyboardInstructions" class="sr-only">
-            Keyboard instructions: use Tab or Shift Tab to move to the grid. Inside the grid, use the arrow keys to move between cells. Press Enter or Space on a filled cell to select the function. Press Enter or Space on another cell to move or swap it. Events can be placed on cells that already contain a matching function. Use the remove button to remove a function or event from a filled cell.
+            Keyboard instructions: use Tab or Shift Tab to enter the grid. Inside the grid, use the arrow keys to move between cells. Select a function or event first, then press Enter or Space on a grid cell to place it. Use Tab to focus events or remove buttons inside a filled cell.
         </p>
 
         <div 
             class="metropolisGrid" 
-            role="grid"
+            tabindex="0"
             aria-describedby="gridKeyboardInstructions"
+            aria-rowcount="{{ $rows }}"
+            aria-colcount="{{ $columns }}"
+            aria-label="The grid exist out of {{ $columns }} columns, {{ $rows }} rows"
         >
         
         @php
@@ -22,6 +30,7 @@
                 @php
                     $readableRow = $cell->y_coordinate + 1;
                     $readableColumn = $cell->x_coordinate + 1;
+
                     $hasFunction = $cell->cityFunction !== null;
                     $hasEvents = $cell->events && $cell->events->count() > 0;
 
@@ -34,21 +43,19 @@
                     if ($hasFunction) {
                         $cellLabel .= 'Contains ' . $cell->cityFunction->name . '. ';
                     } else {
-                        $cellLabel .= 'Empty cell. ';
+                        $cellLabel .= 'Contains no function. ';
                     }
 
                     if ($hasEvents) {
                         $cellLabel .= 'Events: ' . $eventNames . '. ';
                     }
 
-                    if ($hasFunction) {
-                        $cellLabel .= 'Press Enter or Space to select this function to move it.';
-                    } else {
-                        $cellLabel .= 'Press Enter or Space to place a selected function here.';
+                    if (!$hasFunction && !$hasEvents) {
+                        $cellLabel .= 'Empty cell.';
                     }
                 @endphp
 
-                <div 
+                <div
                     class="gridCell {{ $cell->is_available ? 'available' : 'occupied' }}"
                     data-id="{{ $cell->id }}"
                     data-x="{{ $cell->x_coordinate }}"
@@ -56,6 +63,8 @@
                     role="gridcell"
                     tabindex="0"
                     aria-label="{{ $cellLabel }}"
+                    aria-rowindex="{{ $readableRow }}"
+                    aria-colindex="{{ $readableColumn }}"
                 >
                     @if($hasFunction)
                         <img
@@ -73,7 +82,7 @@
                     @endif
 
                     @if($hasEvents)
-                        <div class="gridEvents" aria-hidden="true">
+                        <div class="gridEvents">
                             @foreach($cell->events as $event)
                                 @foreach ($arrEventGridCells as $gridCell)
                                     @if($gridCell->grid_cell_id == $cell->id && $gridCell->event_id == $event->id)
@@ -84,11 +93,12 @@
                                 @endforeach
                                 <img
                                     src="{{ asset($event->image_url) }}"
-                                    alt=""
-                                    aria-hidden="true"
-                                    tabindex="-1"
+                                    alt="{{ $event->name }}"
                                     class="gridEventImage draggableGridEvent"
                                     draggable="true"
+                                    tabindex="0"
+                                    role="button"
+                                    aria-label="Move event {{ $event->name }} from this grid cell"
                                     data-event-id="{{ $event->id }}"
                                     data-event-name="{{ $event->name }}"
                                     data-from-cell-id="{{ $cell->id }}"
@@ -116,7 +126,7 @@
         aria-atomic="true"
     ></div>
 
-    <ul id="tooltipEffectsList">
+    <ul id="tooltipEffectsList" >
         @foreach($categories as $category)
             <li>
                 {{ $category->category }}:

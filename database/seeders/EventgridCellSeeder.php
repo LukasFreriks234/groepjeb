@@ -14,9 +14,9 @@ class EventGridCellSeeder extends Seeder
     public function run(): void
     {
         DB::table('event_grid_cells')->insert([
-            ['event_id' => 1, 'grid_cell_id' => 1, 'route_order' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['event_id' => 1, 'grid_cell_id' => 2, 'route_order' => 2, 'created_at' => now(), 'updated_at' => now()],
-            ['event_id' => 2, 'grid_cell_id' => 3, 'route_order' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['event_id' => 1, 'grid_dynamics_id' => 1, 'route_order' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['event_id' => 1, 'grid_dynamics_id' => 2, 'route_order' => 2, 'created_at' => now(), 'updated_at' => now()],
+            ['event_id' => 2, 'grid_dynamics_id' => 3, 'route_order' => 1, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

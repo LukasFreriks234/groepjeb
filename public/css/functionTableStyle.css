@@ -127,3 +127,14 @@
     height: 0px; 
     overflow: hidden;
 }
+
+.eventItem {
+    background-color: transparent;
+    cursor: grab;
+}
+
+.eventItem.selectedMobileCell,
+.eventItem.keyboardSelected {
+    background-color: yellow !important;
+    color: black !important;
+}

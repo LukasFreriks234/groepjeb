@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             RecurringSeeder::class,
             EventSeeder::class,
+            GridDynamicSeeder::class,
             EventGridCellSeeder::class,
             EventEffectSeeder::class,
             WeeklySeeder::class,

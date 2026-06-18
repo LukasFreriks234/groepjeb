@@ -1,57 +1,93 @@
 document.addEventListener("DOMContentLoaded", function () {
     function cellHasFunction(cell) {
-        return cell.querySelector(".functionItem") || cell.querySelector(".gridImage");
+        return Boolean(
+            cell.querySelector(".functionItem") ||
+            cell.querySelector(".gridImage")
+        );
     }
 
     function cellHasEvents(cell) {
-        return cell.querySelector(".gridEventImage");
+        return Boolean(cell.querySelector(".gridEventImage"));
     }
 
     function cellHasContent(cell) {
         return cellHasFunction(cell) || cellHasEvents(cell);
     }
 
+    function getCellContentLabel(cell) {
+        const functionImage = cell.querySelector(".gridImage");
+        const eventImages = cell.querySelectorAll(".gridEventImage");
+        const names = [];
+
+        if (functionImage) {
+            names.push(
+                functionImage.dataset.functionName ||
+                functionImage.alt ||
+                "function"
+            );
+        }
+
+        eventImages.forEach(function (eventImage) {
+            names.push(
+                eventImage.dataset.eventName ||
+                eventImage.alt ||
+                "event"
+            );
+        });
+
+        if (names.length === 0) {
+            return "content";
+        }
+
+        return names.join(", ");
+    }
+
     function createDeleteButton(cell) {
-        if (!cell) return;
+        if (!cell) {
+            return;
+        }
 
         if (!cellHasContent(cell)) {
             removeDeleteButton(cell);
             return;
         }
 
-        if (cell.querySelector(".delete-btn")) {
+        const existingButton = cell.querySelector(".delete-btn");
+
+        if (existingButton) {
+            existingButton.setAttribute(
+                "aria-label",
+                `Remove ${getCellContentLabel(cell)} from this grid cell`
+            );
             return;
         }
 
-        const btn = document.createElement("button");
-        btn.innerHTML = "✕";
-        btn.className = "delete-btn";
-        btn.type = "button";
-        btn.setAttribute("aria-label", "Remove function and events from this cell");
+        const button = document.createElement("button");
 
-        cell.appendChild(btn);
+        button.innerHTML = "✕";
+        button.className = "delete-btn";
+        button.type = "button";
+        button.setAttribute("aria-label", `Remove ${getCellContentLabel(cell)} from this grid cell`);
 
-        btn.addEventListener("click", function (ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-
-            deleteCellContent(cell);
-        });
-
-        btn.addEventListener("touchstart", function (ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-
-            deleteCellContent(cell);
-        }, { passive: false });
+        cell.appendChild(button);
     }
 
     function removeDeleteButton(cell) {
-        const btn = cell.querySelector(".delete-btn");
+        const button = cell.querySelector(".delete-btn");
 
-        if (btn) {
-            btn.remove();
+        if (button) {
+            button.remove();
         }
+    }
+
+    function removeVisualCellContent(cell) {
+        const items = cell.querySelectorAll(
+            ".functionItem, .gridImage, .gridEvents, .delete-btn"
+        );
+
+        items.forEach(function (item) {
+            item.remove();
+        });
     }
 
     function refreshDeleteButtons() {
@@ -64,13 +100,69 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    window.refreshDeleteButtons = refreshDeleteButtons;
+    function announceDeleteStatus(message) {
+        if (typeof announceKeyboardStatus === "function") {
+            announceKeyboardStatus(message);
+            return;
+        }
+
+        let status = document.getElementById("deleteStatus");
+
+        if (!status) {
+            status = document.createElement("div");
+            status.id = "deleteStatus";
+            status.className = "sr-only";
+            status.setAttribute("role", "status");
+            status.setAttribute("aria-live", "polite");
+            status.setAttribute("aria-atomic", "true");
+            document.body.appendChild(status);
+        }
+
+        status.textContent = "";
+
+        setTimeout(function () {
+            status.textContent = message;
+        }, 50);
+    }
+
+    function updateDeletedCell(cell) {
+        removeVisualCellContent(cell);
+
+        cell.classList.remove("occupied", "selectedMobileCell", "keyboardSelected");
+        cell.classList.add("available");
+
+        delete cell.dataset.category;
+
+        if (typeof updateCellLabel === "function") {
+            updateCellLabel(cell);
+        } else {
+            cell.setAttribute("aria-label", "Empty grid cell.");
+        }
+
+        refreshDeleteButtons();
+
+        if (typeof enableDrag === "function") {
+            enableDrag();
+        }
+
+        if (typeof enableMobileDrag === "function") {
+            enableMobileDrag();
+        }
+
+        if (typeof updateEffectsAccessibilityLabelForReader === "function") {
+            updateEffectsAccessibilityLabelForReader();
+        }
+
+        cell.focus();
+        announceDeleteStatus("Content removed from this grid cell.");
+    }
 
     function deleteCellContent(cell) {
         const id = cell.dataset.id;
 
         if (!id) {
             console.error("Grid cell id ontbreekt");
+            announceDeleteStatus("Could not remove the content because the grid cell id is missing.");
             return;
         }
 
@@ -86,67 +178,82 @@ document.addEventListener("DOMContentLoaded", function () {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json",
                 "X-CSRF-TOKEN": document
                     .querySelector('meta[name="csrf-token"]')
                     .getAttribute("content")
             },
-            body: JSON.stringify({ id: id })
+            body: JSON.stringify({
+                id: id,
+                cell_id: id
+            })
         })
-            .then(response => response.json())
-            .then(data => {
-                cell.innerHTML = "";
-                cell.classList.remove("occupied", "selectedMobileCell", "keyboardSelected");
-                cell.classList.add("available");
-
-                delete cell.dataset.category;
-
-                if (typeof updateCellLabel === "function") {
-                    updateCellLabel(cell);
-                } else {
-                    cell.setAttribute(
-                        "aria-label",
-                        "Empty cell. Press Enter or Space to place a selected function here."
-                    );
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error(`Delete request failed with status ${response.status}`);
                 }
 
-                if (data.success && data.effectTotals) {
+                return response.json();
+            })
+            .then(function (data) {
+                if (!data.success) {
+                    announceDeleteStatus(data.message || "Could not remove the content from this grid cell.");
+                    return;
+                }
+
+                updateDeletedCell(cell);
+
+                if (data.effectTotals && typeof updateEffectTable === "function") {
                     updateEffectTable(data.effectTotals, data.qualityOfLife);
                 }
-
-                refreshDeleteButtons();
-
-                if (typeof enableDrag === "function") {
-                    enableDrag();
-                }
-
-                if (typeof enableMobileDrag === "function") {
-                    enableMobileDrag();
-                }
-
-                if (typeof updateEffectsAccessibilityLabelForReader === "function") {
-                    updateEffectsAccessibilityLabelForReader();
-                }
             })
-            .catch(error => {
+            .catch(function (error) {
                 console.error("Delete error:", error);
+                announceDeleteStatus("The server did not confirm the delete, but the content was removed visually.");
+                updateDeletedCell(cell);
             });
     }
 
-    document.body.addEventListener("mouseover", function (e) {
-        const cell = e.target.closest(".gridCell");
+    window.refreshDeleteButtons = refreshDeleteButtons;
 
-        if (!cell) return;
+    document.body.addEventListener("click", function (event) {
+        const button = event.target.closest(".delete-btn");
+
+        if (!button) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const cell = button.closest(".gridCell");
+
+        if (!cell) {
+            return;
+        }
+
+        deleteCellContent(cell);
+    }, true);
+
+    document.body.addEventListener("mouseover", function (event) {
+        const cell = event.target.closest(".gridCell");
+
+        if (!cell) {
+            return;
+        }
 
         createDeleteButton(cell);
     });
 
-    document.body.addEventListener("touchstart", function (e) {
-        const cell = e.target.closest(".gridCell");
+    document.body.addEventListener("focusin", function (event) {
+        const cell = event.target.closest(".gridCell");
 
-        if (!cell) return;
+        if (!cell) {
+            return;
+        }
 
         createDeleteButton(cell);
-    }, { passive: true });
+    });
 
     const grid = document.querySelector(".metropolisGrid");
 
