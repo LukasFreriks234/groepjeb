@@ -82,11 +82,20 @@
                         </div>
                     </div>
 
+                    <span class="navbar-clock-range">/ 24:00</span>
                 </div>
 
-                <div class="navbar-day-counter" aria-live="polite" aria-atomic="true">
-                    <span class="navbar-day-counter-label">Days</span>
-                    <span class="navbar-day-counter-value" data-simulation-day-counter>0</span>
+                <div class="navbar-date-display" aria-live="polite" aria-atomic="true">
+                    <span class="navbar-date-display-label">Date</span>
+                    <span class="navbar-date-display-value" data-simulation-date>Jan 1, 2026</span>
+                    <div class="navbar-date-popup" data-simulation-date-popup aria-hidden="true">
+                        <div class="navbar-date-popup-nav">
+                            <button class="navbar-date-popup-arrow" type="button" data-calendar-prev aria-label="Previous month">&lsaquo;</button>
+                            <span class="navbar-date-popup-title" data-calendar-title></span>
+                            <button class="navbar-date-popup-arrow" type="button" data-calendar-next aria-label="Next month">&rsaquo;</button>
+                        </div>
+                        <div class="navbar-date-popup-calendar" data-simulation-date-calendar></div>
+                    </div>
                 </div>
 
                 <button
@@ -115,5 +124,3 @@
         </li>
     </ul>
 </nav>
-
-<script src="{{ asset('js/simulationTimer.js') }}?v={{ filemtime(public_path('js/simulationTimer.js')) }}" defer></script>

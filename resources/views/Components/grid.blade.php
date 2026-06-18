@@ -1,4 +1,4 @@
-@props(['cells', 'categories'])
+@props(['cells', 'categories','eventGridCells'])
 
 @php
     $columns = $cells->max('x_coordinate') + 1;
@@ -21,6 +21,11 @@
             aria-colcount="{{ $columns }}"
             aria-label="The grid exist out of {{ $columns }} columns, {{ $rows }} rows"
         >
+        
+        @php
+        $arrEventGridCells = $eventGridCells->sortBy('route_order');
+        @endphp
+
             @foreach($cells as $cell)
                 @php
                     $readableRow = $cell->y_coordinate + 1;
@@ -79,6 +84,13 @@
                     @if($hasEvents)
                         <div class="gridEvents">
                             @foreach($cell->events as $event)
+                                @foreach ($arrEventGridCells as $gridCell)
+                                    @if($gridCell->grid_cell_id == $cell->id && $gridCell->event_id == $event->id)
+                                    @php
+                                        $order = $gridCell->route_order;
+                                        @endphp
+                                    @endif
+                                @endforeach
                                 <img
                                     src="{{ asset($event->image_url) }}"
                                     alt="{{ $event->name }}"
@@ -90,6 +102,8 @@
                                     data-event-id="{{ $event->id }}"
                                     data-event-name="{{ $event->name }}"
                                     data-from-cell-id="{{ $cell->id }}"
+                                    event-speed="{{ $event->speed }}"
+                                    route-state="{{ $order }}"
                                 >
                             @endforeach
                         </div>

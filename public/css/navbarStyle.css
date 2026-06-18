@@ -125,20 +125,22 @@ body {
     font-size: 11px;
 }
 
-.navbar-day-counter {
+.navbar-date-display {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1px;
-    min-width: 40px;
-    padding: 4px 8px;
+    min-width: 80px;
+    padding: 4px 10px;
     border: 2px solid black;
     border-radius: 6px;
     background: linear-gradient(180deg, #ffffff 0%, #eef6ff 100%);
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+    position: relative;
+    cursor: default;
 }
 
-.navbar-day-counter-label {
+.navbar-date-display-label {
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
@@ -146,11 +148,126 @@ body {
     color: #333;
 }
 
-.navbar-day-counter-value {
-    font-size: 20px;
+.navbar-date-display-value {
+    font-size: 14px;
     font-weight: 800;
     line-height: 1;
     color: #2563eb;
+    white-space: nowrap;
+}
+
+.navbar-date-popup {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+    z-index: 1000;
+}
+
+.navbar-date-popup--visible {
+    display: block;
+}
+
+.navbar-date-popup-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.navbar-date-popup-title {
+    font-weight: 700;
+    font-size: 13px;
+    text-align: center;
+    flex: 1;
+}
+
+.navbar-date-popup-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 2px solid black;
+    border-radius: 4px;
+    background: white;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    color: #333;
+}
+
+.navbar-date-popup-arrow:hover {
+    background-color: #e0f2fe;
+    color: #1e40af;
+}
+
+.navbar-date-popup-arrow:focus,
+.navbar-date-popup-arrow:focus-visible {
+    outline: 3px solid black;
+    outline-offset: 2px;
+    background-color: yellow;
+}
+
+.navbar-date-popup-calendar {
+    background: white;
+    border: 2px solid black;
+    border-radius: 6px;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.calendar-table {
+    border-collapse: collapse;
+    font-size: 12px;
+    font-family: inherit;
+}
+
+.calendar-table th {
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    padding: 2px 4px;
+    color: #555;
+    border-bottom: 1px solid #ccc;
+}
+
+.calendar-table td {
+    text-align: center;
+    padding: 2px 4px;
+    font-weight: 600;
+}
+
+.calendar-day {
+    color: #222;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.calendar-day:hover {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.calendar-day--current {
+    background-color: #2563eb;
+    color: white;
+    border-radius: 4px;
+    font-weight: 800;
+}
+
+.calendar-day--current:hover {
+    background-color: #1d4ed8;
+    color: white;
+}
+
+.calendar-empty {
+    color: #ccc;
 }
 
 .navbar-clock-divider {
