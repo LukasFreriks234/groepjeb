@@ -1232,7 +1232,7 @@ function getReadableCellPosition(cell) {
 }
 
 function announceCurrentGridCell(cell) {
-    announceKeyboardStatus(getCellLabelText(cell));
+    announceKeyboardStatus(getCellLabelText(cell), 150);
 }
 
 function getCellLabelText(cell) {
@@ -1271,7 +1271,7 @@ function setCellLabel(cell, name = null, category = null) {
     updateCellLabel(cell);
 }
 
-function showEffectsTooltip(cell, clientX, clientY, autoHide = false) {
+function showEffectsTooltip(cell, clientX, clientY, autoHide = false, announceTooltip = true) {
     const tooltip = document.getElementById("functionTooltip");
 
     if (!tooltip) {
@@ -1309,16 +1309,18 @@ function showEffectsTooltip(cell, clientX, clientY, autoHide = false) {
     tooltip.style.left = left + "px";
     tooltip.style.top = top + "px";
 
-    const announcement = document.getElementById("tooltipAnnouncement");
+    if (announceTooltip) {
+        const announcement = document.getElementById("tooltipAnnouncement");
 
-    if (announcement) {
-        const tooltipText = tooltip.innerText.replace(/\s+/g, " ").trim();
+        if (announcement) {
+            // const tooltipText = tooltip.innerText.replace(/\s+/g, " ").trim();
 
-        announcement.textContent = "";
+            announcement.textContent = "";
 
-        setTimeout(() => {
-            announcement.textContent = tooltipText;
-        }, 100);
+            setTimeout(() => {
+                announcement.textContent = tooltipText;
+            }, 600);
+        }
     }
 
     if (autoHide) {
@@ -1343,7 +1345,7 @@ function enableTooltip() {
         cell.setAttribute("aria-describedby", "functionTooltip");
 
         cell.addEventListener("mousemove", function (ev) {
-            showEffectsTooltip(cell, ev.clientX, ev.clientY);
+            showEffectsTooltip(cell, ev.clientX, ev.clientY, false, true);
         });
 
         cell.addEventListener("mouseleave", function () {
@@ -1357,7 +1359,9 @@ function enableTooltip() {
             showEffectsTooltip(
                 cell,
                 rect.left + rect.width / 2,
-                rect.top + rect.height / 2
+                rect.top + rect.height / 2,
+                false,
+                false
             );
         });
 
@@ -1472,13 +1476,12 @@ window.updateEffectTable = function (effectTotals, qualityOfLife) {
     });
 };
 
+let lastEffectsAnnouncement = "";
+
 function updateEffectsAccessibilityLabelForReader() {
     const effectsList = document.getElementById("effectsList");
     const effectsReader = document.getElementById("effectsReader");
-
-    if (!effectsList || !effectsReader) {
-        return;
-    }
+    if (!effectsList || !effectsReader) return;
 
     const effectSpans = effectsList.querySelectorAll("[data-effect-category]");
     const effectsText = [];
@@ -1486,37 +1489,23 @@ function updateEffectsAccessibilityLabelForReader() {
     effectSpans.forEach((span) => {
         const category = span.dataset.effectCategory;
         const numericValue = Number(span.textContent.trim());
-
-        const readableValue =
-            numericValue < 0
-                ? `minus ${Math.abs(numericValue)}`
-                : `${numericValue}`;
-
+        const readableValue = numericValue < 0 ? `minus ${Math.abs(numericValue)}` : `${numericValue}`;
         effectsText.push(`${category} ${readableValue}`);
     });
 
     const qualityElement = document.getElementById("qualityOfLifeValue");
-
     if (qualityElement) {
         const total = Number(qualityElement.textContent.trim());
-
-        const readableTotal =
-            total < 0
-                ? `minus ${Math.abs(total)}`
-                : `${total}`;
-
+        const readableTotal = total < 0 ? `minus ${Math.abs(total)}` : `${total}`;
         effectsText.push(`Quality of Life ${readableTotal}`);
     }
 
     const fullText = `Effects updated. ${effectsText.join(". ")}.`;
 
-    effectsReader.textContent = "";
+    if (fullText === lastEffectsAnnouncement) return;
+    lastEffectsAnnouncement = fullText;
 
-    setTimeout(() => {
-        effectsReader.textContent = fullText;
-    }, 100);
-
-    effectsList.setAttribute("aria-label", fullText);
+    effectsReader.textContent = fullText;
 }
 
 function loadNeighborEffects(cell) {
@@ -1648,25 +1637,34 @@ window.addEventListener("simulation:tick", (event) => {
         });
 });
 
-function announceKeyboardStatus(message) {
-    let status = document.getElementById("keyboardDragStatus");
+let keyboardStatusTimeout = null;
+let keyboardStatusElement = null;
 
-    if (status) {
-        status.remove();
+function getKeyboardStatusElement() {
+    if (keyboardStatusElement && document.body.contains(keyboardStatusElement)) {
+        return keyboardStatusElement;
     }
 
-    status = document.createElement("div");
+    keyboardStatusElement = document.createElement("div");
+    keyboardStatusElement.id = "keyboardDragStatus";
+    keyboardStatusElement.className = "sr-only";
+    keyboardStatusElement.setAttribute("role", "status");
+    keyboardStatusElement.setAttribute("aria-live", "assertive");
+    keyboardStatusElement.setAttribute("aria-atomic", "true");
 
-    status.id = "keyboardDragStatus";
-    status.className = "sr-only";
+    document.body.appendChild(keyboardStatusElement);
 
-    status.setAttribute("role", "status");
-    status.setAttribute("aria-live", "assertive");
-    status.setAttribute("aria-atomic", "true");
+    return keyboardStatusElement;
+}
 
-    document.body.appendChild(status);
+function announceKeyboardStatus(message, delay = 100) {
+    const status = getKeyboardStatusElement();
 
-    setTimeout(() => {
+    clearTimeout(keyboardStatusTimeout);
+
+    status.textContent = "";
+
+    keyboardStatusTimeout = setTimeout(() => {
         status.textContent = message;
-    }, 50);
+    }, delay);
 }

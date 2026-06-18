@@ -10,15 +10,14 @@
         <h2>City area</h2>
 
         <p id="gridKeyboardInstructions" class="sr-only">
-            Keyboard instructions: use Tab or Shift Tab to enter the grid. Inside the grid, use the arrow keys to move between cells. Select a function or event first, then press Enter or Space on a grid cell to place it. Use Tab to focus events or remove buttons inside a filled cell.
-        </p>
+            Keyboard instructions: use Tab or Shift Tab to move to the grid. Inside the grid, use the arrow keys to move between cells. Press Enter or Space on a filled cell to select the function. Press Enter or Space on another cell to move or swap it. Events can be placed on cells that already contain a matching function. Use the remove button to remove a function or event from a filled cell.
+        </p>   
 
         <div 
             class="metropolisGrid" 
+            role="group"
             tabindex="0"
             aria-describedby="gridKeyboardInstructions"
-            aria-rowcount="{{ $rows }}"
-            aria-colcount="{{ $columns }}"
             aria-label="The grid exist out of {{ $columns }} columns, {{ $rows }} rows"
         >
         
@@ -60,7 +59,7 @@
                     data-id="{{ $cell->id }}"
                     data-x="{{ $cell->x_coordinate }}"
                     data-y="{{ $cell->y_coordinate }}"
-                    role="gridcell"
+                    role="button"
                     tabindex="0"
                     aria-label="{{ $cellLabel }}"
                     aria-rowindex="{{ $readableRow }}"
