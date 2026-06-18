@@ -357,7 +357,6 @@
                                             name="monthDays[]"
                                             value="<?= $day ?>"
                                             aria-label="Day <?= $day ?>"
-                                            {{ in_array((string) $day, old('monthDays', [])) ? 'checked' : '' }}
                                         >
                                         <span aria-hidden="true"><?= $day ?></span>
                                     </label>
@@ -469,25 +468,34 @@
 
     <script>
         document.querySelectorAll('input[type="number"]').forEach((input) => {
-            const liveRegion =
-                document.getElementById(
-                    input.id.replace('input-', '') + '-value'
-                );
+
+            const reader =
+                document.getElementById(input.name + '-reader');
+
+            const label =
+                document.querySelector(`label[for="${input.id}"]`)?.textContent.trim()
+                ?? input.name;
+
             function updateReader() {
-                const value = Number(input.value);
-                if (value < 0) {
-                    liveRegion.textContent =
-                        `minus ${Math.abs(value)}`;
-                } else {
-                    liveRegion.textContent =
-                        `${value}`;
+
+                if (!reader) {
+                    return;
                 }
+
+                const value = Number(input.value);
+
+                reader.textContent = '';
+
+                setTimeout(() => {
+                    reader.textContent =
+                        value < 0
+                            ? `${label} minus ${Math.abs(value)}`
+                            : `${label} ${value}`;
+                }, 10);
             }
 
-            updateReader();
             input.addEventListener('input', updateReader);
             input.addEventListener('change', updateReader);
-            input.addEventListener('focus', updateReader);
         });
         
         const startDate = document.getElementById('startDate');
@@ -501,9 +509,18 @@
             }
         });
 
+        dconst selectedRoute = [];
 
         document.querySelectorAll(".miniGridCell").forEach((cell) => {
-            cell.addEventListener("click", () => toggleCell(cell));
+
+            // reset bij laden
+            cell.classList.remove("selected");
+            cell.removeAttribute("data-order");
+
+            cell.addEventListener("click", () => {
+                toggleCell(cell);
+            });
+
             cell.addEventListener("keydown", (e) => {
                 if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
@@ -511,6 +528,44 @@
                 }
             });
         });
+
+        function toggleCell(cell) {
+
+            const id = cell.dataset.gridId;
+
+            const index = selectedRoute.indexOf(id);
+
+            if (index === -1) {
+
+                selectedRoute.push(id);
+                cell.classList.add("selected");
+
+            } else {
+
+                selectedRoute.splice(index, 1);
+                cell.classList.remove("selected");
+            }
+
+            refreshNumbers();
+        }
+
+        function refreshNumbers() {
+
+            document.querySelectorAll(".miniGridCell").forEach((cell) => {
+                cell.removeAttribute("data-order");
+            });
+
+            selectedRoute.forEach((id, index) => {
+
+                const cell = document.querySelector(
+                    `.miniGridCell[data-grid-id="${id}"]`
+                );
+
+                if (cell) {
+                    cell.dataset.order = index + 1;
+                }
+            });
+        }
     </script>
 
 </body>
