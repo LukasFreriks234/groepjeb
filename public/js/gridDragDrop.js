@@ -1057,7 +1057,7 @@ function showEffectsTooltip(cell, clientX, clientY, autoHide = false, announceTo
         const announcement = document.getElementById("tooltipAnnouncement");
 
         if (announcement) {
-            const tooltipText = tooltip.innerText.replace(/\s+/g, " ").trim();
+            // const tooltipText = tooltip.innerText.replace(/\s+/g, " ").trim();
 
             announcement.textContent = "";
 
