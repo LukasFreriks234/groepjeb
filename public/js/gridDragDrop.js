@@ -1098,7 +1098,6 @@ function enableTooltip() {
         });
 
         cell.addEventListener("focus", function () {
-            announceKeyboardStatus(getCellLabelText(cell), 150);
             const rect = cell.getBoundingClientRect();
 
             showEffectsTooltip(
