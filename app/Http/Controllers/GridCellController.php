@@ -49,6 +49,8 @@ class GridCellController extends Controller
             'recurring.monthly',
         ])->get();
 
+        $eventGridCells = EventgridCell::all();
+
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
         $qualityOfLife = array_sum($effectTotals);
 
@@ -58,7 +60,8 @@ class GridCellController extends Controller
             'events',
             'categories',
             'effectTotals',
-            'qualityOfLife'
+            'qualityOfLife',
+            'eventGridCells'
         ));
     }
 

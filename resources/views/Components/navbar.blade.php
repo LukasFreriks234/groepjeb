@@ -124,5 +124,3 @@
         </li>
     </ul>
 </nav>
-
-<script src="{{ asset('js/simulationTimer.js') }}?v={{ filemtime(public_path('js/simulationTimer.js')) }}" defer></script>

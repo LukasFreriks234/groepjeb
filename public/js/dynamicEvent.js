@@ -1,11 +1,9 @@
-const timerSpeed = 60000;
+const timerSpeed = 5000;
 
 let events = document.querySelectorAll(".gridEventImage");
 let allIDs = [];
 events.forEach((event) =>{
-    if(event.getAttribute("route-state") != 1){
-        event.style.visibility = 'hidden';
-    }
+    event.style.visibility = 'hidden';
     allIDs.push(event.getAttribute("data-event-id"));
 });
 
@@ -15,28 +13,17 @@ function onlyUnique(value, index, array) {
 
 var eventIDs = allIDs.filter(onlyUnique);
 
-function nextEvent(ev,recurr,len){
-    let eventId = ev.getAttribute("data-event-id");
-    let routeState = parseInt(ev.getAttribute("route-state"));
-    let followUp = document.querySelector(`.gridEventImage[data-event-id="${eventId}"][route-state="${routeState%len+1}"]`);
-    ev.style.visibility = 'hidden';
-    followUp.style.visibility = 'visible';
-    if (routeState == len && !recurr){
-        followUp.style.visibility = 'hidden';
-    }
-}
-
-function routeAnimation (path, recurr){
-    path.forEach((point) =>{
-        setTimeout(() => nextEvent(point,recurr,path.length),timerSpeed*parseFloat(point.getAttribute("event-speed"))*parseInt(point.getAttribute("route-state")));
+function setDynamicProgress(minTimer){
+    let elapsedHours = Math.floor(minTimer/60);
+    eventIDs.forEach((event) =>{
+        let route = document.querySelectorAll(`.gridEventImage[data-event-id="${event}"]`);
+        route.forEach((point) =>{
+            let currentLower = point.getAttribute("event-speed")*(point.getAttribute("route-state")-1);
+            let currentUpper = point.getAttribute("event-speed")*(point.getAttribute("route-state"));
+                point.style.visibility = 'hidden';
+                if (currentLower <= elapsedHours && elapsedHours < currentUpper){
+                   point.style.visibility = 'visible';
+                }
+        });
     });
 }
-
-eventIDs.forEach((event) =>{
-    let route = document.querySelectorAll(`.gridEventImage[data-event-id="${event}"]`);
-    let recurrence = route[0].getAttribute('recurring') != '';
-    routeAnimation(route,recurrence);
-    if (recurrence){
-        setInterval(() => routeAnimation(route,recurrence), timerSpeed*route[0].getAttribute("event-speed")*route.length);
-    }
-});
