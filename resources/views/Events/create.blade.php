@@ -469,33 +469,44 @@
     <script>
         document.querySelectorAll('input[type="number"]').forEach((input) => {
 
-            const reader =
-                document.getElementById(input.name + '-reader');
-
-            const label =
-                document.querySelector(`label[for="${input.id}"]`)?.textContent.trim()
-                ?? input.name;
+            const reader = document.getElementById(input.name + '-reader');
 
             function updateReader() {
+                const value = Number(input.value);
 
-                if (!reader) {
+                if (isNaN(value) || !reader) {
                     return;
                 }
 
+                const spokenText =
+                    value < 0
+                        ? `minus ${Math.abs(value)}`
+                        : `${value}`;
+
+                reader.textContent = spokenText;
+            }
+
+            input.addEventListener('input', updateReader);
+            input.addEventListener('change', updateReader);
+
+            input.addEventListener('focus', () => {
                 const value = Number(input.value);
+
+                if (isNaN(value) || !reader) {
+                    return;
+                }
 
                 reader.textContent = '';
 
                 setTimeout(() => {
                     reader.textContent =
                         value < 0
-                            ? `${label} minus ${Math.abs(value)}`
-                            : `${label} ${value}`;
-                }, 10);
-            }
+                            ? `minus ${Math.abs(value)}`
+                            : `${value}`;
+                }, 100);
+            });
 
-            input.addEventListener('input', updateReader);
-            input.addEventListener('change', updateReader);
+            updateReader();
         });
         
         const startDate = document.getElementById('startDate');
@@ -508,64 +519,6 @@
                 }
             }
         });
-
-        dconst selectedRoute = [];
-
-        document.querySelectorAll(".miniGridCell").forEach((cell) => {
-
-            // reset bij laden
-            cell.classList.remove("selected");
-            cell.removeAttribute("data-order");
-
-            cell.addEventListener("click", () => {
-                toggleCell(cell);
-            });
-
-            cell.addEventListener("keydown", (e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    toggleCell(cell);
-                }
-            });
-        });
-
-        function toggleCell(cell) {
-
-            const id = cell.dataset.gridId;
-
-            const index = selectedRoute.indexOf(id);
-
-            if (index === -1) {
-
-                selectedRoute.push(id);
-                cell.classList.add("selected");
-
-            } else {
-
-                selectedRoute.splice(index, 1);
-                cell.classList.remove("selected");
-            }
-
-            refreshNumbers();
-        }
-
-        function refreshNumbers() {
-
-            document.querySelectorAll(".miniGridCell").forEach((cell) => {
-                cell.removeAttribute("data-order");
-            });
-
-            selectedRoute.forEach((id, index) => {
-
-                const cell = document.querySelector(
-                    `.miniGridCell[data-grid-id="${id}"]`
-                );
-
-                if (cell) {
-                    cell.dataset.order = index + 1;
-                }
-            });
-        }
     </script>
 
 </body>
