@@ -16,7 +16,7 @@ class GridCellController extends Controller
 {
     private function cellsWithRelations()
     {
-        return GridCell::with(['cityFunction', 'events.effects']);
+        return GridCell::with(['cityFunction', 'events.effects', 'mainRoad']);
     }
 
     private function calculateTotals()
@@ -301,5 +301,19 @@ class GridCellController extends Controller
             'effectTotals' => $effectTotals,
             'qualityOfLife' => $qualityOfLife,
         ]);
+    }
+
+    public function toggleMainRoad(GridCell $cell){
+        if(!$cell->isBorder()) 
+        {
+            abort(403);
+        }
+
+        if($cell->mainRoad){
+            $cell->mainRoad()->delete();
+        }
+        else {
+            $cell->mainRoad()->create();
+        }
     }
 }

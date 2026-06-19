@@ -17,4 +17,18 @@ class GridCell extends Model
     {
         return $this->belongsToMany(Event::class, 'event_grid_cells', 'grid_cell_id', 'event_id')->withPivot('route_order');
     }
+
+    public function mainRoad()
+    {
+        return $this->hasOne(MainRoad::class);
+    }
+
+    public function isBorder()
+    {
+        return 
+            $this->x == 0 ||
+            $this->x == 3 ||
+            $this->y == 0 ||
+            $this->y == 2;
+    }
 }
