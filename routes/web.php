@@ -27,6 +27,7 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::post('/grid/check-expired-events',[GridCellController::class, 'checkExpiredEvents']);
     Route::post('/grid/remove-event', [GridCellController::class, 'removeEvent']);
     Route::post('/grid/neighbor-effects', [GridCellController::class, 'neighborEffects']);
+    Route::post('/grid/main-road/{cell}',[GridCellController::class, 'toggleMainRoad']);
 
     Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
 

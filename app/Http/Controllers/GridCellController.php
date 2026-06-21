@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GridDynamic;
 use Illuminate\Http\Request;
 use App\Models\GridCell;
 use App\Models\Functions;
@@ -10,6 +11,8 @@ use App\Models\Effects;
 use App\Models\Event;
 use Illuminate\Support\Facades\DB;
 use App\Models\EventgridCell;
+use Datetime;
+use DateInterval;
 
 class GridCellController extends Controller
 {
@@ -26,21 +29,6 @@ class GridCellController extends Controller
 
         if ($dynamicId) {
             return $dynamicId;
-        }
-
-        // Fallback: misschien bestaat de rij al op coördinaten, maar zonder koppeling
-        $existing = DB::table('grid_dynamics')
-            ->where('x_coordinate', $cell->x_coordinate)
-            ->where('y_coordinate', $cell->y_coordinate)
-            ->whereNull('grid_cell_id')
-            ->first();
-
-        if ($existing) {
-            DB::table('grid_dynamics')
-                ->where('id', $existing->id)
-                ->update(['grid_cell_id' => $cell->id, 'updated_at' => now()]);
-
-            return $existing->id;
         }
 
         return DB::table('grid_dynamics')->insertGetId([
@@ -294,7 +282,7 @@ class GridCellController extends Controller
 
         $durationInSimulationMinutes = match ($event->length_unit) {
             'hours' => $eventLength * 60,
-            'days'  => $eventLength * 60 * 24,
+            'days' => $eventLength * 60 * 24,
             'weeks' => $eventLength * 60 * 24 * 7,
             default => $eventLength * 60,
         };
@@ -368,7 +356,7 @@ class GridCellController extends Controller
         return response()->json([
             'success' => true,
             'expiredEvents' => $expired,
-            'effectTotals'  => $totals['effectTotals'],
+            'effectTotals' => $totals['effectTotals'],
             'qualityOfLife' => $totals['qualityOfLife'],
         ]);
     }
@@ -451,6 +439,100 @@ class GridCellController extends Controller
             'success' => true,
             'effectTotals' => $effectTotals,
             'qualityOfLife' => $qualityOfLife,
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+    public function checkRecurring($currentdate)
+    {
+        $recurring = DB::table('recurrings')->select(
+            'frequency',
+            'amount'
+        )->first();
+
+        $event = DB::table('events')->select(
+            'start_date',
+            'time'
+        )->first();
+
+        if ($recurring && $recurring->frequency === 'daily') {
+            $interval = new DateInterval('P' . (int) $recurring->amount . 'D');
+            $date = new DateTime($currentdate . ' ' . $event->time);
+            $nextdate = $date->add($interval)->format('Y-m-d');
+            // $this.dd($nextdate);
+            return $nextdate;
+        } else if ($recurring && $recurring->frequency === 'weekly') {
+            $startdate = $event->start_date;
+            $current = $currentdate->dayName;
+        } else if ($recurring && $recurring->frequency === 'monthly') {
+            // monthly
+        } else if ($recurring && $recurring->frequency === 'yearly') {
+            // yearly
+        } else {
+            return "error";
+        }
+    }
+
+
+    // function dd()
+    // {
+    //     echo '<pre>';
+    //     array_map(function ($x) {
+    //         var_dump($x); }, func_get_args());
+    //     die;
+    // }
+
+    public function toggle(Request $request)
+    {
+        if ($request->active) {
+
+            $gridDynamic = GridDynamic::create([
+                'x_coordinate' => 0,
+                'y_coordinate' => 0,
+                'is_available' => 1,
+                'grid_cell_id' => 1,
+            ]);
+
+            EventgridCell::create([
+                'event_id' => $request->event_id,
+                'grid_dynamics_id' => $gridDynamic->id,
+                'route_order' => 1,
+            ]);
+
+            $nextDate = $this->checkRecurring($request->date);
+
+            // GridCell::where('grid_cell_id', $gridDynamic->id)->update(['is_available' => 0]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Toggled'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Deactivated / no action taken'
+        ]);
+    }
+
+    function untoggle(Request $request)
+    {
+
+        EventgridCell::where('event_id', $request->event_id)
+            ->delete();
+
+        EventgridCell::where('event_id', $request->event_id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Untoggled'
         ]);
     }
 }
