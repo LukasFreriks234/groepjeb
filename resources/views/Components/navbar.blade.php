@@ -14,25 +14,9 @@
             <a
                 href="{{ route('functions.index') }}"
                 class="navbar-button"
-                @if(request()->routeIs('functions.index')) aria-current="page" @endif
+                @if(request()->routeIs('functions.*', 'overview.groups', 'groups.*', 'events.*')) aria-current="page" @endif
             >
-                Functions
-            </a>
-        </li>
-
-        <li>
-            <a href="{{ route('groups.index') }}" class="navbar-button">
-                Groups
-            </a>
-        </li>
-
-        <li>
-            <a
-                href="{{ route('events.create') }}"
-                class="navbar-button"
-                @if(request()->routeIs('events.create')) aria-current="page" @endif
-            >
-                Create Event
+                Overview
             </a>
         </li>
 
@@ -44,6 +28,7 @@
                 aria-atomic="true"
             >
                 <span class="navbar-clock-label">Time</span>
+
                 <div class="navbar-clock-content">
                     <div class="navbar-clock-ring" aria-hidden="true">
                         <svg class="navbar-clock-ring-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false">

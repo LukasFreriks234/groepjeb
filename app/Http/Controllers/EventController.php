@@ -15,6 +15,13 @@ use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
+    public function index()
+    {
+        $events = Event::orderBy('name')->get();
+
+        return view('Events.index', compact('events'));
+    }
+
     public function create()
     {
         $cells = GridDynamic::orderBy('y_coordinate')
@@ -52,7 +59,6 @@ class EventController extends Controller
         ]);
 
         DB::transaction(function () use ($request) {
-
             $imagePath = $this->saveUploadedFunctionImage($request);
 
             $recurringId = null;
@@ -140,7 +146,8 @@ class EventController extends Controller
             }
         });
 
-        return redirect('/grid')
+        return redirect()
+            ->route('events.index')
             ->with('success', 'Event created successfully.');
     }
 
