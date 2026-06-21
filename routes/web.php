@@ -41,6 +41,9 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::post('/groups/add', [GroupController::class, 'store'])->name('groups.store');
     Route::get('/groups/{group}/edit', [GroupController::class, 'edit'])->name('groups.edit');
     Route::put('/groups/{group}', [GroupController::class, 'update'])->name('groups.update');
+
+    Route::get('/grid/export-pdf', [GridCellController::class, 'exportPdf'])
+    ->name('grid.export-pdf');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
