@@ -110,7 +110,7 @@
                                     data-event-name="{{ $event->name }}"
                                     data-from-cell-id="{{ $cell->id }}"
                                     event-speed="{{ $event->speed }}"
-                                    route-state="{{ $order }}"
+                                    route-state="{{ $order ?? 0 }}"
                                     dynamic-event="{{ $event->dynamic }}"
                                 >
                             @endforeach
