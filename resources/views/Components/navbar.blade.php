@@ -14,25 +14,9 @@
             <a
                 href="{{ route('functions.index') }}"
                 class="navbar-button"
-                @if(request()->routeIs('functions.index')) aria-current="page" @endif
+                @if(request()->routeIs('functions.*', 'overview.groups', 'groups.*', 'events.*')) aria-current="page" @endif
             >
-                Functions
-            </a>
-        </li>
-
-        <li>
-            <a href="{{ route('groups.index') }}" class="navbar-button">
-                Groups
-            </a>
-        </li>
-
-        <li>
-            <a
-                href="{{ route('events.create') }}"
-                class="navbar-button"
-                @if(request()->routeIs('events.create')) aria-current="page" @endif
-            >
-                Create Event
+                Overview
             </a>
         </li>
 
@@ -43,32 +27,7 @@
                 aria-live="polite"
                 aria-atomic="true"
             >
-                <div class="navbar-speed-control">
-                    <label class="navbar-speed-label" for="simulation-speed">Speed:</label>
-                    <div class="navbar-speed-row">
-                        <input
-                            id="simulation-speed"
-                            class="navbar-speed-input"
-                            type="number"
-                            min="1"
-                            max="1440"
-                            value="24"
-                            data-simulation-speed-input
-                            aria-label="Simulation minutes per second"
-                        />
-                        <span class="navbar-speed-unit">min/s</span>
-                        <button
-                            class="navbar-speed-button"
-                            type="button"
-                            data-simulation-speed-confirm
-                            aria-label="Apply speed"
-                        >
-                            Set
-                        </button>
-                    </div>
-                </div>
-
-                <div class="navbar-clock-divider" aria-hidden="true"></div>
+                <span class="navbar-clock-label">Time</span>
 
                 <div class="navbar-clock-content">
                     <div class="navbar-clock-ring" aria-hidden="true">
