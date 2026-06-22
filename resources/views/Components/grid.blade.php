@@ -92,8 +92,8 @@
                         <div class="gridEvents">
                             @foreach($cell->events as $event)
                                 @foreach ($arrEventGridCells as $gridCell)
-                                    @if($gridCell->grid_cell_id == $cell->id && $gridCell->event_id == $event->id)
-                                    @php
+                                    @if($gridCell->grid_dynamics_id == $cell->id && $gridCell->event_id == $event->id)
+                                        @php
                                         $order = $gridCell->route_order;
                                         @endphp
                                     @endif
@@ -111,6 +111,7 @@
                                     data-from-cell-id="{{ $cell->id }}"
                                     event-speed="{{ $event->speed }}"
                                     route-state="{{ $order }}"
+                                    dynamic-event="{{ $event->dynamic }}"
                                 >
                             @endforeach
                         </div>

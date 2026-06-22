@@ -41,7 +41,6 @@
                         </div>
                     </div>
 
-                    <span class="navbar-clock-range">/ 24:00</span>
                 </div>
 
                 <div class="navbar-date-display" aria-live="polite" aria-atomic="true">
