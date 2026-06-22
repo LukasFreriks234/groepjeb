@@ -60,7 +60,7 @@
     touch-action: pan-y;
 }
 
-#functionsList .functionItem, #eventsList .functionItem {
+#functionsList .functionItem, #eventsList .functionItem , #eventsList .dynamicEventItem{
     background-color: lightblue;
     overflow: hidden;
     border-bottom-style: solid;
@@ -90,7 +90,7 @@
     
 }
 
-.functionItem {
+.functionItem , .dynamicEventItem{
     touch-action: pan-y;
     user-select: none;
 }
