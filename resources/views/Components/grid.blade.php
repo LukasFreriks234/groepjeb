@@ -8,6 +8,13 @@
 <div class="simulationContainer">
     <main class="citySection">
 
+        <a
+            href="{{ route('grid.export-pdf') }}"
+            class="navButton"
+        >
+            Save as PDF
+        </a>
+
         <h2>City area</h2>
 
         <p id="gridKeyboardInstructions" class="sr-only">

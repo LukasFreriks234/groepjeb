@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.grid-table {
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.grid-cell {
+    width: 90px;
+    height: 90px;
+    border: 1px solid #000;
+    background-color: #c7e5f0;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.grid-image {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.event-container {
+    position: absolute;
+    left: 2px;
+    bottom: 2px;
+}
+
+.event-image {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    margin-right: 2px;
+}
+
+.effects-table {
+    border-collapse: collapse;
+    width: 400px;
+}
+
+.effects-table th,
+.effects-table td {
+    border: 1px solid #000;
+    padding: 8px;
+}
+
+.effects-table th {
+    font-weight: bold;
+}
+
+.quality-row {
+    font-weight: bold;
+}

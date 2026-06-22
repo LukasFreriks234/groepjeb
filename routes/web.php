@@ -14,6 +14,9 @@ Route::post('/logout', [SessionController::class, 'destroy']);
 Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::get('/grid', [GridCellController::class, 'index']);
 
+    Route::get('/grid/export-pdf', [GridCellController::class, 'exportPdf'])
+        ->name('grid.export-pdf');
+
     Route::get('/overview', [FunctionController::class, 'index'])->name('functions.index');
     Route::get('/overview/{id}', [FunctionController::class, 'show'])->name('functions.show');
     Route::get('/functions/{id}/edit', [FunctionController::class, 'edit'])->name('functions.edit');

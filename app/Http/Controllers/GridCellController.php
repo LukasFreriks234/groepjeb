@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\EventgridCell;
 use Datetime;
 use DateInterval;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GridCellController extends Controller
 {
@@ -534,5 +535,25 @@ class GridCellController extends Controller
             'success' => true,
             'message' => 'Untoggled'
         ]);
+    }
+
+    public function exportPdf()
+    {
+        $cells = GridCell::with(['cityFunction', 'events'])->get();
+
+        $categories = Category::all();
+
+        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+
+        $qualityOfLife = array_sum($effectTotals);
+
+        $pdf = Pdf::loadView('pdf.simulation-report', [
+            'cells' => $cells,
+            'categories' => $categories,
+            'effectTotals' => $effectTotals,
+            'qualityOfLife' => $qualityOfLife,
+        ]);
+
+        return $pdf->download('simulation-report.pdf');
     }
 }
