@@ -13,8 +13,20 @@ class GridCell extends Model
         return $this->belongsTo(Functions::class, 'destination_type', 'id');
     }
 
+    public function gridDynamic()
+    {
+        return $this->hasOne(GridDynamic::class);
+    }
+
     public function events()
     {
-        return $this->belongsToMany(Event::class, 'event_grid_cells', 'grid_cell_id', 'event_id')->withPivot('route_order');
+        return $this->hasManyThrough(
+            Event::class,
+            EventgridCell::class,
+            'grid_dynamics_id', 
+            'id',               
+            'id',               
+            'event_id'         
+        );
     }
 }

@@ -63,6 +63,7 @@
                 tabindex="0"
                 id="function{{ $function['id'] }}" 
                 class="functionItem keyboardDraggableFunction"
+                draggable="true"
                 data-function-id="{{ $function['id'] }}"
                 data-category="{{ $function['category'] }}"
                 role="button"
@@ -145,25 +146,50 @@
                 $isDynamic = $event->dynamic ? '1' : '0';
             @endphp
 
+            @if($isDynamic)
             <li 
                 tabindex="0"
                 id="event{{ $event->id }}" 
-                class="functionItem"
+                class="dynamicEventItem"
                 data-event-id="{{ $event->id }}"
+                data-event-name="{{ $event->name }}"
+                data-type="{{ $eventType }}"
+                data-dynamic="{{ $isDynamic }}"
+                role="button"
+                active="false"
+                aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
+            >
+            @else
+            <li 
+                tabindex="0"
+                id="event{{ $event->id }}" 
+                class="functionItem eventItem draggableEventItem"
+                draggable="true"
+                data-event-id="{{ $event->id }}"
+                data-event-name="{{ $event->name }}"
                 data-type="{{ $eventType }}"
                 data-dynamic="{{ $isDynamic }}"
                 role="button"
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
-            >
+            >           
+            @endif
                 <div class="functionImage">
+                    @if($isDynamic)
+                    <img 
+                        src="{{ asset($event->image_url) }}" 
+                        alt="{{ $event->name }}"
+                        draggable="false"
+                    >
+                    @else
                     <img 
                         src="{{ asset($event->image_url) }}" 
                         alt="{{ $event->name }}"
                     >
+                    @endif
                 </div>
 
                 <div>
-                    <p class="functionName">{{ $event->name }}</p>
+                    <p class="functionName eventName">{{ $event->name }}</p>
                     <p class="functionCategory">
                         {{ $eventTypeLabel }}{{ $event->dynamic ? ' / Dynamic' : '' }}
                     </p>

@@ -11,14 +11,26 @@ let selectedKeyboardElement = null;
 let selectedKeyboardData = null;
 
 let scrollInterval = null;
+let focusInsideGrid = false;
+let pointerGridEventData = null;
+let pointerGridEventStart = null;
+let nativeGridEventDragStarted = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     enableDrag();
+    enableGridEventMouseDrag();
+    enablePointerGridEventMove();
     enableMobileDrag();
     enableKeyboardDragDrop();
     enableArrowKeyGridNavigation();
     enableTooltip();
+    prepareGridAccessibility();
+    prepareDeleteButtonsForKeyboard();
     updateEffectsAccessibilityLabelForReader();
+
+    if (typeof window.refreshDeleteButtons === "function") {
+        window.refreshDeleteButtons();
+    }
 
     document.querySelectorAll(".gridCell").forEach((cell) => {
         updateCellLabel(cell);
@@ -38,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         cell.addEventListener("dragover", function (ev) {
             ev.preventDefault();
+            ev.dataTransfer.dropEffect = "move";
         });
 
         cell.addEventListener("drop", function (ev) {
@@ -143,10 +156,104 @@ function markCellAvailable(cell) {
     delete cell.dataset.category;
 }
 
+
+function prepareGridAccessibility() {
+    const grid = document.querySelector(".metropolisGrid");
+
+    if (grid) {
+        if (!grid.getAttribute("role")) {
+            grid.setAttribute("role", "grid");
+        }
+
+        if (grid.dataset.gridInstructionEnabled !== "true") {
+            grid.dataset.gridInstructionEnabled = "true";
+
+            grid.addEventListener("focusin", function (event) {
+                const focusedCell = event.target.closest(".gridCell");
+
+                if (!focusedCell || focusInsideGrid) {
+                    return;
+                }
+
+                focusInsideGrid = true;
+
+                announceKeyboardStatus(
+                    "Grid instructions. Use arrow keys to move between grid cells. Select a function or event first, then press Enter or Space on a grid cell to place it. Use Tab to focus an event or delete button."
+                );
+            });
+
+            grid.addEventListener("focusout", function () {
+                setTimeout(function () {
+                    if (!grid.contains(document.activeElement)) {
+                        focusInsideGrid = false;
+                    }
+                }, 0);
+            });
+        }
+    }
+
+    document.querySelectorAll(".gridCell").forEach((cell) => {
+        if (!cell.getAttribute("tabindex")) {
+            cell.setAttribute("tabindex", "0");
+        }
+
+        if (!cell.getAttribute("role")) {
+            cell.setAttribute("role", "gridcell");
+        }
+
+        updateCellLabel(cell);
+    });
+
+    prepareGridEventElements();
+}
+
+function prepareGridEventElements() {
+    document.querySelectorAll(".gridEvents").forEach((container) => {
+        container.removeAttribute("aria-hidden");
+        container.style.pointerEvents = "auto";
+        container.style.zIndex = "1000";
+    });
+
+    document.querySelectorAll(".gridEventImage, .draggableGridEvent").forEach((image) => {
+        image.classList.add("gridEventImage", "draggableGridEvent");
+        image.setAttribute("draggable", "true");
+        image.setAttribute("tabindex", "0");
+        image.setAttribute("role", "button");
+        image.removeAttribute("aria-hidden");
+        image.alt = image.alt || getGridEventName(image);
+
+        image.style.pointerEvents = "auto";
+        image.style.cursor = "grab";
+        image.style.position = "relative";
+        image.style.zIndex = "1001";
+        image.style.userSelect = "none";
+        image.style.webkitUserDrag = "element";
+
+        image.setAttribute("aria-label", `Move event ${getGridEventName(image)} from this grid cell`);
+    });
+}
+
+function prepareDeleteButtonsForKeyboard() {
+    document.querySelectorAll(".delete-btn").forEach((button) => {
+        button.setAttribute("tabindex", "0");
+
+        if (!button.getAttribute("aria-label")) {
+            button.setAttribute("aria-label", "Remove item from this grid cell");
+        }
+
+        if (button.tagName.toLowerCase() === "button" && !button.getAttribute("type")) {
+            button.setAttribute("type", "button");
+        }
+    });
+}
+
 function refreshDeleteButtonsIfAvailable() {
     if (typeof window.refreshDeleteButtons === "function") {
         window.refreshDeleteButtons();
     }
+
+    prepareDeleteButtonsForKeyboard();
+    prepareGridEventElements();
 }
 
 function createGridImage(data) {
@@ -171,11 +278,12 @@ function createGridEventImage(data) {
     const image = document.createElement("img");
 
     image.src = data.imageSrc;
-    image.alt = "";
-    image.setAttribute("aria-hidden", "true");
-    image.setAttribute("tabindex", "-1");
+    image.alt = data.imageAlt || "Event";
     image.classList.add("gridEventImage", "draggableGridEvent");
     image.setAttribute("draggable", "true");
+    image.setAttribute("tabindex", "0");
+    image.setAttribute("role", "button");
+    image.setAttribute("aria-label", `Move event ${data.imageAlt || "Event"} from this grid cell`);
 
     image.dataset.eventId = data.eventId;
     image.dataset.eventName = data.imageAlt || "Event";
@@ -240,6 +348,7 @@ function enableDrag() {
             const image = ev.currentTarget.querySelector("img");
             const functionName = getFunctionNameFromItem(ev.currentTarget);
 
+            ev.dataTransfer.effectAllowed = "move";
             ev.dataTransfer.setData(
                 "text/plain",
                 JSON.stringify({
@@ -257,7 +366,7 @@ function enableDrag() {
     const eventItems = document.querySelectorAll("#eventsList li");
 
     eventItems.forEach((item) => {
-        item.setAttribute("draggable", "true");
+        //item.setAttribute("draggable", "true");
         item.setAttribute("tabindex", item.getAttribute("tabindex") || "0");
         item.setAttribute("role", item.getAttribute("role") || "button");
 
@@ -271,6 +380,7 @@ function enableDrag() {
             const image = ev.currentTarget.querySelector("img");
             const eventName = getEventNameFromItem(ev.currentTarget);
 
+            ev.dataTransfer.effectAllowed = "move";
             ev.dataTransfer.setData(
                 "text/plain",
                 JSON.stringify({
@@ -298,6 +408,11 @@ function enableDrag() {
         image.dataset.dragEnabled = "true";
 
         image.addEventListener("dragstart", function (ev) {
+            nativeGridEventDragStarted = true;
+            pointerGridEventData = null;
+            pointerGridEventStart = null;
+            ev.stopPropagation();
+            ev.dataTransfer.effectAllowed = "move";
             ev.dataTransfer.setData(
                 "text/plain",
                 JSON.stringify({
@@ -312,12 +427,16 @@ function enableDrag() {
         });
     });
 
+    prepareGridEventElements();
+
     const gridEvents = document.querySelectorAll(".draggableGridEvent");
 
     gridEvents.forEach((image) => {
         image.setAttribute("draggable", "true");
-        image.setAttribute("tabindex", "-1");
-        image.setAttribute("aria-hidden", "true");
+        image.setAttribute("tabindex", "0");
+        image.setAttribute("role", "button");
+        image.removeAttribute("aria-hidden");
+        image.setAttribute("aria-label", `Move event ${getGridEventName(image)} from this grid cell`);
 
         if (image.dataset.dragEnabled === "true") {
             return;
@@ -326,6 +445,7 @@ function enableDrag() {
         image.dataset.dragEnabled = "true";
 
         image.addEventListener("dragstart", function (ev) {
+            ev.dataTransfer.effectAllowed = "move";
             ev.dataTransfer.setData(
                 "text/plain",
                 JSON.stringify({
@@ -336,6 +456,110 @@ function enableDrag() {
                     imageAlt: getGridEventName(ev.currentTarget)
                 })
             );
+        });
+    });
+}
+
+function enableGridEventMouseDrag() {
+    document.addEventListener("dragstart", function (ev) {
+        const eventImage = ev.target.closest(".draggableGridEvent");
+
+        if (!eventImage) {
+            return;
+        }
+
+        ev.stopPropagation();
+
+        nativeGridEventDragStarted = true;
+        pointerGridEventData = null;
+        pointerGridEventStart = null;
+
+        eventImage.setAttribute("draggable", "true");
+
+        ev.dataTransfer.effectAllowed = "move";
+        ev.dataTransfer.setData(
+            "text/plain",
+            JSON.stringify({
+                source: "gridEvent",
+                eventId: eventImage.dataset.eventId,
+                fromCellId: eventImage.dataset.fromCellId,
+                imageSrc: eventImage.src,
+                imageAlt: getGridEventName(eventImage)
+            })
+        );
+    }, true);
+}
+
+
+function enablePointerGridEventMove() {
+    if (document.body.dataset.pointerGridEventMoveEnabled === "true") {
+        return;
+    }
+
+    document.body.dataset.pointerGridEventMoveEnabled = "true";
+
+    document.addEventListener("pointerdown", function (ev) {
+        const eventImage = ev.target.closest(".draggableGridEvent");
+
+        if (!eventImage) {
+            return;
+        }
+
+        nativeGridEventDragStarted = false;
+        pointerGridEventData = buildSelectedData(eventImage);
+        pointerGridEventStart = {
+            x: ev.clientX,
+            y: ev.clientY,
+            sourceCell: eventImage.closest(".gridCell")
+        };
+
+        const parentCell = eventImage.closest(".gridCell");
+
+        if (parentCell) {
+            parentCell.classList.add("keyboardSelected");
+        }
+    }, { passive: true });
+
+    document.addEventListener("pointerup", function (ev) {
+        if (!pointerGridEventData || !pointerGridEventStart || nativeGridEventDragStarted) {
+            pointerGridEventData = null;
+            pointerGridEventStart = null;
+            nativeGridEventDragStarted = false;
+            return;
+        }
+
+        const movedX = Math.abs(ev.clientX - pointerGridEventStart.x);
+        const movedY = Math.abs(ev.clientY - pointerGridEventStart.y);
+        const movedEnough = movedX > 8 || movedY > 8;
+
+        const targetElement = document.elementFromPoint(ev.clientX, ev.clientY);
+        const targetCell = targetElement ? targetElement.closest(".gridCell") : null;
+
+        document.querySelectorAll(".gridCell.keyboardSelected").forEach((cell) => {
+            cell.classList.remove("keyboardSelected");
+        });
+
+        if (
+            movedEnough &&
+            targetCell &&
+            targetCell.dataset.id !== pointerGridEventData.fromCellId
+        ) {
+            ev.preventDefault();
+            placeEventInCell(targetCell, pointerGridEventData);
+        }
+
+        pointerGridEventData = null;
+        pointerGridEventStart = null;
+        nativeGridEventDragStarted = false;
+    }, { passive: false });
+
+    document.addEventListener("pointercancel", function () {
+        pointerGridEventData = null;
+        pointerGridEventStart = null;
+        nativeGridEventDragStarted = false;
+
+        document.querySelectorAll(".gridCell.keyboardSelected").forEach((cell) => {
+            cell.classList.remove("keyboardSelected");
         });
     });
 }
@@ -464,15 +688,19 @@ function addEventImageToCell(cell, dragData) {
     if (!eventContainer) {
         eventContainer = document.createElement("div");
         eventContainer.classList.add("gridEvents");
-        eventContainer.setAttribute("aria-hidden", "true");
         cell.appendChild(eventContainer);
     }
+
+    eventContainer.removeAttribute("aria-hidden");
 
     const alreadyExists = eventContainer.querySelector(
         `.gridEventImage[data-event-id="${dragData.eventId}"]`
     );
 
     if (alreadyExists) {
+        alreadyExists.dataset.fromCellId = cell.dataset.id;
+        prepareGridEventElements();
+        refreshDeleteButtonsIfAvailable();
         return;
     }
 
@@ -488,6 +716,8 @@ function addEventImageToCell(cell, dragData) {
     markCellOccupied(cell, null);
     updateCellLabel(cell);
     enableDrag();
+    prepareGridEventElements();
+    refreshDeleteButtonsIfAvailable();
 }
 
 function removeGridEventImage(fromCellId, eventId) {
@@ -518,21 +748,27 @@ function removeGridEventImage(fromCellId, eventId) {
     }
 
     updateCellLabel(fromCell);
+    refreshDeleteButtonsIfAvailable();
 }
 
 function saveEventInGrid(cell, dragData) {
+    const body = {
+        event_id: dragData.eventId,
+        cell_id: cell.dataset.id,
+        route_order: 1
+    };
+
+    if (window.simulationClock && typeof window.simulationClock.minute !== "undefined") {
+        body.simulation_minute = window.simulationClock.minute;
+    }
+
     fetch("/grid/assign-event", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({
-            event_id: dragData.eventId,
-            cell_id: cell.dataset.id,
-            route_order: 1,
-            simulation_minute: window.simulationClock.minute
-        })
+        body: JSON.stringify(body)
     })
         .then(response => response.json())
         .then(data => {
@@ -554,6 +790,12 @@ function saveEventInGrid(cell, dragData) {
                 updateEffectTable(data.effectTotals, data.qualityOfLife);
             }
 
+            if (dragData.source === "eventLibrary") {
+                selectedEventId = null;
+                selectedEventImage = null;
+                eventPlacementMode = false;
+            }
+
             refreshDeleteButtonsIfAvailable();
 
             setTimeout(() => {
@@ -565,6 +807,7 @@ function saveEventInGrid(cell, dragData) {
         })
         .catch(error => {
             console.error("Event save error:", error);
+            announceKeyboardStatus("Could not place this event.");
         });
 }
 
@@ -736,15 +979,21 @@ function enableKeyboardDragDrop() {
             return;
         }
 
-        if (ev.target.closest(".delete-btn")) {
+        const deleteButton = ev.target.closest(".delete-btn");
+
+        if (deleteButton) {
+            ev.preventDefault();
+            deleteButton.click();
             return;
         }
 
         const functionItem = ev.target.closest("#functionsList .functionItem");
         const eventItem = ev.target.closest("#eventsList li");
+        const gridFunctionImage = ev.target.closest(".draggableGridFunction");
+        const gridEventImage = ev.target.closest(".draggableGridEvent");
         const gridCell = ev.target.closest(".gridCell");
 
-        if (!functionItem && !eventItem && !gridCell) {
+        if (!functionItem && !eventItem && !gridFunctionImage && !gridEventImage && !gridCell) {
             return;
         }
 
@@ -773,6 +1022,16 @@ function enableKeyboardDragDrop() {
             return;
         }
 
+        if (gridEventImage) {
+            selectKeyboardItem(gridEventImage);
+            return;
+        }
+
+        if (gridFunctionImage) {
+            selectKeyboardItem(gridFunctionImage);
+            return;
+        }
+
         if (functionItem) {
             selectKeyboardItem(functionItem);
             return;
@@ -785,15 +1044,13 @@ function enableKeyboardDragDrop() {
 
         if (gridCell) {
             const imageInCell = gridCell.querySelector(".draggableGridFunction");
-            const eventInCell = gridCell.querySelector(".draggableGridEvent");
 
             if (imageInCell) {
                 selectKeyboardItem(imageInCell);
-            } else if (eventInCell) {
-                selectKeyboardItem(eventInCell);
-            } else {
-                announceKeyboardStatus("Empty grid cell. Select a function or event first, then press Enter or Space here to place it.");
+                return;
             }
+
+            announceKeyboardStatus("Empty grid cell. Select a function or event first, then press Enter or Space here to place it.");
         }
     });
 }
@@ -1001,8 +1258,6 @@ function getCellLabelText(cell) {
     if (!image && eventImages.length === 0) {
         label += "Empty cell. ";
     }
-
-    label += "Press Enter or Space to place a selected function or event here.";
 
     return label;
 }
@@ -1359,12 +1614,12 @@ document.addEventListener("dragend", stopAutoScroll);
 document.addEventListener("drop", stopAutoScroll);
 document.addEventListener("touchend", stopAutoScroll);
 
-window.addEventListener('simulation:tick', (event) => {
-    fetch('/grid/check-expired-events', {
-        method: 'POST',
+window.addEventListener("simulation:tick", (event) => {
+    fetch("/grid/check-expired-events", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector(
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector(
                 'meta[name="csrf-token"]'
             ).content
         },
@@ -1372,25 +1627,24 @@ window.addEventListener('simulation:tick', (event) => {
             minute: event.detail.minute
         })
     })
-    .then(response => response.json())
-    .then(data => {
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                return;
+            }
 
-        if (!data.success) {
-            return;
-        }
+            data.expiredEvents.forEach(expired => {
+                removeGridEventImage(
+                    expired.grid_cell_id,
+                    expired.event_id
+                );
+            });
 
-        data.expiredEvents.forEach(expired => {
-            removeGridEventImage(
-                expired.grid_cell_id,
-                expired.event_id
+            updateEffectTable(
+                data.effectTotals,
+                data.qualityOfLife
             );
         });
-
-        updateEffectTable(
-            data.effectTotals,
-            data.qualityOfLife
-        );
-    });
 });
 
 function announceKeyboardStatus(message) {
