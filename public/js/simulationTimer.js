@@ -214,7 +214,7 @@
         const currentMinute = elapsedMinutes % CYCLE_LENGTH_MINUTES;
         const progress = (currentMinute / CYCLE_LENGTH_MINUTES) * 100;
         const progressRatio = progress / 100;
-        setDynamicProgress(dayOffset*CYCLE_LENGTH_MINUTES+elapsedMinutes);
+        setDynamicProgress(dayOffset * CYCLE_LENGTH_MINUTES + elapsedMinutes);
 
         if (timeDisplay) {
             timeDisplay.textContent = formatTime(elapsedMinutes);
@@ -531,3 +531,52 @@
         window.simulationClock.start();
     }
 })();
+
+
+const recurringEvents = document.querySelectorAll('[data-type="recurring"]');
+const gridCells = document.querySelectorAll('.gridCell');
+
+recurringEvents.forEach((eventItem) => {
+
+    eventItem.addEventListener('click', () => {
+        if (eventItem.getAttribute('active') === 'false') {
+            eventItem.setAttribute('active', 'true');
+            eventItem.style.backgroundColor = 'aquamarine';
+            // add the event inside 0,0
+        } else {
+            eventItem.setAttribute('active', 'false');
+            eventItem.style.backgroundColor = 'lightblue';
+        }
+    });
+
+    eventItem.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('eventId', eventItem.dataset.eventId);
+    });
+
+});
+
+gridCells.forEach((gridCell) => {
+
+    gridCell.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    gridCell.addEventListener('drop', (e) => {
+        e.preventDefault();
+
+        const eventId = e.dataTransfer.getData('eventId');
+
+        const eventsList = document.querySelector('#eventsList');
+
+        const originalEvent = eventsList.querySelector(
+            `[data-event-id="${eventId}"]`
+        );
+
+        if (!originalEvent) return;
+
+        originalEvent.setAttribute('active', 'true');
+        originalEvent.style.backgroundColor = 'aquamarine';
+    });
+
+});
+
