@@ -91,7 +91,7 @@
                     @endif
                 </div>
             </div>
-            <x-grid :cells="$cells" :categories="$categories" />
+            <x-grid :cells="$cells" :categories="$categories" :eventGridCells="$eventGridCells"/>
         </div>
 
         <div class="sidebar">

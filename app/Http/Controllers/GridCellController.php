@@ -163,6 +163,8 @@ class GridCellController extends Controller
             ->where('is_global', true)
             ->get();
 
+        $eventGridCells = EventgridCell::all();
+
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
         $qualityOfLife = array_sum($effectTotals);
 

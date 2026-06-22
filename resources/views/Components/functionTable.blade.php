@@ -104,11 +104,7 @@
             <li 
                 tabindex="0"
                 id="event{{ $event->id }}" 
-<<<<<<< HEAD
-                class="dynamicEventItem"
-=======
                 class="functionItem{{ $isGlobal ? ' event-is-global' : '' }}"
->>>>>>> origin/set-event
                 data-event-id="{{ $event->id }}"
                 data-event-name="{{ $event->name }}"
                 data-type="{{ $eventType }}"
@@ -151,6 +147,7 @@
                     <span class="slider round"></span>
                 </label>
             </li>
+            @endif
         @endforeach
     </ul>
 </div>
