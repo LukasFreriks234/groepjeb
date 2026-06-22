@@ -303,6 +303,168 @@
     }
 }
 
+/* GLOBAL EVENTS DROP ZONE */
+.global-events-zone {
+    border: 2px dashed var(--global-zone-border, #2563eb);
+    border-radius: 0;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    background: linear-gradient(180deg, var(--global-zone-bg-start, #f0f8ff) 0%, var(--global-zone-bg-end, #e0f0ff) 100%);
+    transition: border-color 60s linear, background 60s linear;
+    min-height: 40px;
+}
+
+.global-events-zone.global-events-zone--dragover {
+    border-color: #1d4ed8;
+    background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+.global-events-zone-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.global-events-zone-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #2563eb;
+}
+
+.global-events-zone-hint {
+    font-size: 11px;
+    color: #666;
+    margin-left: auto;
+}
+
+.global-events-zone-empty {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+}
+
+.global-events-zone-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.global-event-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 6px;
+    border: 2px solid black;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    position: relative;
+}
+
+.global-event-chip:hover {
+    background-color: #e0f2fe;
+}
+
+.global-event-chip-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    border: 1px solid black;
+    border-radius: 2px;
+    background: white;
+}
+
+.global-event-chip-name {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.global-event-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    background: #f0f0f0;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+    margin-left: 2px;
+}
+
+.global-event-remove:hover {
+    background: red;
+    color: white;
+    border-color: red;
+}
+
+.global-event-tooltip {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 240px;
+    background: white;
+    border: 2px solid black;
+    border-radius: 6px;
+    padding: 10px;
+    z-index: 99999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    pointer-events: none;
+}
+
+.global-event-tooltip.hidden {
+    display: none;
+}
+
+.global-event-tooltip-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #ccc;
+}
+
+.global-event-tooltip-icon {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border: 2px solid black;
+    border-radius: 4px;
+    background: white;
+    flex-shrink: 0;
+}
+
+.global-event-tooltip-duration {
+    font-size: 12px;
+    font-weight: 400;
+    color: #555;
+}
+
+.global-event-tooltip-effects {
+    font-size: 13px;
+}
+
+.global-event-tooltip-effects ul {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0 0;
+}
+
+.global-event-tooltip-effects li {
+    padding: 1px 0;
+    font-weight: 600;
+}
+
+/* SCREENREADER ONLY */
 .sr-only {
     position: absolute;
     width: 1px;

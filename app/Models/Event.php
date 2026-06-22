@@ -19,7 +19,7 @@ class Event extends Model
         'length',
         'length_unit',
         'dynamic',
-        'speed'
+        'is_global',
     ];
 
     protected $casts = [
@@ -27,6 +27,7 @@ class Event extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'dynamic' => 'boolean',
+        'is_global' => 'boolean',
     ];
 
     public function categories()
