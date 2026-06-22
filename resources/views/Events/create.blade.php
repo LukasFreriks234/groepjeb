@@ -356,7 +356,7 @@
                                             type="checkbox"
                                             name="monthDays[]"
                                             value="<?= $day ?>"
-                                            aria-label="Day <?= $day ?>"
+                                            aria-label="Day <?= $day ?>. Press Space to select or deselect."
                                         >
                                         <span aria-hidden="true"><?= $day ?></span>
                                     </label>
@@ -411,14 +411,20 @@
 
                 <h2 tabindex="0">Dynamic event</h2>
 
+                <p id="dynamic-help" class="sr-only">
+                    Press Space to enable or disable the dynamic event option.
+                </p>
+
                 <div class="containerRadio label">
                     <input
                         type="checkbox"
                         id="dynamic"
                         name="dynamic"
                         value="1"
+                        aria-describedby="dynamic-help"
                         {{ old('dynamic') ? 'checked' : '' }}
                     >
+
                     <label for="dynamic">Dynamic event</label>
                 </div>
 
