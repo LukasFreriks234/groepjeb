@@ -21,9 +21,6 @@ let eventDict = {};
 function setDynamicProgress(minTimer){
     eventIDs.forEach((event) =>{
         let elapsedHours = Math.floor((minTimer-eventDict[event]-1)/60);
-        console.log(minTimer);
-        console.log(eventDict[event]);
-        console.log(elapsedHours);
         let route = document.querySelectorAll(`.gridEventDynamicImage[data-event-id="${event}"]`);
         route.forEach((point) =>{
             let currentLower = point.getAttribute("event-speed")*(point.getAttribute("route-state")-1);
