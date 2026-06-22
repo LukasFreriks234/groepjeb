@@ -15,7 +15,9 @@ body {
     background-color: lightblue;
     color: black;
     border: 2px solid black;
-    transition: background-color 2s linear;
+    position: sticky;
+    top: 0;
+    z-index: 999;
 }
 
 .navbar-menu {
