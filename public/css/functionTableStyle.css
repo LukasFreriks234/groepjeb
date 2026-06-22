@@ -70,6 +70,11 @@
     margin-bottom: 0em;
 }
 
+#eventsList .dynamicEventItem:hover{
+    background-color: aqua;
+    cursor: pointer;
+}
+
 .functionImage {
     margin-top: 0.75em;
     margin-bottom: 0.75em;
