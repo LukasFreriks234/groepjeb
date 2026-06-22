@@ -20,7 +20,10 @@ let eventDict = {};
 
 function setDynamicProgress(minTimer){
     eventIDs.forEach((event) =>{
-        let elapsedHours = Math.floor((minTimer-eventDict[event])/60);
+        let elapsedHours = Math.floor((minTimer-eventDict[event]-1)/60);
+        console.log(minTimer);
+        console.log(eventDict[event]);
+        console.log(elapsedHours);
         let route = document.querySelectorAll(`.gridEventDynamicImage[data-event-id="${event}"]`);
         route.forEach((point) =>{
             let currentLower = point.getAttribute("event-speed")*(point.getAttribute("route-state")-1);
@@ -36,7 +39,6 @@ function setDynamicProgress(minTimer){
 let eventButtons = document.querySelectorAll(".dynamicEventItem");
 
 const startDate = new Date("Jan 1, 2026");
-const disable = new Date("Jan 1, 1970");
 
 eventButtons.forEach((button) =>{
     button.addEventListener("click", ()=>{
@@ -46,9 +48,12 @@ eventButtons.forEach((button) =>{
             let simDelta;
         if(button.getAttribute("active") == "false"){
             button.setAttribute("active", "true");
-            simDelta = (simDate-startDate)/60000+simMinutes*1440-simSpeed;
+            button.style.backgroundColor = 'aquamarine';
+            simDelta = (simDate-startDate)/60000+simMinutes*1440+simSpeed;
         } else{
-            simDelta = (simDate-disable)/60000+simMinutes*1440;
+            button.style.backgroundColor = 'lightblue';
+            button.setAttribute("active", "false");
+            simDelta = NaN;
         }
         eventDict[parseInt(button.getAttribute("data-event-id"))] = simDelta;
     })
