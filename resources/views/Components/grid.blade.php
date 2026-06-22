@@ -7,6 +7,7 @@
 
 <div class="simulationContainer">
     <main class="citySection">
+
         <h2>City area</h2>
 
         <p id="gridKeyboardInstructions" class="sr-only">
@@ -84,8 +85,8 @@
                         <div class="gridEvents">
                             @foreach($cell->events as $event)
                                 @foreach ($arrEventGridCells as $gridCell)
-                                    @if($gridCell->grid_cell_id == $cell->id && $gridCell->event_id == $event->id)
-                                    @php
+                                    @if($gridCell->grid_dynamics_id == $cell->id && $gridCell->event_id == $event->id)
+                                        @php
                                         $order = $gridCell->route_order;
                                         @endphp
                                     @endif
@@ -102,7 +103,8 @@
                                     data-event-name="{{ $event->name }}"
                                     data-from-cell-id="{{ $cell->id }}"
                                     event-speed="{{ $event->speed }}"
-                                    route-state="{{ $order }}"
+                                    route-state="{{ $order ?? 0 }}"
+                                    dynamic-event="{{ $event->dynamic }}"
                                 >
                             @endforeach
                         </div>
