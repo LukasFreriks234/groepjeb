@@ -49,6 +49,10 @@ class GridCellController extends Controller
             'recurring.monthly',
         ])->get();
 
+        $globalEvents = Event::with('effects')
+            ->where('is_global', true)
+            ->get();
+
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
         $qualityOfLife = array_sum($effectTotals);
 
@@ -56,6 +60,7 @@ class GridCellController extends Controller
             'cells',
             'functions',
             'events',
+            'globalEvents',
             'categories',
             'effectTotals',
             'qualityOfLife'
@@ -254,6 +259,103 @@ class GridCellController extends Controller
             'success' => true,
             'effectTotals' => $totals['effectTotals'],
             'qualityOfLife' => $totals['qualityOfLife'],
+        ]);
+    }
+
+    public function toggleGlobalEvent(Request $request)
+    {
+        $event = Event::find($request->event_id);
+
+        if (!$event) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Event not found',
+            ], 404);
+        }
+
+        $event->is_global = !$event->is_global;
+        $event->save();
+
+        $cells = $this->cellsWithRelations()->get();
+        $categories = Category::all();
+
+        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+        $qualityOfLife = array_sum($effectTotals);
+
+        $globalEvents = Event::with('effects')
+            ->where('is_global', true)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'is_global' => $event->is_global,
+            'effectTotals' => $effectTotals,
+            'qualityOfLife' => $qualityOfLife,
+            'globalEvents' => $globalEvents,
+        ]);
+    }
+
+    public function checkDayNight(Request $request)
+    {
+        $simulationMinute = (int) ($request->simulation_minute ?? 0);
+        $cycleLength = 24 * 60; // 1440 minutes in a full cycle
+
+        // Day: 6:00 (360 min) to 18:00 (1080 min)
+        $isDay = $simulationMinute >= 360 && $simulationMinute < 1080;
+
+        $dayEvent = Event::where('name', 'Day')->first();
+        $nightEvent = Event::where('name', 'Night')->first();
+
+        $changed = false;
+
+        if ($isDay) {
+            if ($dayEvent && !$dayEvent->is_global) {
+                $dayEvent->is_global = true;
+                $dayEvent->save();
+                $changed = true;
+            }
+            if ($nightEvent && $nightEvent->is_global) {
+                $nightEvent->is_global = false;
+                $nightEvent->save();
+                $changed = true;
+            }
+        } else {
+            if ($nightEvent && !$nightEvent->is_global) {
+                $nightEvent->is_global = true;
+                $nightEvent->save();
+                $changed = true;
+            }
+            if ($dayEvent && $dayEvent->is_global) {
+                $dayEvent->is_global = false;
+                $dayEvent->save();
+                $changed = true;
+            }
+        }
+
+        if ($changed) {
+            $cells = $this->cellsWithRelations()->get();
+            $categories = Category::all();
+            $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+            $qualityOfLife = array_sum($effectTotals);
+
+            $globalEvents = Event::with('effects')
+                ->where('is_global', true)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'changed' => true,
+                'is_day' => $isDay,
+                'effectTotals' => $effectTotals,
+                'qualityOfLife' => $qualityOfLife,
+                'globalEvents' => $globalEvents,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'changed' => false,
+            'is_day' => $isDay,
         ]);
     }
 

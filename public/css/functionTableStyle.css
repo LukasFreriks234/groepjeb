@@ -95,6 +95,10 @@
     user-select: none;
 }
 
+.event-is-global {
+    opacity: 0.5;
+}
+
 .filters {
     display: flex;
     justify-content: space-between;
