@@ -36,13 +36,20 @@ function setDynamicProgress(minTimer){
 let eventButtons = document.querySelectorAll(".dynamicEventItem");
 
 const startDate = new Date("Jan 1, 2026");
+const disable = new Date("Jan 1, 1970");
 
 eventButtons.forEach((button) =>{
     button.addEventListener("click", ()=>{
-        let simDate = new Date(document.querySelector(".navbar-date-display-value").textContent);
-        let simMinutes = parseFloat(document.querySelector(".navbar-clock").getAttribute("style").split(" ")[1].split(";")[0]);
-        let simDelta = (simDate-startDate)/60000+simMinutes*1440;
+            let simDate = new Date(document.querySelector(".navbar-date-display-value").textContent);
+            let simMinutes = parseFloat(document.querySelector(".navbar-clock").getAttribute("style").split(" ")[1].split(";")[0]);
+            let simSpeed = parseInt(document.getElementById("simulation-speed").value); 
+            let simDelta;
+        if(button.getAttribute("active") == "false"){
+            button.setAttribute("active", "true");
+            simDelta = (simDate-startDate)/60000+simMinutes*1440-simSpeed;
+        } else{
+            simDelta = (simDate-disable)/60000+simMinutes*1440;
+        }
         eventDict[parseInt(button.getAttribute("data-event-id"))] = simDelta;
-        //console.log(parseInt(document.getElementById("simulation-speed").value));
     })
 });

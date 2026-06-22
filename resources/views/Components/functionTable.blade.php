@@ -156,6 +156,7 @@
                 data-type="{{ $eventType }}"
                 data-dynamic="{{ $isDynamic }}"
                 role="button"
+                active="false"
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
             >
             @else
