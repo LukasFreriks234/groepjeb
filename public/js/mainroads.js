@@ -54,14 +54,26 @@ document.querySelectorAll(".gridCell").forEach(cell => {
 
     cell.addEventListener("click", () => {
         if (createRouteMode){
-            if(cell.querySelector(".main-road-icon")){
-                startCellId = cell.dataset.id;
+            if(cell.querySelector(".main-road-icon") && !cell.querySelector(".draggableGridEvent")){
+                selectedStartCell = cell.dataset.id;
+                console.log('start');
             }
-            if (cell.querySelector(".draggableGridEvent")){
-                endEventId = cell.dataset.id;
+            if (cell.querySelector(".draggableGridEvent") && !cell.querySelector(".main-road-icon")){
+                selectedEndEvent = cell.dataset.id;
+                console.log('end');
 
                 loadRoute();
-            }            
+            }
+            if(cell.querySelector(".draggableGridEvent") && cell.querySelector(".main-road-icon")){
+                if(!selectedStartCell){
+                    selectedStartCell = cell.dataset.id;
+                    console.log('start');
+                }else{
+                    selectedEndEvent = cell.dataset.id;
+                    console.log('end');
+                    loadRoute();
+                }
+            }       
         }
 
         if(!createRouteMode && mainRoadMode){
@@ -111,8 +123,8 @@ function loadRoute() {
             "Accept": "application/json"
         }, 
         body: JSON.stringify({
-            start_cell_id: startCellId,
-            end_cell_id: endEventId
+            start_cell_id: selectedStartCell,
+            end_cell_id: selectedEndEvent
         })
     })
     .then(res => {
@@ -147,6 +159,9 @@ function renderRoute(route) {
 
         cell.appendChild(div);
     });
+
+    selectedStartCell = null;
+    selectedEndEvent = null;
 
 }
 
