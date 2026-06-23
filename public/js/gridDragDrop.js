@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         cell.addEventListener("drop", function (ev) {
+            console.log("DROP");
             ev.preventDefault();
 
             const dragData = getDragData(ev);
@@ -345,6 +346,7 @@ function enableDrag() {
         item.dataset.dragEnabled = "true";
 
         item.addEventListener("dragstart", function (ev) {
+            console.log("DRag");
             const image = ev.currentTarget.querySelector("img");
             const functionName = getFunctionNameFromItem(ev.currentTarget);
 
