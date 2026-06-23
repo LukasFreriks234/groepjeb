@@ -11,6 +11,8 @@
 <script src="{{ asset('js/switchFunctionEvent.js') }}" defer></script>
 <script src="{{ asset('js/mainroads.js') }}" defer></script>
 <script src="{{ asset('js/simulationTimer.js') }}" defer></script>
+<script src="{{ asset('js/dynamicEvent.js') }}" defer></script>
+
 
 <link href="{{ asset('css/functionTableStyle.css') }}" type="text/css" rel="stylesheet"/>
 <link href="{{ asset('css/gridStyle.css') }}" type="text/css" rel="stylesheet"/>
