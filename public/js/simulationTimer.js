@@ -583,7 +583,7 @@
                     }
 
                     const nextDate = new Date(startDate);
-                    nextDate.setDate(startDate.getDate() + minDiff);
+                    nextDate.setDate(startDate.getDate() + minDiff + ((amount - 1) * 7));
 
                     console.log(nextDate);
                 }
@@ -592,9 +592,10 @@
                     const days = JSON.parse(eventItem.dataset.dateNumber || "[]")
                         .map(Number)
                         .filter(n => Number.isFinite(n) && n > 0);
+                    console.log(days.length);
+                    console.log(eventItem.dataset.dateNumber)
 
                     if (days.length == 0) {
-                        // amount is not correctly implemented
                         console.log('numeral');
                         const ordinals = JSON.parse(eventItem.dataset.ordinalNumber || "[]");
                         const weekdays = JSON.parse(eventItem.dataset.weekday || "[]");
@@ -648,7 +649,10 @@
 
                         for (const rule of rules) {
 
-                            const matches = getWeekdayMatches(year, month, rule.weekday);
+                            let targetMonth = month;
+                            let targetYear = year;
+
+                            const matches = getWeekdayMatches(targetYear, targetMonth, rule.weekday);
 
                             let target;
 
@@ -664,7 +668,13 @@
 
                             if (target && target < start) {
 
-                                const nextMatches = getWeekdayMatches(year, month + 1, rule.weekday);
+                                const future = new Date(year, month + amount, 1);
+
+                                const nextMatches = getWeekdayMatches(
+                                    future.getFullYear(),
+                                    future.getMonth(),
+                                    rule.weekday
+                                );
 
                                 if (rule.ordinal === "last") {
                                     target = nextMatches.at(-1);
@@ -685,29 +695,35 @@
                         console.log(bestDate);
                     }
                     else {
-                        // amount is not correctly implemented
-                        console.log('dates')
+                        console.log('dates');
 
                         const currentDay = startDate.getDate();
 
                         let bestDiff = Infinity;
                         let bestDay = null;
 
+                        // Find the next day in the current month
                         for (const day of days) {
-
                             let diff = day - currentDay;
 
-                            if (diff < 0) diff += 31;
-
-                            if (diff < bestDiff) {
+                            if (diff >= 0 && diff < bestDiff) {
                                 bestDiff = diff;
                                 bestDay = day;
                             }
                         }
 
                         const nextDate = new Date(startDate);
-                        nextDate.setMonth(startDate.getMonth() + (bestDiff >= 31 ? 1 : 0));
-                        nextDate.setDate(bestDay);
+
+                        if (bestDay !== null) {
+                            // There is still a valid day this month
+                            nextDate.setDate(bestDay);
+                        } else {
+                            // Move to the next active month
+                            nextDate.setMonth(nextDate.getMonth() + amount);
+
+                            // Pick the first configured day
+                            nextDate.setDate(Math.min(...days));
+                        }
 
                         console.log(nextDate);
                     }
@@ -721,10 +737,9 @@
                     console.log(nextDate);
                 }
             }
-        }
         })
-})
-let simDate = new Date(document.querySelector(".navbar-date-display-value").textContent);
-console.log(simDate);
-}) ();
+    })
+    let simDate = new Date(document.querySelector(".navbar-date-display-value").textContent);
+    console.log(simDate);
+})();
 
