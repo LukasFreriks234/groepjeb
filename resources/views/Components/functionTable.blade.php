@@ -1,6 +1,7 @@
 <div id="functionsTable">
     <div class="filters">
         <div>
+            <label class="sr-only" for="myInput">Searchbar for functions</label>
             <input type="text" id="myInput" placeholder="Search for functions.." aria-label="searchbar for functions"><br>
 
             <?php 
@@ -10,6 +11,8 @@
             $i = 1;
             ?>
 
+            <fieldset>
+                <legend>Filters:</legend>
             @foreach($arrCategories as $category)
                 <input 
                     type="checkbox" 
@@ -21,6 +24,7 @@
                 <label for="category{{ $i }}">{{ $category['category'] }}</label><br>
                 <?php $i++; ?>
             @endforeach
+            </fieldset>
         </div>
     </div>
 
