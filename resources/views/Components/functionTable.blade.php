@@ -10,7 +10,8 @@
 <div id="functionsTable" class="tabContent" style="display:block;">
     <div class="filters">
         <div>
-            <input type="text" id="myInput" placeholder="Search for functions.." aria-label="Search functions"><br>
+            <label class="sr-only" for="myInput">Searchbar for functions</label>
+            <input type="text" id="myInput" placeholder="Search for functions.." aria-label="searchbar for functions"><br>
 
             @php
                 $arrCategories = $categories->toArray();
@@ -19,6 +20,8 @@
                 $i = 1;
             @endphp
 
+            <fieldset>
+                <legend>Filters:</legend>
             @foreach($arrCategories as $category)
                 <input type="checkbox" id="category{{ $i }}" class="functionFilter" name="category{{ $i }}"
                     value="{{ $category['category'] }}">
@@ -28,6 +31,7 @@
                     $i++;
                 @endphp
             @endforeach
+            </fieldset>
         </div>
     </div>
 
