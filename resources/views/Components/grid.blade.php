@@ -44,7 +44,9 @@
                 @endphp
 
                 <div 
-                    class="gridCell {{ $cell->is_available ? 'available' : 'occupied' }}"
+                    class="gridCell 
+                    {{ $cell->is_available ? 'available' : 'occupied' }}
+                    {{ $cell->mainRoad ? 'main-road' : '' }}"
                     data-id="{{ $cell->id }}"
                     data-x="{{ $cell->x_coordinate }}"
                     data-y="{{ $cell->y_coordinate }}"
@@ -82,6 +84,11 @@
                                     data-from-cell-id="{{ $cell->id }}"
                                 >
                             @endforeach
+                        </div>
+                    @endif
+                    @if($cell->mainRoad)
+                        <div class="main-road-icon">
+                            <img src='images/mainroad.png'></img>
                         </div>
                     @endif
                 </div>

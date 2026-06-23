@@ -302,18 +302,4 @@ class GridCellController extends Controller
             'qualityOfLife' => $qualityOfLife,
         ]);
     }
-
-    public function toggleMainRoad(GridCell $cell){
-        if(!$cell->isBorder()) 
-        {
-            abort(403);
-        }
-
-        if($cell->mainRoad){
-            $cell->mainRoad()->delete();
-        }
-        else {
-            $cell->mainRoad()->create();
-        }
-    }
 }

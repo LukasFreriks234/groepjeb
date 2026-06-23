@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class MainRoad extends Model
 {
-    protected $fillable = ['cell_id'];
+    protected $fillable = ['grid_cell_id'];
 
     public function cell()
     {
-        return $this->belongsTo(GridCell::class);
+        return $this->belongsTo(GridCell::class, 'grid_cell_id');
     }
 }

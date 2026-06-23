@@ -20,15 +20,15 @@ class GridCell extends Model
 
     public function mainRoad()
     {
-        return $this->hasOne(MainRoad::class);
+        return $this->hasOne(MainRoad::class, 'grid_cell_id');
     }
 
     public function isBorder()
     {
-        return 
-            $this->x == 0 ||
-            $this->x == 3 ||
-            $this->y == 0 ||
-            $this->y == 2;
+        return
+            $this->x_coordinate == 0 ||
+            $this->x_coordinate == 3 ||
+            $this->y_coordinate == 0 ||
+            $this->y_coordinate == 2;
     }
 }

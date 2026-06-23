@@ -5,6 +5,7 @@ use App\Http\Controllers\GridCellController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\FunctionController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\MainRoadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SessionController::class, 'create'])->name('login');
@@ -27,9 +28,11 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::post('/grid/check-expired-events',[GridCellController::class, 'checkExpiredEvents']);
     Route::post('/grid/remove-event', [GridCellController::class, 'removeEvent']);
     Route::post('/grid/neighbor-effects', [GridCellController::class, 'neighborEffects']);
-    Route::post('/grid/main-road/{cell}',[GridCellController::class, 'toggleMainRoad']);
 
     Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
+
+    Route::post('/grid/main-road/{cell}',[MainRoadController::class, 'toggleMainRoad']);
+    Route::post('/mainroad/route',[MainRoadController::class, 'calculateRoute']);
 
     Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
     Route::post('/events/store', [EventController::class, 'store'])->name('events.store');

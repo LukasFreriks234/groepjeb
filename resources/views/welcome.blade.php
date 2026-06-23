@@ -28,7 +28,10 @@
             <x-grid :cells="$cells" :categories="$categories" />
 
             <button id="toggle-mainroad-button">
-                Toggle Main Road
+                Show Main Road Overlay
+            </button>
+            <button id="createRouteButton">
+                Create Route
             </button>
         </div>
 

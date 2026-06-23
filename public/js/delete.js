@@ -94,7 +94,10 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
-                cell.innerHTML = "";
+
+                cell.querySelectorAll(
+                    ".functionItem, .gridImage, .gridEventImage, .delete-btn"
+                ).forEach(el => el.remove());
                 cell.classList.remove("occupied", "selectedMobileCell", "keyboardSelected");
                 cell.classList.add("available");
 
