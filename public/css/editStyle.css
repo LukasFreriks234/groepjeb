@@ -101,7 +101,7 @@ select[aria-invalid="true"] {
     border-color: #b42318;
 }
 
-button:not(.navbar-button) {
+button:not(.navbar-button):not(.navbar-speed-button):not(.navbar-pause-button):not(.navbar-date-popup-arrow) {
     margin-top: 20px;
     background: #1d4ed8;
     color: white;

@@ -6,9 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Group</title>
     <link href="{{ asset('css/group.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('css/navbarStyle.css') }}" type="text/css" rel="stylesheet" />
 </head>
 
 <body>
+    <x-navbar />
     <main class="group-page">
         <h1>Add Group</h1>
         <div class="group-form-container">
