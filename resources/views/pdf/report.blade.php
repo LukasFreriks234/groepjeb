@@ -45,14 +45,32 @@
                     });
                 @endphp
 
-                <td>
+                <td class="grid-cell">
+
                     @if($cell && $cell->cityFunction)
                         <img
                             src="{{ public_path($cell->cityFunction->image) }}"
-                            alt="Row {{ $y + 1 }} Column {{ $x + 1 }} {{ $cell->cityFunction->name }}"
+                            alt="{{ $cell->cityFunction->name }}"
                             class="grid-image"
                         >
                     @endif
+
+                    @if($cell && $cell->events && $cell->events->count())
+                        <div class="event-container">
+
+                            @foreach($cell->events as $event)
+
+                                <img
+                                    src="{{ public_path($event->image_url) }}"
+                                    alt="{{ $event->name }}"
+                                    class="event-image"
+                                >
+
+                            @endforeach
+
+                        </div>
+                    @endif
+
                 </td>
 
             @endfor

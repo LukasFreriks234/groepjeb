@@ -7,13 +7,15 @@
 
 <div class="simulationContainer">
     <main class="citySection">
-        <a
-            href="{{ route('grid.export-pdf') }}"
-            class="navButton"
-            aria-label="Export the current simulation to a PDF report"
-        >
-            Save as PDF
-        </a>
+        @if(auth()->check() && auth()->user()->role === 'policymaker')
+            <a
+                href="{{ route('grid.export-pdf') }}"
+                class="navButton"
+                aria-label="Export the current simulation to a PDF report"
+            >
+                Save as PDF
+            </a>
+        @endif
 
         <h2>City area</h2>
 
