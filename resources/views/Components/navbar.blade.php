@@ -12,6 +12,16 @@
 
         <li>
             <a
+                href="{{ route('saved-grids.index') }}"
+                class="navbar-button"
+                @if(request()->routeIs('saved-grids.index')) aria-current="page" @endif
+            >
+                Saved grids
+            </a>
+        </li>
+
+        <li>
+            <a
                 href="{{ route('functions.index') }}"
                 class="navbar-button"
                 @if(request()->routeIs('functions.*', 'overview.groups', 'groups.*', 'events.*')) aria-current="page" @endif
