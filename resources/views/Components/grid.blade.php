@@ -1,4 +1,4 @@
-@props(['cells', 'categories'])
+@props(['cells', 'categories','eventGridCells'])
 
 @php
     $columns = $cells->max('x_coordinate') + 1;
@@ -7,6 +7,16 @@
 
 <div class="simulationContainer">
     <main class="citySection">
+        @if(auth()->check() && auth()->user()->role === 'policymaker')
+            <a
+                href="{{ route('grid.export-pdf') }}"
+                class="navButton"
+                aria-label="Export the current simulation to a PDF report"
+            >
+                Save as PDF
+            </a>
+        @endif
+
         <h2>City area</h2>
 
         <p id="gridKeyboardInstructions" class="sr-only">
@@ -20,6 +30,11 @@
             aria-describedby="gridKeyboardInstructions"
             aria-label="The grid exist out of {{ $columns }} columns, {{ $rows }} rows"
         >
+        
+        @php
+        $arrEventGridCells = $eventGridCells->sortBy('route_order');
+        @endphp
+
             @foreach($cells as $cell)
                 @php
                     $readableRow = $cell->y_coordinate + 1;
@@ -78,6 +93,13 @@
                     @if($hasEvents)
                         <div class="gridEvents">
                             @foreach($cell->events as $event)
+                                @foreach ($arrEventGridCells as $gridCell)
+                                    @if($gridCell->grid_dynamics_id == $cell->id && $gridCell->event_id == $event->id)
+                                        @php
+                                        $order = $gridCell->route_order;
+                                        @endphp
+                                    @endif
+                                @endforeach
                                 <img
                                     src="{{ asset($event->image_url) }}"
                                     alt="{{ $event->name }}"
@@ -89,6 +111,9 @@
                                     data-event-id="{{ $event->id }}"
                                     data-event-name="{{ $event->name }}"
                                     data-from-cell-id="{{ $cell->id }}"
+                                    event-speed="{{ $event->speed }}"
+                                    route-state="{{ $order ?? 0 }}"
+                                    dynamic-event="{{ $event->dynamic }}"
                                 >
                             @endforeach
                         </div>

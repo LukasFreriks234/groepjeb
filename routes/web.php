@@ -12,8 +12,11 @@ Route::get('/', [SessionController::class, 'create'])->name('login');
 Route::post('/', [SessionController::class, 'store']);
 Route::post('/logout', [SessionController::class, 'destroy']);
 
-Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
+Route::middleware(['auth', 'role:cityplanner,admin,policymaker'])->group(function () {
     Route::get('/grid', [GridCellController::class, 'index'])->name('grid.index');
+
+    Route::get('/grid/export-pdf', [GridCellController::class, 'exportPdf'])
+        ->name('grid.export-pdf');
 
     Route::get('/overview', [FunctionController::class, 'index'])->name('functions.index');
     Route::get('/overview/{id}', [FunctionController::class, 'show'])->name('functions.show');
@@ -37,6 +40,8 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::post('/grid/check-expired-events', [GridCellController::class, 'checkExpiredEvents']);
     Route::post('/grid/remove-event', [GridCellController::class, 'removeEvent']);
     Route::post('/grid/neighbor-effects', [GridCellController::class, 'neighborEffects']);
+    Route::post('/grid/toggle-global-event', [GridCellController::class, 'toggleGlobalEvent']);
+    Route::post('/grid/check-day-night', [GridCellController::class, 'checkDayNight']);
     Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
 
     Route::post('/grid/main-road/{cell}', [MainRoadController::class, 'toggleMainRoad']);

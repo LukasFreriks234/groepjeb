@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GridDynamic;
 use Illuminate\Http\Request;
 use App\Models\GridCell;
 use App\Models\Functions;
@@ -9,12 +10,16 @@ use App\Models\Category;
 use App\Models\Effects;
 use App\Models\Event;
 use Illuminate\Support\Facades\DB;
+use App\Models\EventgridCell;
+use DateInterval;
+use DateTime;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GridCellController extends Controller
 {
     private function cellsWithRelations()
     {
-        return GridCell::with(['cityFunction', 'mainRoad']);
+return GridCell::with(['cityFunction', 'mainRoad']);
     }
 
     private function gridDynamicIdForCell(GridCell $cell)
@@ -27,7 +32,7 @@ class GridCellController extends Controller
             return $dynamicId;
         }
 
-        $existing = DB::table('grid_dynamics')
+$existing = DB::table('grid_dynamics')
             ->where('x_coordinate', $cell->x_coordinate)
             ->where('y_coordinate', $cell->y_coordinate)
             ->whereNull('grid_cell_id')
@@ -43,7 +48,6 @@ class GridCellController extends Controller
 
             return $existing->id;
         }
-
         return DB::table('grid_dynamics')->insertGetId([
             'x_coordinate' => $cell->x_coordinate,
             'y_coordinate' => $cell->y_coordinate,
@@ -176,6 +180,12 @@ class GridCellController extends Controller
             'recurring.monthly',
         ])->get();
 
+        $globalEvents = Event::with('effects')
+            ->where('is_global', true)
+            ->get();
+
+        $eventGridCells = EventgridCell::all();
+
         $effectTotals = Effects::calculateEffectTotals($cells, $categories);
         $qualityOfLife = array_sum($effectTotals);
 
@@ -183,9 +193,11 @@ class GridCellController extends Controller
             'cells',
             'functions',
             'events',
+            'globalEvents',
             'categories',
             'effectTotals',
-            'qualityOfLife'
+            'qualityOfLife',
+            'eventGridCells'
         ));
     }
 
@@ -422,6 +434,103 @@ class GridCellController extends Controller
         ]);
     }
 
+    public function toggleGlobalEvent(Request $request)
+    {
+        $event = Event::find($request->event_id);
+
+        if (!$event) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Event not found',
+            ], 404);
+        }
+
+        $event->is_global = !$event->is_global;
+        $event->save();
+
+        $cells = $this->cellsWithRelations()->get();
+        $categories = Category::all();
+
+        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+        $qualityOfLife = array_sum($effectTotals);
+
+        $globalEvents = Event::with('effects')
+            ->where('is_global', true)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'is_global' => $event->is_global,
+            'effectTotals' => $effectTotals,
+            'qualityOfLife' => $qualityOfLife,
+            'globalEvents' => $globalEvents,
+        ]);
+    }
+
+    public function checkDayNight(Request $request)
+    {
+        $simulationMinute = (int) ($request->simulation_minute ?? 0);
+        $cycleLength = 24 * 60; // 1440 minutes in a full cycle
+
+        // Day: 6:00 (360 min) to 18:00 (1080 min)
+        $isDay = $simulationMinute >= 360 && $simulationMinute < 1080;
+
+        $dayEvent = Event::where('name', 'Day')->first();
+        $nightEvent = Event::where('name', 'Night')->first();
+
+        $changed = false;
+
+        if ($isDay) {
+            if ($dayEvent && !$dayEvent->is_global) {
+                $dayEvent->is_global = true;
+                $dayEvent->save();
+                $changed = true;
+            }
+            if ($nightEvent && $nightEvent->is_global) {
+                $nightEvent->is_global = false;
+                $nightEvent->save();
+                $changed = true;
+            }
+        } else {
+            if ($nightEvent && !$nightEvent->is_global) {
+                $nightEvent->is_global = true;
+                $nightEvent->save();
+                $changed = true;
+            }
+            if ($dayEvent && $dayEvent->is_global) {
+                $dayEvent->is_global = false;
+                $dayEvent->save();
+                $changed = true;
+            }
+        }
+
+        if ($changed) {
+            $cells = $this->cellsWithRelations()->get();
+            $categories = Category::all();
+            $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+            $qualityOfLife = array_sum($effectTotals);
+
+            $globalEvents = Event::with('effects')
+                ->where('is_global', true)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'changed' => true,
+                'is_day' => $isDay,
+                'effectTotals' => $effectTotals,
+                'qualityOfLife' => $qualityOfLife,
+                'globalEvents' => $globalEvents,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'changed' => false,
+            'is_day' => $isDay,
+        ]);
+    }
+
     public function neighborEffects(Request $request)
     {
         $cell = GridCell::find($request->cell_id);
@@ -471,6 +580,114 @@ class GridCellController extends Controller
             'success' => true,
             'effectTotals' => $effectTotals,
             'qualityOfLife' => $qualityOfLife,
+        ]);
+    }
+
+    public function exportPdf()
+    {
+        $cells = $this->cellsWithRelations()
+            ->orderBy('y_coordinate')
+            ->orderBy('x_coordinate')
+            ->get();
+
+        $this->attachEventsToCells($cells);
+
+        $categories = Category::all();
+
+        $effectTotals = Effects::calculateEffectTotals($cells, $categories);
+        $qualityOfLife = array_sum($effectTotals);
+
+        $pdf = Pdf::loadView('pdf.report', [
+            'cells' => $cells,
+            'categories' => $categories,
+            'effectTotals' => $effectTotals,
+            'qualityOfLife' => $qualityOfLife,
+        ]);
+
+        return $pdf->download('simulatierapport.pdf');
+    }
+
+    public function checkRecurring($currentdate)
+    {
+        $recurring = DB::table('recurrings')->select(
+            'frequency',
+            'amount'
+        )->first();
+
+        $event = DB::table('events')->select(
+            'start_date',
+            'time'
+        )->first();
+
+        if ($recurring && $recurring->frequency === 'daily') {
+            $interval = new DateInterval('P' . (int) $recurring->amount . 'D');
+            $date = new DateTime($currentdate . ' ' . $event->time);
+            $nextdate = $date->add($interval)->format('Y-m-d');
+            // $this.dd($nextdate);
+            return $nextdate;
+        } else if ($recurring && $recurring->frequency === 'weekly') {
+            $startdate = $event->start_date;
+            $current = $currentdate->dayName;
+        } else if ($recurring && $recurring->frequency === 'monthly') {
+            // monthly
+        } else if ($recurring && $recurring->frequency === 'yearly') {
+            // yearly
+        } else {
+            return "error";
+        }
+    }
+
+
+    // function dd()
+    // {
+    //     echo '<pre>';
+    //     array_map(function ($x) {
+    //         var_dump($x); }, func_get_args());
+    //     die;
+    // }
+
+    public function toggle(Request $request)
+    {
+        if ($request->active) {
+
+            $gridDynamic = GridDynamic::create([
+                'x_coordinate' => 0,
+                'y_coordinate' => 0,
+                'is_available' => 1,
+                'grid_cell_id' => 1,
+            ]);
+
+            EventgridCell::create([
+                'event_id' => $request->event_id,
+                'grid_dynamics_id' => $gridDynamic->id,
+                'route_order' => 1,
+            ]);
+
+            $nextDate = $this->checkRecurring($request->date);
+
+            // GridCell::where('grid_cell_id', $gridDynamic->id)->update(['is_available' => 0]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Toggled'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Deactivated / no action taken'
+        ]);
+    }
+
+    function untoggle(Request $request)
+    {
+
+        EventgridCell::where('event_id', $request->event_id)
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Untoggled'
         ]);
     }
 }

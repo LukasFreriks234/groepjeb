@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         cell.addEventListener("drop", function (ev) {
+            console.log("DROP");
             ev.preventDefault();
 
             const dragData = getDragData(ev);
@@ -345,6 +346,7 @@ function enableDrag() {
         item.dataset.dragEnabled = "true";
 
         item.addEventListener("dragstart", function (ev) {
+            console.log("DRag");
             const image = ev.currentTarget.querySelector("img");
             const functionName = getFunctionNameFromItem(ev.currentTarget);
 
@@ -366,7 +368,7 @@ function enableDrag() {
     const eventItems = document.querySelectorAll("#eventsList li");
 
     eventItems.forEach((item) => {
-        item.setAttribute("draggable", "true");
+        //item.setAttribute("draggable", "true");
         item.setAttribute("tabindex", item.getAttribute("tabindex") || "0");
         item.setAttribute("role", item.getAttribute("role") || "button");
 
@@ -433,9 +435,9 @@ function enableDrag() {
 
     gridEvents.forEach((image) => {
         image.setAttribute("draggable", "true");
-        image.setAttribute("tabindex", "0");
-        image.setAttribute("role", "button");
-        image.removeAttribute("aria-hidden");
+        image.setAttribute("tabindex", "-1");
+        image.setAttribute("aria-hidden", "true");
+        image.removeAttribute("role");
         image.setAttribute("aria-label", `Move event ${getGridEventName(image)} from this grid cell`);
 
         if (image.dataset.dragEnabled === "true") {
@@ -802,7 +804,8 @@ function saveEventInGrid(cell, dragData) {
                 updateEffectsAccessibilityLabelForReader();
             }, 100);
 
-            announceKeyboardStatus(`${dragData.imageAlt || "Event"} placed in this grid cell.`);
+            updateCellLabel(cell);
+            announceKeyboardStatus(getCellLabelText(cell));
             cell.focus();
         })
         .catch(error => {

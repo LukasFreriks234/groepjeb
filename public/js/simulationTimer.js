@@ -214,6 +214,7 @@
         const currentMinute = elapsedMinutes % CYCLE_LENGTH_MINUTES;
         const progress = (currentMinute / CYCLE_LENGTH_MINUTES) * 100;
         const progressRatio = progress / 100;
+        setDynamicProgress(dayOffset*CYCLE_LENGTH_MINUTES+elapsedMinutes);
 
         if (timeDisplay) {
             timeDisplay.textContent = formatTime(elapsedMinutes);

@@ -17,27 +17,21 @@
 
     <div class="overviewContent">
         <nav class="overviewTabs" aria-label="Overview navigation">
-            <a
-                href="{{ route('functions.index') }}"
-                class="overviewTab active"
-                aria-current="page"
-            >
-                Functions
-            </a>
-
-            <a
-                href="{{ route('groups.index') }}"
-                class="overviewTab"
-            >
-                Groups
-            </a>
-
-            <a
-                href="{{ route('events.index') }}"
-                class="overviewTab"
-            >
-                Events
-            </a>
+            <button class="createButton">
+                <a href="{{ route('functions.index') }}" class="overviewTab active" aria-current="page">
+                    Functions
+                </a>
+            </button>
+            <button class="createButton">
+                <a href="{{ route('groups.index') }}" class="overviewTab">
+                    Groups
+                </a>
+            </button>
+            <button class="createButton">
+                <a href="{{ route('events.index') }}" class="overviewTab">
+                    Events
+                </a>
+            </button>
         </nav>
 
         <div class="topbar">
@@ -57,12 +51,7 @@
         <h2>Categories</h2>
 
         <div class="category">
-            <input
-                type="text"
-                id="myInput"
-                placeholder="Search for names.."
-                aria-label="Search functions"
-            ><br>
+            <input type="text" id="myInput" placeholder="Search for names.." aria-label="Search functions"><br>
 
             @php
                 $arrCategories = $categories->toArray();
@@ -74,13 +63,8 @@
             <div class="categoryFilterContainer">
                 @foreach($arrCategories as $category)
                     <div class="categoryFilter">
-                        <input
-                            type="checkbox"
-                            id="category{{ $i }}"
-                            class="functionFilter"
-                            name="category{{ $i }}"
-                            value="{{ $category['category'] }}"
-                        >
+                        <input type="checkbox" id="category{{ $i }}" class="functionFilter" name="category{{ $i }}"
+                            value="{{ $category['category'] }}">
 
                         <label for="category{{ $i }}">
                             {{ $category['category'] }}
@@ -112,24 +96,13 @@
 
         <ul id="functionsList">
             @foreach($arrFunctions as $function)
-                <li
-                    id="function{{ $function['id'] }}"
-                    class="functionItem"
-                    draggable="true"
-                    data-function-id="{{ $function['id'] }}"
-                    data-category="{{ $function['category'] }}"
-                >
-                    <a
-                        href="{{ route('functions.show', $function['id']) }}"
-                        class="noStyle"
-                        aria-label="Function {{ $function['name'] }} in category {{ $function['category'] }}"
-                    >
+                <li id="function{{ $function['id'] }}" class="functionItem" draggable="true"
+                    data-function-id="{{ $function['id'] }}" data-category="{{ $function['category'] }}">
+                    <a href="{{ route('functions.show', $function['id']) }}" class="noStyle"
+                        aria-label="Function {{ $function['name'] }} in category {{ $function['category'] }}">
                         <div class="functionNameImage">
                             <div class="functionImage">
-                                <img
-                                    src="{{ asset($function['image']) }}"
-                                    alt="{{ $function['name'] }}"
-                                >
+                                <img src="{{ asset($function['image']) }}" alt="{{ $function['name'] }}">
                             </div>
 
                             <div>
@@ -137,10 +110,7 @@
                                     {{ $function['name'] }}
                                 </p>
 
-                                <p
-                                    class="functionCategory"
-                                    name="{{ $function['category'] }}"
-                                >
+                                <p class="functionCategory" name="{{ $function['category'] }}">
                                     {{ $function['category'] }}
                                 </p>
                             </div>

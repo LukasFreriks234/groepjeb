@@ -17,7 +17,7 @@
 
     <x-navbar />
 
-    <h1>Create Event</h1>
+    <h1 tabindex="0">Create Event</h1>
 
     <div class="container event-container">
         <div class="form-section">
@@ -25,7 +25,7 @@
                 @csrf
 
                 @if ($errors->any())
-                    <div style="color:red;">
+                    <div style="color:red;" role="alert" aria-live="assertive" tabindex="-1">
                         @foreach ($errors->all() as $error)
                             <p>{{ $error }}</p>
                         @endforeach
@@ -40,10 +40,12 @@
                     id="image"
                     name="image"
                     accept="image/*"
-                    alt="Upload an image for the new event"
+                    aria-label="Upload an image for the new event"
+                    required
+                    aria-required="true"
                 >
 
-                <h2>Effect while active</h2>
+                <h2 tabindex="0">Effect while active</h2>
 
                 <x-formInput
                     name="Safety"
@@ -90,9 +92,9 @@
                     max="10"
                 />
 
-                <h2>Event settings</h2>
+                <h2 tabindex="0">Event settings</h2>
 
-                <fieldset>
+                <fieldset aria-describedby="event-type-help">
                     <legend>Event type</legend>
 
                     <div class="containerRadio">
@@ -127,6 +129,8 @@
                         type="number"
                         value="{{ old('length') }}"
                         required
+                        aria-required="true"
+                        min="1"
                     >
 
                     <select name="lengthUnit">
@@ -138,24 +142,27 @@
 
                 <div id="recurringFields">
 
-                    <h2>Date and Time</h2>
+                <h2 tabindex="0">Date and Time</h2>
 
                     <div class="dateTime">
-                        <label for="startTime" class="label">Start time</label>
-                        <input
-                            type="time"
-                            id="startTime"
-                            name="startTime"
-                            value="{{ old('startTime') }}"
-                        >
+                        <label>
+                            Start time
+                            <input
+                                type="time"
+                                id="startTime"
+                                name="startTime"
+                            >
+                        </label>
 
-                        <label for="startDate" class="label">Start date</label>
-                        <input
-                            type="date"
-                            id="startDate"
-                            name="startDate"
-                            value="{{ old('startDate') }}"
-                        >
+                        <label>
+                            Start date
+                            <input
+                                type="date"
+                                id="startDate"
+                                name="startDate"
+                                value="{{ old('startDate') }}"
+                            >
+                        </label>
                     </div>
 
                     <p class="information">
@@ -222,83 +229,102 @@
                             <label for="everyWeek">Week(s)</label>
                         </div>
 
-                        <div class="weekDays label">
-                            <div class="containerRadio">
-                                <input
-                                    type="checkbox"
-                                    id="monday"
-                                    name="weekdays[]"
-                                    value="monday"
-                                    {{ in_array('monday', old('weekdays', [])) ? 'checked' : '' }}
-                                >
-                                <label for="monday">Monday</label>
+                        <p id="weekday-help" class="sr-only">
+                            Press Space to select.
+                        </p>
+
+                        <div class="weekDays label" aria-describedby="weekday-help">
+                            <p id="weekday-help" class="sr-only">
+                                Use the Space key to select or deselect a day.
+                            </p>
+
+                            <div class="weekDays label">
+
+                                <div class="containerRadio">
+                                    <input
+                                        type="checkbox"
+                                        id="monday"
+                                        name="weekdays[]"
+                                        value="monday"
+                                        aria-describedby="weekday-help"
+                                        {{ in_array('monday', old('weekdays', [])) ? 'checked' : '' }}
+                                    >
+                                    <label for="monday">Monday</label>
+                                </div>
+
+                                <div class="containerRadio">
+                                    <input
+                                        type="checkbox"
+                                        id="tuesday"
+                                        name="weekdays[]"
+                                        value="tuesday"
+                                        aria-describedby="weekday-help"
+                                        {{ in_array('tuesday', old('weekdays', [])) ? 'checked' : '' }}
+                                    >
+                                    <label for="tuesday">Tuesday</label>
+                                </div>
+
+                                <div class="containerRadio">
+                                    <input
+                                        type="checkbox"
+                                        id="wednesday"
+                                        name="weekdays[]"
+                                        value="wednesday"
+                                        aria-describedby="weekday-help"
+                                        {{ in_array('wednesday', old('weekdays', [])) ? 'checked' : '' }}
+                                    >
+                                    <label for="wednesday">Wednesday</label>
+                                </div>
+
+                                <div class="containerRadio">
+                                    <input
+                                        type="checkbox"
+                                        id="thursday"
+                                        name="weekdays[]"
+                                        value="thursday"
+                                        aria-describedby="weekday-help"
+                                        {{ in_array('thursday', old('weekdays', [])) ? 'checked' : '' }}
+                                    >
+                                    <label for="thursday">Thursday</label>
+                                </div>
+
+                                <div class="containerRadio">
+                                    <input
+                                        type="checkbox"
+                                        id="friday"
+                                        name="weekdays[]"
+                                        value="friday"
+                                        aria-describedby="weekday-help"
+                                        {{ in_array('friday', old('weekdays', [])) ? 'checked' : '' }}
+                                    >
+                                    <label for="friday">Friday</label>
+                                </div>
+
+                                <div class="containerRadio">
+                                    <input
+                                        type="checkbox"
+                                        id="saturday"
+                                        name="weekdays[]"
+                                        value="saturday"
+                                        aria-describedby="weekday-help"
+                                        {{ in_array('saturday', old('weekdays', [])) ? 'checked' : '' }}
+                                    >
+                                    <label for="saturday">Saturday</label>
+                                </div>
+
+                                <div class="containerRadio">
+                                    <input
+                                        type="checkbox"
+                                        id="sunday"
+                                        name="weekdays[]"
+                                        value="sunday"
+                                        aria-describedby="weekday-help"
+                                        {{ in_array('sunday', old('weekdays', [])) ? 'checked' : '' }}
+                                    >
+                                    <label for="sunday">Sunday</label>
+                                </div>
                             </div>
 
-                            <div class="containerRadio">
-                                <input
-                                    type="checkbox"
-                                    id="tuesday"
-                                    name="weekdays[]"
-                                    value="tuesday"
-                                    {{ in_array('tuesday', old('weekdays', [])) ? 'checked' : '' }}
-                                >
-                                <label for="tuesday">Tuesday</label>
-                            </div>
-
-                            <div class="containerRadio">
-                                <input
-                                    type="checkbox"
-                                    id="wednesday"
-                                    name="weekdays[]"
-                                    value="wednesday"
-                                    {{ in_array('wednesday', old('weekdays', [])) ? 'checked' : '' }}
-                                >
-                                <label for="wednesday">Wednesday</label>
-                            </div>
-
-                            <div class="containerRadio">
-                                <input
-                                    type="checkbox"
-                                    id="thursday"
-                                    name="weekdays[]"
-                                    value="thursday"
-                                    {{ in_array('thursday', old('weekdays', [])) ? 'checked' : '' }}
-                                >
-                                <label for="thursday">Thursday</label>
-                            </div>
-
-                            <div class="containerRadio">
-                                <input
-                                    type="checkbox"
-                                    id="friday"
-                                    name="weekdays[]"
-                                    value="friday"
-                                    {{ in_array('friday', old('weekdays', [])) ? 'checked' : '' }}
-                                >
-                                <label for="friday">Friday</label>
-                            </div>
-
-                            <div class="containerRadio">
-                                <input
-                                    type="checkbox"
-                                    id="saturday"
-                                    name="weekdays[]"
-                                    value="saturday"
-                                    {{ in_array('saturday', old('weekdays', [])) ? 'checked' : '' }}
-                                >
-                                <label for="saturday">Saturday</label>
-                            </div>
-
-                            <div class="containerRadio">
-                                <input
-                                    type="checkbox"
-                                    id="sunday"
-                                    name="weekdays[]"
-                                    value="sunday"
-                                    {{ in_array('sunday', old('weekdays', [])) ? 'checked' : '' }}
-                                >
-                                <label for="sunday">Sunday</label>
-                            </div>
                         </div>
                     </div>
 
@@ -339,8 +365,12 @@
                             <label for="onThe">On the...</label>
                         </div>
 
-                        <div id="eachFields" class="label">
-                            <p>Choose the days of the month this event will be active.</p>
+                        <fieldset id="eachFields" aria-describedby="month-day-help">
+
+                            <p id="month-day-help" class="sr-only">
+                                Use the Space key to select or deselect a day of the month.
+                            </p>
+                            <legend>Choose the days of the month this event will be active.</legend>
 
                             <div class="month-days-grid">
                                 <?php for ($day = 1; $day <= 31; $day++): ?>
@@ -349,13 +379,13 @@
                                             type="checkbox"
                                             name="monthDays[]"
                                             value="<?= $day ?>"
-                                            {{ in_array((string) $day, old('monthDays', [])) ? 'checked' : '' }}
+                                            aria-label="Day <?= $day ?>. Press Space to select or deselect."
                                         >
-                                        <span><?= $day ?></span>
+                                        <span aria-hidden="true"><?= $day ?></span>
                                     </label>
                                 <?php endfor; ?>
                             </div>
-                        </div>
+                        </fieldset>
 
                         <div id="onTheFields">
                             <div class="onThe label">
@@ -402,31 +432,48 @@
                     </div>
                 </div>
 
-                <h2>Dynamic event</h2>
+                <h2 tabindex="0">Dynamic event</h2>
+
+                <p id="dynamic-help" class="sr-only">
+                    Press Space to enable or disable the dynamic event option.
+                </p>
 
                 <div class="containerRadio label">
+                    <p id="dynamic-help" class="sr-only">
+                        Press Space to enable or disable the dynamic event option.
+                    </p>
                     <input
                         type="checkbox"
                         id="dynamic"
                         name="dynamic"
                         value="1"
+                        aria-label="Dynamic event. Press Space to enable or disable."
                         {{ old('dynamic') ? 'checked' : '' }}
                     >
+
                     <label for="dynamic">Dynamic event</label>
                 </div>
 
                 <div id="dynamicEventBox" style="display:none;">
-                    <h3>Select route</h3>
+                    <h3 id="routeHeading" tabindex="0">Select route</h3>
+
+                    <p id="grid-help" class="sr-only">
+                        Use Tab to move between cells. Press Space or Enter to select or deselect a cell.
+                    </p>
 
                     <div
                         class="miniGrid"
-                        role="button"
-                        tabindex="0"
-                        aria-pressed="false"
+                        role="grid"
+                        aria-labelledby="routeHeading"
+                        aria-describedby="grid-help"
                     >
                         @foreach($cells as $cell)
                             <div
                                 class="miniGridCell {{ $cell->is_available ? 'available' : 'occupied' }}"
+                                role="gridcell"
+                                tabindex="0"
+                                aria-label="Cell {{ $cell->x_coordinate }}, {{ $cell->y_coordinate }}"
+                                aria-selected="false"
                                 data-grid-id="{{ $cell->id }}"
                                 data-x="{{ $cell->x_coordinate }}"
                                 data-y="{{ $cell->y_coordinate }}"
@@ -434,13 +481,12 @@
                             </div>
                         @endforeach
                     </div>
-
                     <input
                         type="hidden"
                         name="route_cells"
                         id="routeCells"
-                        aria-hidden="true"
                         value="{{ old('route_cells') }}"
+                        aria-hidden="true"
                     >
 
                     <x-formInput
@@ -456,6 +502,61 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.querySelectorAll('input[type="number"]').forEach((input) => {
+
+            const reader = document.getElementById(input.name + '-reader');
+
+            function updateReader() {
+                const value = Number(input.value);
+
+                if (isNaN(value) || !reader) {
+                    return;
+                }
+
+                const spokenText =
+                    value < 0
+                        ? `minus ${Math.abs(value)}`
+                        : `${value}`;
+
+                reader.textContent = spokenText;
+            }
+
+            input.addEventListener('input', updateReader);
+            input.addEventListener('change', updateReader);
+
+            input.addEventListener('focus', () => {
+                const value = Number(input.value);
+
+                if (isNaN(value) || !reader) {
+                    return;
+                }
+
+                reader.textContent = '';
+
+                setTimeout(() => {
+                    reader.textContent =
+                        value < 0
+                            ? `minus ${Math.abs(value)}`
+                            : `${value}`;
+                }, 100);
+            });
+
+            updateReader();
+        });
+        
+        const startDate = document.getElementById('startDate');
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Tab' && !event.shiftKey) {
+                const active = document.activeElement;
+                if (active.closest('.timepicker') || active.closest('[role="dialog"]')) {
+                    event.preventDefault();
+                    startDate.focus();
+                }
+            }
+        });
+    </script>
 
 </body>
 
