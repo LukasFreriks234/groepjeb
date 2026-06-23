@@ -18,7 +18,7 @@
         id="effectsReader"
         class="sr-only"
         role="status"
-        aria-live="assertive"
+        aria-live="polite"
         aria-atomic="true"
     ></div>
 
