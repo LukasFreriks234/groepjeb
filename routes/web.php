@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GridCellController;
+use App\Http\Controllers\SavedGridController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\FunctionController;
 use App\Http\Controllers\GroupController;
@@ -13,6 +14,8 @@ Route::post('/logout', [SessionController::class, 'destroy']);
 
 Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::get('/grid', [GridCellController::class, 'index']);
+    Route::get('/saved-grids', [SavedGridController::class, 'index'])->name('saved-grids.index');
+    Route::post('/saved-grids/load', [SavedGridController::class, 'load'])->name('saved-grids.load');
 
     Route::get('/overview', [FunctionController::class, 'index'])->name('functions.index');
     Route::get('/overview/{id}', [FunctionController::class, 'show'])->name('functions.show');
@@ -21,6 +24,7 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
 
     Route::get('/groups', [GroupController::class, 'index'])->name('groups.index');
 
+    Route::post('/grid/save', [GridCellController::class, 'saveGrid'])->name('grid.save');
     Route::post('/grid/assign-function', [GridCellController::class, 'assignFunction']);
     Route::post('/grid/move-function', [GridCellController::class, 'moveFunction']);
     Route::post('/grid/assign-event', [GridCellController::class, 'assignEvent']);

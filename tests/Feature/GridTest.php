@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Functions;
 use App\Models\GridCell;
+use App\Models\User;
 use Database\Seeders\GridCellSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class GridTest extends TestCase
@@ -61,5 +64,46 @@ class GridTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('City area');
+    }
+
+    /** @test */
+    public function test_a_named_grid_can_be_saved()
+    {
+        $user = User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+            'role' => 'admin',
+        ]);
+        $this->actingAs($user);
+
+        DB::table('categories')->insert(['category' => 'Safety']);
+
+        $function = Functions::create([
+            'name' => 'Park',
+            'image' => 'images/park.png',
+            'category' => 'Safety',
+        ]);
+
+        $cell = GridCell::create([
+            'x_coordinate' => 0,
+            'y_coordinate' => 0,
+            'is_available' => false,
+            'destination_type' => $function->id,
+        ]);
+
+        $response = $this->post('/grid/save', [
+            'name' => 'Test grid',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('status', 'Saved grid "Test grid".');
+
+        $this->assertDatabaseHas('saved_grid', [
+            'name' => 'Test grid',
+            'grid_cell_id' => $cell->id,
+            'item_type' => 'function',
+            'function_id' => $function->id,
+        ]);
     }
 }

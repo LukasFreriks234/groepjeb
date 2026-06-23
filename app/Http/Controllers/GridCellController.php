@@ -8,6 +8,7 @@ use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
 use App\Models\Event;
+use App\Models\SavedGrid;
 use Illuminate\Support\Facades\DB;
 use App\Models\EventgridCell;
 
@@ -60,6 +61,59 @@ class GridCellController extends Controller
             'effectTotals',
             'qualityOfLife'
         ));
+    }
+
+    public function saveGrid(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $cells = $this->cellsWithRelations()->get();
+        $timestamp = now()->toDateTimeString();
+        $rows = [];
+
+        foreach ($cells as $cell) {
+            if ($cell->cityFunction) {
+                $rows[] = [
+                    'name' => $validated['name'],
+                    'grid_cell_id' => $cell->id,
+                    'item_type' => 'function',
+                    'function_id' => $cell->cityFunction->id,
+                    'event_id' => null,
+                    'recurring_id' => null,
+                    'occurs_at' => null,
+                    'route_order' => null,
+                    'created_at' => $timestamp,
+                    'updated_at' => $timestamp,
+                ];
+            }
+
+            foreach ($cell->events as $event) {
+                $rows[] = [
+                    'name' => $validated['name'],
+                    'grid_cell_id' => $cell->id,
+                    'item_type' => 'event',
+                    'function_id' => null,
+                    'event_id' => $event->id,
+                    'recurring_id' => $event->recurring_id,
+                    'occurs_at' => null,
+                    'route_order' => $event->pivot?->route_order,
+                    'created_at' => $timestamp,
+                    'updated_at' => $timestamp,
+                ];
+            }
+        }
+
+        if (empty($rows)) {
+            return back()
+                ->withErrors(['name' => 'There is nothing on the grid to save yet.'])
+                ->withInput();
+        }
+
+        SavedGrid::insert($rows);
+
+        return back()->with('status', sprintf('Saved grid "%s".', $validated['name']));
     }
 
     public function assignFunction(Request $request)

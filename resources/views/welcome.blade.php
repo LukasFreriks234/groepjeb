@@ -24,6 +24,33 @@
 
     <div class="container">
         <div class="gridSection">
+            <div class="gridSavePanel">
+                <form method="POST" action="{{ route('grid.save') }}" class="gridSaveForm">
+                    @csrf
+
+                    <label for="savedGridName">Saved grid name</label>
+                    <input
+                        id="savedGridName"
+                        type="text"
+                        name="name"
+                        value="{{ old('name') }}"
+                        placeholder="Spring layout"
+                        maxlength="255"
+                        required
+                    >
+
+                    <button type="submit">Save grid</button>
+                </form>
+
+                @if (session('status'))
+                    <p class="gridSaveMessage">{{ session('status') }}</p>
+                @endif
+
+                @error('name')
+                    <p class="gridSaveError">{{ $message }}</p>
+                @enderror
+            </div>
+
             <x-grid :cells="$cells" :categories="$categories" />
         </div>
 

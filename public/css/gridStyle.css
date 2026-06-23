@@ -2,6 +2,61 @@
     display: block;
 }
 
+.gridSavePanel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.gridSaveForm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: end;
+}
+
+.gridSaveForm label {
+    font-weight: bold;
+}
+
+.gridSaveForm input {
+    min-width: 220px;
+    padding: 10px 12px;
+    border: 2px solid black;
+    background: white;
+    color: black;
+    font: inherit;
+}
+
+.gridSaveForm button {
+    padding: 10px 16px;
+    border: 2px solid black;
+    background: black;
+    color: white;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.gridSaveForm button:hover,
+.gridSaveForm button:focus {
+    background: #333;
+}
+
+.gridSaveMessage,
+.gridSaveError {
+    font-weight: bold;
+}
+
+.gridSaveMessage {
+    color: #006400;
+}
+
+.gridSaveError {
+    color: #b00020;
+}
+
 .citySection {
     width: 100%;
     max-width: 100%;
