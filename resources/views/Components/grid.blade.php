@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> dfa503fc0d83576676e58e278dbbae71ea0de7a2
 @props(['cells', 'categories'])
 
 @php
