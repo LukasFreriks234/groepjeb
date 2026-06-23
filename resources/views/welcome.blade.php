@@ -10,6 +10,7 @@
 <script src="{{ asset('js/delete.js') }}" defer></script>
 <script src="{{ asset('js/switchFunctionEvent.js') }}" defer></script>
 <script src="{{ asset('js/mainroads.js') }}" defer></script>
+<script src="{{ asset('js/simulationTimer.js') }}" defer></script>
 
 <link href="{{ asset('css/functionTableStyle.css') }}" type="text/css" rel="stylesheet"/>
 <link href="{{ asset('css/gridStyle.css') }}" type="text/css" rel="stylesheet"/>
@@ -162,7 +163,7 @@
 </div>
 
 <script>
-    // // Day/Night: smoothly transition blues based on simulation time
+    // Day/Night: smoothly transition blues based on simulation time
     // function lerpColor(a, b, t) {
     //     t = Math.max(0, Math.min(1, t));
     //     var ah = parseInt(a.replace('#', ''), 16);
