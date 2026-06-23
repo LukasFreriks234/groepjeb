@@ -31,5 +31,14 @@ class UserSeeder extends Seeder
             'email' => 'test@admin.com',
             'password' => 'test'
         ]);
+
+        User::updateOrCreate([
+            'email' => 'test@policymaker.com',
+        ], [
+            'name' => 'Test policy maker',
+            'role' => 'policymaker',
+            'email' => 'test@policymaker.com',
+            'password' => 'test'
+        ]);
     }
 }

@@ -11,7 +11,7 @@ Route::get('/', [SessionController::class, 'create'])->name('login');
 Route::post('/', [SessionController::class, 'store']);
 Route::post('/logout', [SessionController::class, 'destroy']);
 
-Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
+Route::middleware(['auth', 'role:cityplanner,admin,policymaker'])->group(function () {
     Route::get('/grid', [GridCellController::class, 'index'])->name('grid.index');
 
     Route::get('/grid/export-pdf', [GridCellController::class, 'exportPdf'])
