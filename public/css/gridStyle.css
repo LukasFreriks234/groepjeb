@@ -207,7 +207,7 @@
     z-index: 1000;
 }
 
-.gridEventImage {
+.gridEventImage, .gridEventDynamicImage {
     width: 28px;
     height: 28px;
     object-fit: contain;
@@ -223,13 +223,13 @@
     touch-action: none;
 }
 
-.gridEventImage:focus,
-.gridEventImage:focus-visible {
+.gridEventImage:focus, .gridEventDynamicImage:focus
+.gridEventImage:focus-visible, .gridEventDynamicImage:focus-visible {
     outline: 3px solid black;
     outline-offset: 3px;
 }
 
-.gridEventImage:active {
+.gridEventImage:active{
     cursor: grabbing;
 }
 

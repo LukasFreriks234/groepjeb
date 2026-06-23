@@ -366,7 +366,7 @@ function enableDrag() {
     const eventItems = document.querySelectorAll("#eventsList li");
 
     eventItems.forEach((item) => {
-        item.setAttribute("draggable", "true");
+        //item.setAttribute("draggable", "true");
         item.setAttribute("tabindex", item.getAttribute("tabindex") || "0");
         item.setAttribute("role", item.getAttribute("role") || "button");
 

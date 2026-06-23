@@ -14,25 +14,9 @@
             <a
                 href="{{ route('functions.index') }}"
                 class="navbar-button"
-                @if(request()->routeIs('functions.index')) aria-current="page" @endif
+                @if(request()->routeIs('functions.*', 'overview.groups', 'groups.*', 'events.*')) aria-current="page" @endif
             >
-                Functions
-            </a>
-        </li>
-
-        <li>
-            <a href="{{ route('groups.index') }}" class="navbar-button">
-                Groups
-            </a>
-        </li>
-
-        <li>
-            <a
-                href="{{ route('events.create') }}"
-                class="navbar-button"
-                @if(request()->routeIs('events.create')) aria-current="page" @endif
-            >
-                Create Event
+                Overview
             </a>
         </li>
 
@@ -69,6 +53,7 @@
                 </div>
 
                 <div class="navbar-clock-divider" aria-hidden="true"></div>
+                <span class="navbar-clock-label">Time</span>
 
                 <div class="navbar-clock-content">
                     <div class="navbar-clock-ring" aria-hidden="true">
@@ -82,7 +67,6 @@
                         </div>
                     </div>
 
-                    <span class="navbar-clock-range">/ 24:00</span>
                 </div>
 
                 <div class="navbar-date-display" aria-live="polite" aria-atomic="true">

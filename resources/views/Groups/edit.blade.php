@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <title>Edit Group</title>
     <link href="{{ asset('css/group.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/navbarStyle.css') }}" type="text/css" rel="stylesheet" />
 </head>
 
 <body>
+    <x-navbar />
 
     <div class="group-page">
 

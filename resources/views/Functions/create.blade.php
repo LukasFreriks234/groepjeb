@@ -7,10 +7,12 @@
     <title>Create Function</title>
 
     <link rel="stylesheet" href="{{ asset('css/editStyle.css') }}">
+    <link href="{{ asset('css/navbarStyle.css') }}" type="text/css" rel="stylesheet" />
     <script src="{{ asset('js/functionForm.js') }}" defer></script>
 </head>
 
 <body>
+    <x-navbar />
     <h1>Create Function</h1>
 
     <div class="event-container">

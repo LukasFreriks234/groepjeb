@@ -9,9 +9,11 @@
 
     <link rel="stylesheet"
           href="{{ asset('css/editStyle.css') }}">
+    <link href="{{ asset('css/navbarStyle.css') }}" type="text/css" rel="stylesheet" />
 </head>
 
 <body>
+    <x-navbar />
 
 <h1>Edit Function</h1>
 

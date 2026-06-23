@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Overview</title>
+    <title>Overview - Functions</title>
 
     <link href="{{ asset('css/overviewFunctionStyle.css') }}" type="text/css" rel="stylesheet" />
     <link href="{{ asset('css/navbarStyle.css') }}" type="text/css" rel="stylesheet" />
@@ -16,82 +16,107 @@
     <x-navbar />
 
     <div class="overviewContent">
+        <nav class="overviewTabs" aria-label="Overview navigation">
+            <button class="createButton">
+                <a href="{{ route('functions.index') }}" class="overviewTab active" aria-current="page">
+                    Functions
+                </a>
+            </button>
+            <button class="createButton">
+                <a href="{{ route('groups.index') }}" class="overviewTab">
+                    Groups
+                </a>
+            </button>
+            <button class="createButton">
+                <a href="{{ route('events.index') }}" class="overviewTab">
+                    Events
+                </a>
+            </button>
+        </nav>
+
         <div class="topbar">
             <h1>All functions:</h1>
 
             @auth
                 @if(auth()->user()->role === 'admin')
                     <a href="{{ route('functions.create') }}">
-                        <button class="createButton">Create function</button>
+                        <button class="createButton" type="button">
+                            Create function
+                        </button>
                     </a>
                 @endif
             @endauth
         </div>
 
         <h2>Categories</h2>
-        <div class="category">
-            <input type="text" id="myInput" placeholder="Search for names.."><br>
 
-            <?php 
+        <div class="category">
+            <input type="text" id="myInput" placeholder="Search for names.." aria-label="Search functions"><br>
+
+            @php
                 $arrCategories = $categories->toArray();
                 $arrCategorie = array_column($arrCategories, 'category');
                 array_multisort($arrCategorie, SORT_ASC, $arrCategories);
                 $i = 1;
-            ?>
+            @endphp
 
             <div class="categoryFilterContainer">
                 @foreach($arrCategories as $category)
                     <div class="categoryFilter">
-                        <input 
-                            type="checkbox" 
-                            id="category{{ $i }}" 
-                            class="functionFilter" 
-                            name="category{{ $i }}"
-                            value="{{ $category['category'] }}"
-                        >
-                        <label for="category{{ $i }}">{{ $category['category'] }}</label><br>
-                        <?php $i++; ?>
+                        <input type="checkbox" id="category{{ $i }}" class="functionFilter" name="category{{ $i }}"
+                            value="{{ $category['category'] }}">
+
+                        <label for="category{{ $i }}">
+                            {{ $category['category'] }}
+                        </label><br>
+
+                        @php
+                            $i++;
+                        @endphp
                     </div>
                 @endforeach
             </div>
         </div>
 
-        <?php 
+        @php
             $arrFunctions = $functions->toArray();
             $arrFunctionName = array_column($arrFunctions, 'name');
             $arrFunctionCategory = array_column($arrFunctions, 'category');
-            array_multisort($arrFunctionCategory, SORT_ASC, $arrFunctionName, SORT_ASC, $arrFunctions);
-        ?>
+
+            array_multisort(
+                $arrFunctionCategory,
+                SORT_ASC,
+                $arrFunctionName,
+                SORT_ASC,
+                $arrFunctions
+            );
+        @endphp
 
         <h2>Functions</h2>
 
         <ul id="functionsList">
             @foreach($arrFunctions as $function)
-                <a href="{{ route('functions.show', $function['id']) }}" class="noStyle" aria-label="function {{ $function['name'] }} in category {{ $function['category'] }}">
-                    <li 
-                        id="function{{ $function['id'] }}" 
-                        class="functionItem" 
-                        draggable="true"
-                        data-function-id="{{ $function['id'] }}"
-                        data-category="{{ $function['category'] }}"
-                    >
+                <li id="function{{ $function['id'] }}" class="functionItem" draggable="true"
+                    data-function-id="{{ $function['id'] }}" data-category="{{ $function['category'] }}">
+                    <a href="{{ route('functions.show', $function['id']) }}" class="noStyle"
+                        aria-label="Function {{ $function['name'] }} in category {{ $function['category'] }}">
                         <div class="functionNameImage">
                             <div class="functionImage">
-                                <img 
-                                    src="{{ asset($function['image']) }}" 
-                                    alt="{{ $function['name'] }}"
-                                >
+                                <img src="{{ asset($function['image']) }}" alt="{{ $function['name'] }}">
                             </div>
 
                             <div>
-                                <p class="functionName">{{ $function['name'] }}</p>
+                                <p class="functionName">
+                                    {{ $function['name'] }}
+                                </p>
+
                                 <p class="functionCategory" name="{{ $function['category'] }}">
                                     {{ $function['category'] }}
                                 </p>
                             </div>
                         </div>
-                    </li>
-                </a>
+                    </a>
+                </li>
             @endforeach
         </ul>
     </div>

@@ -142,3 +142,43 @@ body {
     color: inherit;
     text-decoration: none;
 }
+
+.overviewTabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.overviewTab {
+    width: 180px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 8px;
+    background: rgb(103, 143, 156);
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.overviewTab:hover {
+    background: lightblue;
+    color: black;
+}
+
+.overviewTab:focus,
+.overviewTab:focus-visible {
+    outline: 3px solid black;
+    outline-offset: 2px;
+}
+
+.overviewTab.active {
+    border: 3px solid black;
+    background: rgb(103, 143, 156);
+}

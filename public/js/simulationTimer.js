@@ -5,6 +5,7 @@
     const STORAGE_KEY_DATE = 'simulation_date';
     const STORAGE_KEY_TIMESTAMP = 'simulation_last_tick';
     const STORAGE_KEY_SPEED = 'simulation_speed';
+    const STORAGE_KEY_PAUSED = 'simulation_paused';
 
     const START_DATE = new Date(2026, 0, 1); // January 1, 2026
 
@@ -27,6 +28,7 @@
     let dayOffset = 0; // Number of days since START_DATE
     let timerId = null;
     let minutesPerTick = 24;
+    let wasPaused = false;
     let currentYear = 2026;
     let currentMonth = 0; // 0 = January
     let calendarViewYear = 2026;
@@ -152,10 +154,12 @@
         const savedDate = localStorage.getItem(STORAGE_KEY_DATE);
         const savedTimestamp = localStorage.getItem(STORAGE_KEY_TIMESTAMP);
         const savedSpeed = localStorage.getItem(STORAGE_KEY_SPEED);
+        const savedPaused = localStorage.getItem(STORAGE_KEY_PAUSED);
 
         elapsedMinutes = savedElapsed !== null ? Number.parseInt(savedElapsed, 10) || 0 : 0;
         dayOffset = savedDate !== null ? Number.parseInt(savedDate, 10) || 0 : 0;
         minutesPerTick = savedSpeed !== null ? Number.parseInt(savedSpeed, 10) || 24 : 24;
+        wasPaused = savedPaused === 'true';
 
         // Clamp speed to a sane range
         if (minutesPerTick < 1) minutesPerTick = 1;
@@ -188,6 +192,7 @@
         localStorage.setItem(STORAGE_KEY_DATE, String(dayOffset));
         localStorage.setItem(STORAGE_KEY_TIMESTAMP, String(Date.now()));
         localStorage.setItem(STORAGE_KEY_SPEED, String(minutesPerTick));
+        localStorage.setItem(STORAGE_KEY_PAUSED, String(timerId === null));
     }
 
     function formatTime(totalMinutes) {
@@ -209,7 +214,7 @@
         const currentMinute = elapsedMinutes % CYCLE_LENGTH_MINUTES;
         const progress = (currentMinute / CYCLE_LENGTH_MINUTES) * 100;
         const progressRatio = progress / 100;
-        setDynamicProgress(elapsedMinutes);
+        setDynamicProgress(dayOffset*CYCLE_LENGTH_MINUTES+elapsedMinutes);
 
         if (timeDisplay) {
             timeDisplay.textContent = formatTime(elapsedMinutes);
@@ -343,6 +348,7 @@
                 pauseButton.setAttribute('aria-label', 'Pause the simulation');
             }
         }
+        saveState();
     }
 
     window.simulationClock = {
@@ -514,5 +520,14 @@
 
     syncCalendarViewToCurrentDate();
 
-    window.simulationClock.start();
+    // If was paused before page navigation, don't start the timer and show play button
+    if (wasPaused) {
+        timerId = null;
+        if (pauseButton) {
+            pauseButton.textContent = '\u25B6';
+            pauseButton.setAttribute('aria-label', 'Resume the simulation');
+        }
+    } else {
+        window.simulationClock.start();
+    }
 })();
