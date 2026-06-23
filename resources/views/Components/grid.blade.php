@@ -7,10 +7,10 @@
 
 <div class="simulationContainer">
     <main class="citySection">
-
         <a
             href="{{ route('grid.export-pdf') }}"
             class="navButton"
+            aria-label="Export the current simulation to a PDF report"
         >
             Save as PDF
         </a>
@@ -110,7 +110,7 @@
                                     data-event-name="{{ $event->name }}"
                                     data-from-cell-id="{{ $cell->id }}"
                                     event-speed="{{ $event->speed }}"
-                                    route-state="{{ $order }}"
+                                    route-state="{{ $order ?? 0 }}"
                                     dynamic-event="{{ $event->dynamic }}"
                                 >
                             @endforeach

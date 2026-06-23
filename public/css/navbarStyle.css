@@ -1,3 +1,8 @@
+:root {
+    --day-blue: lightblue;
+    --night-blue: #5072a4;
+}
+
 body {
     margin: 0;
     padding: 0;

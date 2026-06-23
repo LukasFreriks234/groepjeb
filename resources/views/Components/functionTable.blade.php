@@ -97,13 +97,14 @@
                 $eventType = $event->recurring_id ? 'recurring' : 'one-off';
                 $eventTypeLabel = $event->recurring_id ? 'Recurring' : 'One-off';
                 $isDynamic = $event->dynamic ? '1' : '0';
+                $isGlobal = $event->is_global ?? false;
             @endphp
 
             @if($isDynamic)
             <li 
                 tabindex="0"
                 id="event{{ $event->id }}" 
-                class="dynamicEventItem"
+                class="functionItem{{ $isGlobal ? ' event-is-global' : '' }}"
                 data-event-id="{{ $event->id }}"
                 data-event-name="{{ $event->name }}"
                 data-type="{{ $eventType }}"
@@ -122,10 +123,10 @@
                 data-event-name="{{ $event->name }}"
                 data-type="{{ $eventType }}"
                 data-dynamic="{{ $isDynamic }}"
+                data-global="{{ $isGlobal ? '1' : '0' }}"
                 role="button"
-                aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
-            >           
-            @endif
+                aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }}{{ $isGlobal ? ', currently active as global event' : '' }} to place it in the grid."
+            >
                 <div class="functionImage">
                     @if($isDynamic)
                     <img 
@@ -146,6 +147,7 @@
                     <span class="slider round"></span>
                 </label>
             </li>
+            @endif
         @endforeach
     </ul>
 </div>

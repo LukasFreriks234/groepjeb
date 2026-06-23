@@ -40,9 +40,29 @@ class Effects extends Model
 
         self::addFunctionEffects($cells, $categories, $effects, $effectTotals);
         self::addEventEffects($cells, $categories, $effectTotals);
+        self::addGlobalEventEffects($categories, $effectTotals);
         self::addRelationshipEffects($cells, $categories, $effectTotals);
 
         return $effectTotals;
+    }
+
+    private static function addGlobalEventEffects($categories, &$effectTotals)
+    {
+        $globalEvents = Event::with('effects')->where('is_global', true)->get();
+
+        foreach ($globalEvents as $event) {
+            foreach ($categories as $category) {
+                $categoryName = $category->category;
+
+                $eventEffect = $event->effects->firstWhere('category_name', $categoryName);
+
+                if (!$eventEffect) {
+                    continue;
+                }
+
+                $effectTotals[$categoryName] += (int) $eventEffect->effect;
+            }
+        }
     }
 
     private static function addFunctionEffects($cells, $categories, $effects, &$effectTotals)

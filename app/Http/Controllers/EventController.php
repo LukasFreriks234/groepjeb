@@ -126,6 +126,7 @@ class EventController extends Controller
                 'length_unit' => $request->lengthUnit,
                 'dynamic' => $request->boolean('dynamic'),
                 'speed' => $request->boolean('dynamic') ? $request->speed : null,
+                'is_global' => $request->boolean('is_global'),
             ]);
 
             $this->storeEventEffects($event, $request);
