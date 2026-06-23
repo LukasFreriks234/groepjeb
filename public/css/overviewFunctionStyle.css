@@ -193,3 +193,12 @@ body {
     border: 3px solid black;
     background: rgb(103, 143, 156);
 }
+
+.createFunctionLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    color: black;
+    text-decoration: none;
+}

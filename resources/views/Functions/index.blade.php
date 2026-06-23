@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Overview - Functions</title>
 
-    <link href="{{ asset('css/overviewFunctionStyle.css') }}" type="text/css" rel="stylesheet" />
-    <link href="{{ asset('css/navbarStyle.css') }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset('css/overviewFunctionStyle.css') }}" type="text/css" rel="stylesheet">
+    <link href="{{ asset('css/navbarStyle.css') }}" type="text/css" rel="stylesheet">
 
-    <script type="text/javascript" src="{{ asset('js/functionTable.js') }}" defer></script>
+    <script src="{{ asset('js/functionTable.js') }}" defer></script>
 </head>
 
 <body>
@@ -17,21 +17,17 @@
 
     <div class="overviewContent">
         <nav class="overviewTabs" aria-label="Overview navigation">
-            <button class="createButton">
-                <a href="{{ route('functions.index') }}" class="overviewTab active" aria-current="page">
-                    Functions
-                </a>
-            </button>
-            <button class="createButton">
-                <a href="{{ route('groups.index') }}" class="overviewTab">
-                    Groups
-                </a>
-            </button>
-            <button class="createButton">
-                <a href="{{ route('events.index') }}" class="overviewTab">
-                    Events
-                </a>
-            </button>
+            <a href="{{ route('functions.index') }}" class="overviewTab active" aria-current="page">
+                Functions
+            </a>
+
+            <a href="{{ route('groups.index') }}" class="overviewTab">
+                Groups
+            </a>
+
+            <a href="{{ route('events.index') }}" class="overviewTab">
+                Events
+            </a>
         </nav>
 
         <div class="topbar">
@@ -39,10 +35,8 @@
 
             @auth
                 @if(auth()->user()->role === 'admin')
-                    <a href="{{ route('functions.create') }}">
-                        <button class="createButton" type="button">
-                            Create function
-                        </button>
+                    <a href="{{ route('functions.create') }}" class="createButton createFunctionLink">
+                        Create function
                     </a>
                 @endif
             @endauth
@@ -51,7 +45,12 @@
         <h2>Categories</h2>
 
         <div class="category">
-            <input type="text" id="myInput" placeholder="Search for names.." aria-label="Search functions"><br>
+            <input
+                type="text"
+                id="myInput"
+                placeholder="Search for names.."
+                aria-label="Search functions"
+            ><br>
 
             @php
                 $arrCategories = $categories->toArray();
@@ -63,8 +62,13 @@
             <div class="categoryFilterContainer">
                 @foreach($arrCategories as $category)
                     <div class="categoryFilter">
-                        <input type="checkbox" id="category{{ $i }}" class="functionFilter" name="category{{ $i }}"
-                            value="{{ $category['category'] }}">
+                        <input
+                            type="checkbox"
+                            id="category{{ $i }}"
+                            class="functionFilter"
+                            name="category{{ $i }}"
+                            value="{{ $category['category'] }}"
+                        >
 
                         <label for="category{{ $i }}">
                             {{ $category['category'] }}
@@ -96,13 +100,21 @@
 
         <ul id="functionsList">
             @foreach($arrFunctions as $function)
-                <li id="function{{ $function['id'] }}" class="functionItem" draggable="true"
-                    data-function-id="{{ $function['id'] }}" data-category="{{ $function['category'] }}">
-                    <a href="{{ route('functions.show', $function['id']) }}" class="noStyle"
-                        aria-label="Function {{ $function['name'] }} in category {{ $function['category'] }}">
+                <li
+                    id="function{{ $function['id'] }}"
+                    class="functionItem"
+                    draggable="true"
+                    data-function-id="{{ $function['id'] }}"
+                    data-category="{{ $function['category'] }}"
+                >
+                    <a
+                        href="{{ route('functions.show', $function['id']) }}"
+                        class="noStyle"
+                        aria-label="Function {{ $function['name'] }} in category {{ $function['category'] }}"
+                    >
                         <div class="functionNameImage">
                             <div class="functionImage">
-                                <img src="{{ asset($function['image']) }}" alt="{{ $function['name'] }}">
+                                <img src="{{ asset($function['image']) }}" alt="">
                             </div>
 
                             <div>
@@ -110,7 +122,7 @@
                                     {{ $function['name'] }}
                                 </p>
 
-                                <p class="functionCategory" name="{{ $function['category'] }}">
+                                <p class="functionCategory">
                                     {{ $function['category'] }}
                                 </p>
                             </div>
