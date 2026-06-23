@@ -16,16 +16,16 @@
     <link href="{{ asset('css/effectTableStyle.css') }}" type="text/css" rel="stylesheet"/>
     <link href="{{ asset('css/layout.css') }}" type="text/css" rel="stylesheet"/>
     <link href="{{ asset('css/navbarStyle.css') }}" type="text/css" rel="stylesheet"/>
-    {{-- <link href="{{ asset('css/functionEventsTableStyle.css') }}" type="text/css" rel="stylesheet"/> --}}
+    <link href="{{ asset('css/functionEventsTableStyle.css') }}" type="text/css" rel="stylesheet"/> 
 
     <title>Metropolis</title>
 </head>
 <body>
-    <x-navbar />
+    <x-navbar/>
 
     <div class="container">
         <div class="gridSection">
-            <x-grid :cells="$cells" :categories="$categories" />
+            <x-grid :cells="$cells" :categories="$categories"/>
 
             <button id="toggle-mainroad-button">
                 Show Main Road Overlay
