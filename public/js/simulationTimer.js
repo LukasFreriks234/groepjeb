@@ -530,4 +530,201 @@
     } else {
         window.simulationClock.start();
     }
-})();
+
+
+
+
+    const recurringEvents = document.querySelectorAll('[data-type="recurring"]');
+    recurringEvents.forEach((eventItem) => {
+        eventItem.addEventListener('click', () => {
+            if (eventItem.getAttribute('active') === 'true') {
+                const startDate = new Date(document.querySelector(".navbar-date-display-value").textContent);
+                const frequency = eventItem.dataset.frequency;
+                const amount = Number(eventItem.dataset.amount);
+                console.log(frequency, amount);
+
+                if (frequency == 'daily') {
+                    const nextDay = new Date(startDate);
+                    nextDay.setDate(nextDay.getDate() + amount);
+                    console.log(nextDay);
+                }
+
+                else if (frequency == 'weekly') {
+                    // amount is not correctly implemented
+                    const weekdays = JSON.parse(eventItem.dataset.weekly || "[]")
+                        .map(d => d.toLowerCase());
+
+                    const weekdayMap = {
+                        sunday: 0,
+                        monday: 1,
+                        tuesday: 2,
+                        wednesday: 3,
+                        thursday: 4,
+                        friday: 5,
+                        saturday: 6
+                    };
+
+                    const currentDay = startDate.getDay();
+
+                    let minDiff = Infinity;
+
+                    for (const dayName of weekdays) {
+                        const targetDay = weekdayMap[dayName];
+
+                        if (targetDay === undefined) continue;
+
+                        let diff = targetDay - currentDay;
+
+                        if (diff < 0) diff += 7;
+
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                        }
+                    }
+
+                    const nextDate = new Date(startDate);
+                    nextDate.setDate(startDate.getDate() + minDiff);
+
+                    console.log(nextDate);
+                }
+
+                else if (frequency == "monthly") {
+                    const days = JSON.parse(eventItem.dataset.dateNumber || "[]")
+                        .map(Number)
+                        .filter(n => Number.isFinite(n) && n > 0);
+
+                    if (days.length == 0) {
+                        // amount is not correctly implemented
+                        console.log('numeral');
+                        const ordinals = JSON.parse(eventItem.dataset.ordinalNumber || "[]");
+                        const weekdays = JSON.parse(eventItem.dataset.weekday || "[]");
+
+                        console.log(ordinals, weekdays)
+
+                        const rules = ordinals
+                            .map((o, i) => ({
+                                ordinal: o,
+                                weekday: weekdays[i]
+                            }))
+                            .filter(r => r.ordinal && r.weekday);
+
+                        const weekdayMap = {
+                            sunday: 0,
+                            monday: 1,
+                            tuesday: 2,
+                            wednesday: 3,
+                            thursday: 4,
+                            friday: 5,
+                            saturday: 6
+                        };
+
+                        const ordinalMap = {
+                            first: 0,
+                            second: 1,
+                            third: 2,
+                            fourth: 3,
+                            fifth: 4
+                        };
+
+                        function getWeekdayMatches(year, month, weekday) {
+                            const result = [];
+                            const date = new Date(year, month, 1);
+
+                            while (date.getMonth() === month) {
+                                if (date.getDay() === weekdayMap[weekday]) {
+                                    result.push(new Date(date));
+                                }
+                                date.setDate(date.getDate() + 1);
+                            }
+
+                            return result;
+                        }
+
+                        const start = new Date(startDate);
+                        const year = start.getFullYear();
+                        const month = start.getMonth();
+
+                        let bestDate = null;
+
+                        for (const rule of rules) {
+
+                            const matches = getWeekdayMatches(year, month, rule.weekday);
+
+                            let target;
+
+                            if (rule.ordinal === "last") {
+                                target = matches.at(-1);
+                            }
+                            else if (rule.ordinal === "next to last") {
+                                target = matches.at(-2);
+                            }
+                            else {
+                                target = matches[ordinalMap[rule.ordinal]];
+                            }
+
+                            if (target && target < start) {
+
+                                const nextMatches = getWeekdayMatches(year, month + 1, rule.weekday);
+
+                                if (rule.ordinal === "last") {
+                                    target = nextMatches.at(-1);
+                                }
+                                else if (rule.ordinal === "next to last") {
+                                    target = nextMatches.at(-2);
+                                }
+                                else {
+                                    target = nextMatches[ordinalMap[rule.ordinal]];
+                                }
+                            }
+
+                            if (!bestDate || (target && target < bestDate)) {
+                                bestDate = target;
+                            }
+                        }
+
+                        console.log(bestDate);
+                    }
+                    else {
+                        // amount is not correctly implemented
+                        console.log('dates')
+
+                        const currentDay = startDate.getDate();
+
+                        let bestDiff = Infinity;
+                        let bestDay = null;
+
+                        for (const day of days) {
+
+                            let diff = day - currentDay;
+
+                            if (diff < 0) diff += 31;
+
+                            if (diff < bestDiff) {
+                                bestDiff = diff;
+                                bestDay = day;
+                            }
+                        }
+
+                        const nextDate = new Date(startDate);
+                        nextDate.setMonth(startDate.getMonth() + (bestDiff >= 31 ? 1 : 0));
+                        nextDate.setDate(bestDay);
+
+                        console.log(nextDate);
+                    }
+                }
+
+                else if (frequency == 'yearly') {
+                    const nextDate = new Date(startDate);
+
+                    nextDate.setFullYear(startDate.getFullYear() + amount);
+
+                    console.log(nextDate);
+                }
+            }
+        }
+        })
+})
+let simDate = new Date(document.querySelector(".navbar-date-display-value").textContent);
+console.log(simDate);
+}) ();
+

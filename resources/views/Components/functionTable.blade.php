@@ -156,6 +156,12 @@
                 data-type="{{ $eventType }}"
                 data-dynamic="{{ $isDynamic }}"
                 data-image="{{ $event->image_url }}"
+                data-frequency="{{ $event->recurring?->frequency }}"
+                data-amount="{{ $event->recurring?->amount }}"
+                data-weekly='@json($event->recurring?->weekly?->pluck("weekday"))'
+                data-date-number='@json($event->recurring?->monthly?->pluck("day_of_month") ?? [])'
+                data-ordinal-number='@json($event->recurring?->monthly?->pluck('ordinal_number') ?? [])'
+                data-weekday='@json($event->recurring?->monthly?->pluck('weekday') ?? [])'
                 role="button"
                 active="false"
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
@@ -171,6 +177,12 @@
                 data-type="{{ $eventType }}"
                 data-dynamic="{{ $isDynamic }}"
                 data-image="{{ $event->image_url }}"
+                data-frequency="{{ $event->recurring?->frequency }}"
+                data-amount="{{ $event->recurring?->amount }}"
+                data-weekly='@json($event->recurring?->weekly?->pluck("weekday"))'
+                data-ordinal-number='@json($event->recurring?->monthly?->pluck('ordinal_number') ?? [])'
+                data-weekday='@json($event->recurring?->monthly?->pluck('weekday') ?? [])'
+                data-weekday="@json($event->recurring?->monthly?->pluck("weekday") ?? [])"
                 role="button"
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
             >           
