@@ -1669,3 +1669,75 @@ function announceKeyboardStatus(message) {
         status.textContent = message;
     }, 50);
 }
+
+
+
+
+const recurringEvents = document.querySelectorAll('[data-type="recurring"]');
+const gridCells = document.querySelectorAll('.gridCell');
+
+recurringEvents.forEach((eventItem) => {
+
+    eventItem.addEventListener('click', () => {
+        if (eventItem.getAttribute('active') === 'false') {
+            eventItem.setAttribute('active', 'true');
+            eventItem.style.backgroundColor = 'aquamarine';
+
+            const cell = document.querySelector(
+                '.gridCell[data-x="0"][data-y="0"]'
+            );
+
+            saveEventInGrid(cell, {
+                eventId: eventItem.dataset.eventId,
+                imageSrc: eventItem.dataset.image,
+                imageAlt: eventItem.dataset.name,
+                source: "eventLibrary",
+            });
+
+
+        } else {
+            eventItem.setAttribute('active', 'false');
+            eventItem.style.backgroundColor = 'lightblue';
+
+            const image = document.querySelector(
+                `.gridEventImage[data-event-id="${eventItem.dataset.eventId}"]`
+            );
+
+            if (image) {
+                removeEventFromGrid(image.dataset.fromCellId, eventItem.dataset.eventId);
+                removeGridEventImage(image.dataset.fromCellId, eventItem.dataset.eventId);
+            }
+        }
+    });
+
+    eventItem.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('eventId', eventItem.dataset.eventId);
+    });
+
+});
+
+gridCells.forEach((gridCell) => {
+
+    gridCell.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    gridCell.addEventListener('drop', (e) => {
+        e.preventDefault();
+
+        const eventId = e.dataTransfer.getData('eventId');
+
+        const eventsList = document.querySelector('#eventsList');
+
+        const originalEvent = eventsList.querySelector(
+            `[data-event-id="${eventId}"]`
+        );
+
+        if (!originalEvent) return;
+
+        originalEvent.setAttribute('active', 'true');
+        originalEvent.style.backgroundColor = 'aquamarine';
+    });
+
+});
+

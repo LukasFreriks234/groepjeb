@@ -92,8 +92,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 `.eventItem[data-event-id="${eventId}"]`
             );
 
-            console.log(originalEvent);
-
             if (originalEvent) {
                 originalEvent.setAttribute("active", "false");
                 originalEvent.style.backgroundColor = "lightblue";

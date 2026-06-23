@@ -155,6 +155,7 @@
                 data-event-name="{{ $event->name }}"
                 data-type="{{ $eventType }}"
                 data-dynamic="{{ $isDynamic }}"
+                data-image="{{ $event->image_url }}"
                 role="button"
                 active="false"
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
@@ -169,6 +170,7 @@
                 data-event-name="{{ $event->name }}"
                 data-type="{{ $eventType }}"
                 data-dynamic="{{ $isDynamic }}"
+                data-image="{{ $event->image_url }}"
                 role="button"
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
             >           
