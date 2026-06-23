@@ -33,7 +33,7 @@ class CreateFunctionTest extends DuskTestCase
             ->type('Safety', '2')
             ->type('Services', '8')
             ->press('Create function')
-            ->pause(3000)
+            ->pause(2000)
 
             ->waitForText('The name field is required.')
             ->assertSee('The name field is required.')
