@@ -550,7 +550,6 @@
                 }
 
                 else if (frequency == 'weekly') {
-                    // amount is not correctly implemented
                     const weekdays = JSON.parse(eventItem.dataset.weekly || "[]")
                         .map(d => d.toLowerCase());
 
@@ -702,7 +701,6 @@
                         let bestDiff = Infinity;
                         let bestDay = null;
 
-                        // Find the next day in the current month
                         for (const day of days) {
                             let diff = day - currentDay;
 
@@ -715,13 +713,10 @@
                         const nextDate = new Date(startDate);
 
                         if (bestDay !== null) {
-                            // There is still a valid day this month
                             nextDate.setDate(bestDay);
                         } else {
-                            // Move to the next active month
                             nextDate.setMonth(nextDate.getMonth() + amount);
 
-                            // Pick the first configured day
                             nextDate.setDate(Math.min(...days));
                         }
 
