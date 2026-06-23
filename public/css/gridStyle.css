@@ -29,14 +29,49 @@
     min-height: 0;
 }
 
+/* Mainroads */
+.main-road-mode .main-road-icon {
+    display: block;
+}
+
+.main-road-icon {
+    display: none;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 20px;
+    height: 20px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.main-road-icon img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
+    max-width: 20px;
+    max-height: 20px;
+}
+
+.route-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(118, 117, 117, 0.45);
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* Alleen outline, geen kleurverandering */
 .gridCell:focus,
 .gridCell:focus-visible {
     outline: 3px solid black;
     outline-offset: -3px;
 }
 
-.gridCell img,
-.gridCell svg {
+.gridCell > img,
+.gridCell > svg {
     object-fit: contain;
     display: block;
 }

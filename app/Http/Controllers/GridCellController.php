@@ -9,13 +9,12 @@ use App\Models\Category;
 use App\Models\Effects;
 use App\Models\Event;
 use Illuminate\Support\Facades\DB;
-use App\Models\EventgridCell;
 
 class GridCellController extends Controller
 {
     private function cellsWithRelations()
     {
-        return GridCell::with(['cityFunction']);
+        return GridCell::with(['cityFunction', 'mainRoad']);
     }
 
     private function gridDynamicIdForCell(GridCell $cell)
@@ -28,7 +27,6 @@ class GridCellController extends Controller
             return $dynamicId;
         }
 
-        // Fallback: misschien bestaat de rij al op coördinaten, maar zonder koppeling
         $existing = DB::table('grid_dynamics')
             ->where('x_coordinate', $cell->x_coordinate)
             ->where('y_coordinate', $cell->y_coordinate)
@@ -38,7 +36,10 @@ class GridCellController extends Controller
         if ($existing) {
             DB::table('grid_dynamics')
                 ->where('id', $existing->id)
-                ->update(['grid_cell_id' => $cell->id, 'updated_at' => now()]);
+                ->update([
+                    'grid_cell_id' => $cell->id,
+                    'updated_at' => now(),
+                ]);
 
             return $existing->id;
         }
@@ -77,7 +78,12 @@ class GridCellController extends Controller
 
         $eventRows = DB::table('event_grid_cells')
             ->whereIn('grid_dynamics_id', $dynamicRows->pluck('id'))
-            ->get(['event_id', 'grid_dynamics_id', 'route_order', 'expires_at']);
+            ->get([
+                'event_id',
+                'grid_dynamics_id',
+                'route_order',
+                'expires_at',
+            ]);
 
         if ($eventRows->isEmpty()) {
             $cells->each(function ($cell) {
@@ -291,12 +297,16 @@ class GridCellController extends Controller
 
         $durationInSimulationMinutes = match ($event->length_unit) {
             'hours' => $eventLength * 60,
-            'days'  => $eventLength * 60 * 24,
+            'days' => $eventLength * 60 * 24,
             'weeks' => $eventLength * 60 * 24 * 7,
             default => $eventLength * 60,
         };
 
-        $durationInRealSeconds = max(1, $durationInSimulationMinutes / $simulationMinutesPerRealSecond);
+        $durationInRealSeconds = max(
+            1,
+            $durationInSimulationMinutes / $simulationMinutesPerRealSecond
+        );
+
         $expiresAt = now()->addSeconds($durationInRealSeconds);
 
         $existingRow = DB::table('event_grid_cells')
@@ -337,7 +347,12 @@ class GridCellController extends Controller
     public function checkExpiredEvents(Request $request)
     {
         $expired = DB::table('event_grid_cells')
-            ->join('grid_dynamics', 'event_grid_cells.grid_dynamics_id', '=', 'grid_dynamics.id')
+            ->join(
+                'grid_dynamics',
+                'event_grid_cells.grid_dynamics_id',
+                '=',
+                'grid_dynamics.id'
+            )
             ->whereNotNull('event_grid_cells.expires_at')
             ->where('event_grid_cells.expires_at', '<=', now())
             ->select(
@@ -353,11 +368,15 @@ class GridCellController extends Controller
                 ->whereIn('id', $expired->pluck('id'))
                 ->delete();
 
-            $expiredCellIds = $expired->pluck('grid_cell_id')->filter()->unique();
+            $expiredCellIds = $expired->pluck('grid_cell_id')
+                ->filter()
+                ->unique();
 
-            GridCell::whereIn('id', $expiredCellIds)->get()->each(function ($cell) {
-                $this->updateCellAvailability($cell);
-            });
+            GridCell::whereIn('id', $expiredCellIds)
+                ->get()
+                ->each(function ($cell) {
+                    $this->updateCellAvailability($cell);
+                });
         }
 
         $totals = $this->calculateTotals();
@@ -365,7 +384,7 @@ class GridCellController extends Controller
         return response()->json([
             'success' => true,
             'expiredEvents' => $expired,
-            'effectTotals'  => $totals['effectTotals'],
+            'effectTotals' => $totals['effectTotals'],
             'qualityOfLife' => $totals['qualityOfLife'],
         ]);
     }
@@ -441,7 +460,11 @@ class GridCellController extends Controller
 
         $categories = Category::all();
 
-        $effectTotals = Effects::calculateEffectTotals($cellsToCalculate, $categories);
+        $effectTotals = Effects::calculateEffectTotals(
+            $cellsToCalculate,
+            $categories
+        );
+
         $qualityOfLife = array_sum($effectTotals);
 
         return response()->json([

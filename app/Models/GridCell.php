@@ -29,4 +29,18 @@ class GridCell extends Model
             'event_id'         
         );
     }
+
+    public function mainRoad()
+    {
+        return $this->hasOne(MainRoad::class, 'grid_cell_id');
+    }
+
+    public function isBorder()
+    {
+        return
+            $this->x_coordinate == 0 ||
+            $this->x_coordinate == 3 ||
+            $this->y_coordinate == 0 ||
+            $this->y_coordinate == 2;
+    }
 }

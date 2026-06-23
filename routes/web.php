@@ -1,9 +1,11 @@
+```php
 <?php
 
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FunctionController;
 use App\Http\Controllers\GridCellController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\MainRoadController;
 use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +39,9 @@ Route::middleware(['auth', 'role:cityplanner,admin'])->group(function () {
     Route::post('/grid/remove-event', [GridCellController::class, 'removeEvent']);
     Route::post('/grid/neighbor-effects', [GridCellController::class, 'neighborEffects']);
     Route::post('/remove-function', [GridCellController::class, 'removeFunction']);
+
+    Route::post('/grid/main-road/{cell}', [MainRoadController::class, 'toggleMainRoad']);
+    Route::post('/mainroad/route', [MainRoadController::class, 'calculateRoute']);
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -45,3 +50,4 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/functions/restore', [FunctionController::class, 'restore'])->name('functions.restore');
     Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });
+```

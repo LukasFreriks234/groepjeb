@@ -2,7 +2,7 @@
     <button class="tabButton active" data-target="functionsTable">
         Functions
     </button>
-    <button class="tabButton" data-target="eventsTable">
+    <button id="tabButtonEvent" class="tabButton" data-target="eventsTable">
         Events
     </button>
 </div>

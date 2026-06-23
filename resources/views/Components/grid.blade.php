@@ -1,3 +1,4 @@
+```blade
 @props(['cells', 'categories'])
 
 @php
@@ -13,8 +14,8 @@
             Keyboard instructions: use Tab or Shift Tab to enter the grid. Inside the grid, use the arrow keys to move between cells. Select a function or event first, then press Enter or Space on a grid cell to place it. Use Tab to focus events or remove buttons inside a filled cell.
         </p>
 
-        <div 
-            class="metropolisGrid" 
+        <div
+            class="metropolisGrid"
             tabindex="0"
             aria-describedby="gridKeyboardInstructions"
             aria-rowcount="{{ $rows }}"
@@ -51,7 +52,7 @@
                 @endphp
 
                 <div
-                    class="gridCell {{ $cell->is_available ? 'available' : 'occupied' }}"
+                    class="gridCell {{ $cell->is_available ? 'available' : 'occupied' }} {{ $cell->mainRoad ? 'main-road' : '' }}"
                     data-id="{{ $cell->id }}"
                     data-x="{{ $cell->x_coordinate }}"
                     data-y="{{ $cell->y_coordinate }}"
@@ -94,6 +95,15 @@
                             @endforeach
                         </div>
                     @endif
+
+                    @if($cell->mainRoad)
+                        <div class="main-road-icon" aria-hidden="true">
+                            <img
+                                src="{{ asset('images/mainroad.png') }}"
+                                alt=""
+                            >
+                        </div>
+                    @endif
                 </div>
             @endforeach
         </div>
@@ -112,7 +122,7 @@
         aria-atomic="true"
     ></div>
 
-    <ul id="tooltipEffectsList" >
+    <ul id="tooltipEffectsList">
         @foreach($categories as $category)
             <li>
                 {{ $category->category }}:
@@ -128,3 +138,4 @@
         </li>
     </ul>
 </div>
+```

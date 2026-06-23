@@ -67,7 +67,10 @@ document.addEventListener("DOMContentLoaded", function () {
         button.innerHTML = "✕";
         button.className = "delete-btn";
         button.type = "button";
-        button.setAttribute("aria-label", `Remove ${getCellContentLabel(cell)} from this grid cell`);
+        button.setAttribute(
+            "aria-label",
+            `Remove ${getCellContentLabel(cell)} from this grid cell`
+        );
 
         cell.appendChild(button);
     }
@@ -128,7 +131,11 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateDeletedCell(cell) {
         removeVisualCellContent(cell);
 
-        cell.classList.remove("occupied", "selectedMobileCell", "keyboardSelected");
+        cell.classList.remove(
+            "occupied",
+            "selectedMobileCell",
+            "keyboardSelected"
+        );
         cell.classList.add("available");
 
         delete cell.dataset.category;
@@ -162,7 +169,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!id) {
             console.error("Grid cell id ontbreekt");
-            announceDeleteStatus("Could not remove the content because the grid cell id is missing.");
+            announceDeleteStatus(
+                "Could not remove the content because the grid cell id is missing."
+            );
             return;
         }
 
@@ -190,50 +199,69 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(function (response) {
                 if (!response.ok) {
-                    throw new Error(`Delete request failed with status ${response.status}`);
+                    throw new Error(
+                        `Delete request failed with status ${response.status}`
+                    );
                 }
 
                 return response.json();
             })
             .then(function (data) {
                 if (!data.success) {
-                    announceDeleteStatus(data.message || "Could not remove the content from this grid cell.");
+                    announceDeleteStatus(
+                        data.message ||
+                        "Could not remove the content from this grid cell."
+                    );
                     return;
                 }
 
                 updateDeletedCell(cell);
 
-                if (data.effectTotals && typeof updateEffectTable === "function") {
-                    updateEffectTable(data.effectTotals, data.qualityOfLife);
+                if (
+                    data.effectTotals &&
+                    typeof updateEffectTable === "function"
+                ) {
+                    updateEffectTable(
+                        data.effectTotals,
+                        data.qualityOfLife
+                    );
                 }
             })
             .catch(function (error) {
                 console.error("Delete error:", error);
-                announceDeleteStatus("The server did not confirm the delete, but the content was removed visually.");
+
+                announceDeleteStatus(
+                    "The server did not confirm the delete, but the content was removed visually."
+                );
+
                 updateDeletedCell(cell);
             });
     }
 
     window.refreshDeleteButtons = refreshDeleteButtons;
 
-    document.body.addEventListener("click", function (event) {
-        const button = event.target.closest(".delete-btn");
+    document.body.addEventListener(
+        "click",
+        function (event) {
+            const button = event.target.closest(".delete-btn");
 
-        if (!button) {
-            return;
-        }
+            if (!button) {
+                return;
+            }
 
-        event.preventDefault();
-        event.stopPropagation();
+            event.preventDefault();
+            event.stopPropagation();
 
-        const cell = button.closest(".gridCell");
+            const cell = button.closest(".gridCell");
 
-        if (!cell) {
-            return;
-        }
+            if (!cell) {
+                return;
+            }
 
-        deleteCellContent(cell);
-    }, true);
+            deleteCellContent(cell);
+        },
+        true
+    );
 
     document.body.addEventListener("mouseover", function (event) {
         const cell = event.target.closest(".gridCell");
