@@ -1,4 +1,4 @@
-```blade
+
 @props(['cells', 'categories'])
 
 @php
@@ -137,4 +137,4 @@
         </li>
     </ul>
 </div>
-```
+
