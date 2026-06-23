@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-```
 <script type="text/javascript" src="{{ asset('js/functionTable.js') }}" defer></script>
 <script src="{{ asset('js/gridDragDrop.js') }}" defer></script>
 <script src="{{ asset('js/delete.js') }}" defer></script>
@@ -22,23 +20,13 @@
 <link href="{{ asset('css/eventTableStyle.css') }}" type="text/css" rel="stylesheet"/>
 
 <title>Metropolis</title>
-```
 
 </head>
 <body>
     <x-navbar/>
 
-```
 <div class="container">
     <div class="gridSection">
-        <button id="toggle-mainroad-button">
-            Show Main Road Overlay
-        </button>
-
-        <button id="createRouteButton">
-            Create Route
-        </button>
-
         <div class="global-events-zone" data-global-drop-zone>
             <div class="global-events-zone-header">
                 <span class="global-events-zone-label">Global Events</span>
@@ -117,20 +105,30 @@
         <x-grid
             :cells="$cells"
             :categories="$categories"
-            :eventGridCells="$eventGridCells"
+            :event-grid-cells="$eventGridCells"
         />
+
+        <div class="road-controls" aria-label="Main road controls">
+            <button id="toggle-mainroad-button" type="button">
+                Show Main Road Overlay
+            </button>
+
+            <button id="createRouteButton" type="button">
+                Create Route
+            </button>
+        </div>
 
         <div class="gridSavePanel">
             <form method="POST" action="{{ route('grid.save') }}" class="gridSaveForm">
                 @csrf
 
-                <label for="savedGridName">Saved grid name</label>
+                
                 <input
                     id="savedGridName"
                     type="text"
                     name="name"
                     value="{{ old('name') }}"
-                    placeholder="Spring layout"
+                    placeholder="Grid layout"
                     maxlength="255"
                     required
                 >
@@ -494,7 +492,6 @@
     //     attachGlobalRemoveListeners();
     // });
 </script>
-```
 
 </body>
 </html>
