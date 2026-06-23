@@ -1,4 +1,3 @@
-```php
 <?php
 
 use App\Http\Controllers\EventController;
@@ -50,4 +49,3 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/functions/restore', [FunctionController::class, 'restore'])->name('functions.restore');
     Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });
-```
