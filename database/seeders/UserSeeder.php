@@ -15,11 +15,11 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate([
-            'email' => 'test@cityplanner.com',
+            'email' => 'noreply.metropolisb@gmail.com',
         ], [
             'name' => 'Test Planner',
             'role' => 'cityplanner',
-            'email' => 'test@cityplanner.com',
+            'email' => 'noreply.metropolisb@gmail.com',
             'password' => 'test'
         ]);
 
