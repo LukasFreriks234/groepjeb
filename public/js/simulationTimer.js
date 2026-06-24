@@ -589,6 +589,7 @@
                     const eventId = img.dataset.eventId;
 
                     if (img.classList.contains('event-is-global')) {
+                        calculateNextDate(eventItem);
                         fetch('/grid/check-recurring', {
                             method: "POST",
                             headers: {
@@ -665,7 +666,6 @@ function calculateNextDate(eventItem) {
         const startDate = new Date(document.querySelector(".navbar-date-display-value").textContent);
         const frequency = eventItem.dataset.frequency;
         const amount = Number(eventItem.dataset.amount);
-        console.log(frequency, amount);
         const startTime = eventItem.dataset.startTime;
         const eventId = eventItem.dataset.eventId;
 
