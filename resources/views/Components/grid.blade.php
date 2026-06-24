@@ -105,6 +105,11 @@
                                     event-speed="{{ $event->speed }}"
                                     route-state="{{ $order }}"
                                     dynamic-event="{{ $event->dynamic }}"
+                                    environmental-quality="{{ $event->effects[0]->effect }}"
+                                    mobility="{{ $event->effects[1]->effect }}"
+                                    recreation="{{ $event->effects[2]->effect }}"
+                                    safety="{{ $event->effects[3]->effect }}"
+                                    services="{{ $event->effects[4]->effect }}"
                                 >
                             @endforeach
                         </div>

@@ -6,10 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <script type="text/javascript" src="{{ asset('js/functionTable.js') }}" defer></script>
+    <script src="{{ asset('js/dynamicEvent.js') }}" defer></script>
     <script src="{{ asset('js/gridDragDrop.js') }}" defer></script>
     <script src="{{ asset('js/delete.js') }}" defer></script>
     <script src="{{ asset('js/switchFunctionEvent.js') }}" defer></script>
-    <script src="{{ asset('js/dynamicEvent.js') }}" defer></script>
     <script src="{{ asset('js/simulationTimer.js') }}?v={{ filemtime(public_path('js/simulationTimer.js')) }}" defer></script>
 
     <link href="{{ asset('css/functionTableStyle.css') }}" type="text/css" rel="stylesheet"/>

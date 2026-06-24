@@ -55,3 +55,58 @@ eventButtons.forEach((button) =>{
         eventDict[parseInt(button.getAttribute("data-event-id"))] = simDelta;
     })
 });
+
+let cells = document.querySelectorAll(".gridCell")
+
+function getNeighbors(dataDict, dataQL, CellId){
+    let selectedCell = document.querySelector(`.gridCell[data-id="${CellId}"]`)
+    let xC=parseInt(selectedCell.getAttribute("data-x"));
+    let yC=parseInt(selectedCell.getAttribute("data-y"));
+    let neighbors;
+    if(xC == 0){
+        if(yC== 0){
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"]`);
+        } else if(yC == 2){
+            neighbors = document.querySelector(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        } else {
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        }
+    }else if(xC == 3){
+        if(yC == 0){
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"]`);
+        } else if(yC == 2){
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        } else {
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        }
+    } else{
+        if(yC == 0){
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"]`);
+        } else if(yC == 2){
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        } else {
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        }
+    }
+
+    let EQ = 0;
+    let MO = 0;
+    let RE = 0;
+    let SA = 0;
+    let SE = 0;
+    
+    neighbors.forEach((neighbor) =>{
+        let hiddenEvents = neighbor.querySelectorAll(`.gridEventDynamicImage[style="visibility: hidden;"]`);
+        hiddenEvents.forEach((event) =>{
+            EQ-=parseInt(event.getAttribute("environmental-quality"));
+            MO-=parseInt(event.getAttribute("mobility"));
+            RE-=parseInt(event.getAttribute("recreation"));
+            SA-=parseInt(event.getAttribute("safety"));
+            SE-=parseInt(event.getAttribute("services"));
+        })
+    });
+
+    let QL=EQ+MO+RE+SA+SE;
+
+    return [{"Environmental Quality":EQ+dataDict["Environmental Quality"],"Mobility":MO+dataDict["Mobility"],"Recreation":RE+dataDict["Recreation"],"Safety":SA+dataDict["Safety"],"Services":SE+dataDict["Services"]},QL+dataQL];
+}

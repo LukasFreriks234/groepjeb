@@ -1538,7 +1538,7 @@ function loadNeighborEffects(cell) {
         .then(response => response.json())
         .then(data => {
             if (data.success && data.effectTotals) {
-                updateTooltipEffects(data.effectTotals, data.qualityOfLife);
+                updateTooltipEffects(getNeighbors(data.effectTotals,data.qualityOfLife,cellId)[0], getNeighbors(data.effectTotals,data.qualityOfLife,cellId)[1]);
             }
         })
         .catch(error => {
