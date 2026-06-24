@@ -535,6 +535,7 @@
 
 
     const recurringEvents = document.querySelectorAll('[data-type="recurring"]');
+
     recurringEvents.forEach((eventItem) => {
         eventItem.classList.add('recurring');
         eventItem.addEventListener('click', () => {
@@ -597,8 +598,13 @@
                                 img.classList.remove('event-is-global');
                                 img.classList.add('event-triggered');
                             } else {
-                                img.classList.add('event-is-global');
-                                img.classList.remove('event-triggered');
+                                if (!data.is_recurring) {
+                                    return
+                                }
+                                else {
+                                    img.classList.add('event-is-global');
+                                    img.classList.remove('event-triggered');
+                                }
                             }
 
                         });

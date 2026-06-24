@@ -290,6 +290,7 @@ class EventController extends Controller
 
         return response()->json([
             'triggered' => $triggered,
+            'is_recurring' => !is_null($event->recurring_id),
             'event_id' => $event->id,
             'current' => $current->format('Y-m-d H:i:s'),
             'previous' => $previous->format('Y-m-d H:i:s'),

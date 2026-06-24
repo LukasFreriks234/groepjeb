@@ -1615,10 +1615,6 @@ document.addEventListener("drop", stopAutoScroll);
 document.addEventListener("touchend", stopAutoScroll);
 
 window.addEventListener("simulation:tick", (event) => {
-    const el = event.target;
-    if (el && el.classList && el.classList.contains("recurring")) {
-        return;
-    }
 
     fetch("/grid/check-expired-events", {
         method: "POST",
