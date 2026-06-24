@@ -1452,7 +1452,9 @@ function getEffectClass(value) {
     return "neutralEffect";
 }
 
-window.updateEffectTable = function (effectTotals, qualityOfLife) {
+window.updateEffectTable = function (effectOvershoout, qualityOfLifeOvershoot) {
+    let effectTotals =  dynamicEffects(effectOvershoout, qualityOfLifeOvershoot)[0];
+    let qualityOfLife =  dynamicEffects(effectOvershoout, qualityOfLifeOvershoot)[1];
     Object.keys(effectTotals).forEach(function (category) {
         const element = document.querySelector(`[data-effect-category="${category}"]`);
 
@@ -1530,7 +1532,7 @@ function loadNeighborEffects(cell) {
         .then(response => response.json())
         .then(data => {
             if (data.success && data.effectTotals) {
-                updateTooltipEffects(data.effectTotals, data.qualityOfLife);
+                updateTooltipEffects(getNeighbors(data.effectTotals,data.qualityOfLife,cellId)[0], getNeighbors(data.effectTotals,data.qualityOfLife,cellId)[1]);
             }
         })
         .catch(error => {
