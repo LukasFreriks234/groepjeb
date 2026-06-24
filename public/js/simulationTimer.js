@@ -538,6 +538,16 @@
 
     recurringEvents.forEach((eventItem) => {
         eventItem.classList.add('recurring');
+        fetch('/grid/update-active', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                event_id: eventItem.dataset.eventId,
+            })
+        })
         eventItem.addEventListener('click', () => {
             const nextDate = calculateNextDate(eventItem);
             const dateText = document.querySelector(".navbar-date-display-value").textContent.trim();

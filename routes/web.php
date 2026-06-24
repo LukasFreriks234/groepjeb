@@ -49,3 +49,4 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::post('/grid/save-next-date', [EventController::class, 'saveNextDate']);
 Route::post('/grid/check-recurring', [EventController::class, 'checkRecurring']);
 Route::post('/grid/check-recurring-activation', [Eventcontroller::class, 'checkRecurringexpired']);
+Route::post('/grid/update-active', [EventController::class, 'updateActive']);

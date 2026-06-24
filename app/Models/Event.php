@@ -19,6 +19,7 @@ class Event extends Model
         'length',
         'length_unit',
         'dynamic',
+        'active',
         'speed'
     ];
 

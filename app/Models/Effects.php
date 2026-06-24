@@ -76,6 +76,11 @@ class Effects extends Model
             }
 
             foreach ($cell->events as $event) {
+
+                if (!$event->active) {
+                    continue;
+                }
+                
                 if (!$event->relationLoaded('effects')) {
                     continue;
                 }
@@ -98,11 +103,11 @@ class Effects extends Model
     private static function addRelationshipEffects($cells, $categories, &$effectTotals)
     {
         $relationshipColumns = [
-            'Safety'                => 'relationship_safety',
-            'Recreation'            => 'relationship_recreation',
+            'Safety' => 'relationship_safety',
+            'Recreation' => 'relationship_recreation',
             'Environmental Quality' => 'relationship_environmental',
-            'Services'              => 'relationship_services',
-            'Mobility'              => 'relationship_mobility',
+            'Services' => 'relationship_services',
+            'Mobility' => 'relationship_mobility',
         ];
 
         $occupiedCells = $cells->filter(function ($cell) {
@@ -167,11 +172,11 @@ class Effects extends Model
                     $penalty = (int) ($relationship->effects->penalty_effect ?? 0);
 
                     $relationshipEffects = [
-                        'Safety'                => $relationship->effects->safety ?? 0,
-                        'Recreation'            => $relationship->effects->recreation ?? 0,
+                        'Safety' => $relationship->effects->safety ?? 0,
+                        'Recreation' => $relationship->effects->recreation ?? 0,
                         'Environmental Quality' => $relationship->effects->environmental_quality ?? 0,
-                        'Services'              => $relationship->effects->services ?? 0,
-                        'Mobility'              => $relationship->effects->mobility ?? 0,
+                        'Services' => $relationship->effects->services ?? 0,
+                        'Mobility' => $relationship->effects->mobility ?? 0,
                     ];
 
                     foreach ($relationshipEffects as $categoryName => $value) {

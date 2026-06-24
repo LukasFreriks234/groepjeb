@@ -302,6 +302,13 @@ class EventController extends Controller
             ]);
 
         $triggered = ($previous < $nextDate && $current >= $nextDate);
+        if ($triggered == true) {
+            DB::table('events')
+                ->where('id', $request->event_id)
+                ->update([
+                    'active' => true,
+                ]);
+        }
 
         return response()->json([
             'triggered' => $triggered,
@@ -330,6 +337,11 @@ class EventController extends Controller
 
         if ($current > $endDate) {
             $untoggle = true;
+            DB::table('events')
+                ->where('id', $request->event_id)
+                ->update([
+                    'active' => false,
+                ]);
         } else {
             $untoggle = false;
         }
@@ -340,7 +352,17 @@ class EventController extends Controller
             'current' => $current,
             'endDate' => $endDate
         ]);
+    }
 
+    function updateActive(Request $request)
+    {
+        DB::table('events')
+            ->where('id', $request->event_id)
+            ->update([
+                'active' => false,
+            ]);
+
+        return;
     }
 }
 
