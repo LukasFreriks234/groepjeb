@@ -13,20 +13,36 @@ use Tests\TestCase;
 class GridTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $user = User::updateOrCreate([
+            'email' => 'test@admin.com',
+        ], [
+            'name' => 'Test Admin',
+            'role' => 'admin',
+            'email' => 'test@admin.com',
+            'password' => bcrypt('test')
+        ]);
+
+        $this->actingAs($user);
+    }
     
     /** @test */
     public function test_the_city_is_shown_in_a_grid()
     { 
         $this->seed(GridCellSeeder::class);
         
-        $response = $this->get('/');
+        $response = $this->get('/grid');
 
         $response->assertStatus(200);
         $response->assertViewHas('cells', function ($cells) {
             return $cells->count() === 12;
         });
 
-        $response->assertSee('metropolis-grid');
+        $response->assertSee('metropolisGrid');
     }
 
     /** @test */
@@ -44,7 +60,7 @@ class GridTest extends TestCase
             'is_available' => false
         ]);
 
-        $response = $this->get('/');
+        $response = $this->get('/grid');
         $response->assertSee('available');
         $response->assertSee('occupied');
     }
@@ -54,13 +70,13 @@ class GridTest extends TestCase
     {
         $this->seed(GridCellSeeder::class);
 
-        $response = $this->get('/');
-        $response->assertSee('grid-cell');
+        $response = $this->get('/grid');
+        $response->assertSee('gridCell');
     }
 
     public function test_page_is_shown_without_grid_cells()
     {
-        $response = $this->get('/');
+        $response = $this->get('/grid');
 
         $response->assertStatus(200);
         $response->assertSee('City area');
