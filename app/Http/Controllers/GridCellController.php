@@ -413,17 +413,19 @@ $existing = DB::table('grid_dynamics')
     public function checkExpiredEvents(Request $request)
     {
         $expired = DB::table('event_grid_cells')
-            ->join('grid_dynamics', 'event_grid_cells.grid_dynamics_id', '=', 'grid_dynamics.id')
-            ->join('events', 'event_grid_cells.event_id', '=', 'events.id')
+            ->join(
+                'grid_dynamics',
+                'event_grid_cells.grid_dynamics_id',
+                '=',
+                'grid_dynamics.id'
+            )
             ->whereNotNull('event_grid_cells.expires_at')
             ->where('event_grid_cells.expires_at', '<=', now())
-            ->whereNull('events.recurring_id')
             ->select(
                 'event_grid_cells.id',
                 'event_grid_cells.event_id',
                 'event_grid_cells.grid_dynamics_id',
-                'grid_dynamics.grid_cell_id',
-                'events.recurring_id'
+                'grid_dynamics.grid_cell_id'
             )
             ->get();
 

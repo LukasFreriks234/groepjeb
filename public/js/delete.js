@@ -84,22 +84,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function removeVisualCellContent(cell) {
-
-        // activation visual
-        const image = cell.querySelector('.gridEventImage');
-        if (image) {
-            const eventId = image.dataset.eventId;
-            const eventsList = document.querySelector('#eventsList');
-
-            const originalEvent = eventsList.querySelector(
-                `.eventItem[data-event-id="${eventId}"]`
-            );
-
-            if (originalEvent) {
-                originalEvent.setAttribute("active", "false");
-                originalEvent.style.backgroundColor = "lightblue";
-            }
-        }
         const items = cell.querySelectorAll(
             ".functionItem, .gridImage, .gridEvents, .delete-btn"
         );
