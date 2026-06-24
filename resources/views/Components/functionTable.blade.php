@@ -108,7 +108,7 @@
             <li 
                 tabindex="0"
                 id="event{{ $event->id }}" 
-                class="functionItem{{ $isGlobal ? ' event-is-global' : '' }}"
+                class="dynamicEventItem"
                 data-event-id="{{ $event->id }}"
                 data-event-name="{{ $event->name }}"
                 data-type="{{ $eventType }}"
@@ -122,7 +122,6 @@
                 data-weekday='@json($event->recurring?->monthly?->pluck('weekday') ?? [])'
                 data-start-time="{{ $event->time }}"
                 role="button"
-                active="false"
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
             >
                 <div class="functionImage">
@@ -140,6 +139,13 @@
                         {{ $eventTypeLabel }} / Dynamic
                     </p>
                 </div>
+
+                
+                <label class="switch">
+                    <input type="checkbox" active="false" data-event-id="{{ $event->id }}" aria-label="Activate {{ $event->name }}">
+                    <span class="slider round"></span>
+                </label>
+
             </li>
             @else
             <li 
