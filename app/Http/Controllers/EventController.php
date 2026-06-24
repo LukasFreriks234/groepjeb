@@ -259,6 +259,7 @@ class EventController extends Controller
 
         return response()->json([
             'success' => true,
+            'next_date' => $request->next_date
         ]);
     }
 
