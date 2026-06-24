@@ -3,6 +3,7 @@ const recurring = document.getElementById('recurring');
 const recurringFields = document.getElementById('recurringFields');
 const dynamic = document.getElementById('dynamic');
 const dynamicEventBox = document.getElementById('dynamicEventBox');
+const dynamicOptionsBox = document.getElementById('dynamicOptionsBox');
 const recurrencePattern = document.querySelector('select[name="recurrencePattern"]');
 const dailyFields = document.getElementById("dailyFields");
 const weeklyFields = document.getElementById("weeklyFields");
@@ -23,6 +24,11 @@ recurring.addEventListener('change', toggleRecurringFields);
 //dynamic
 dynamic.addEventListener('change', toggleDynamicEvent);
 toggleDynamicEvent();
+
+//dynamicOptions
+oneOff.addEventListener('change', toggleDynamicOptions);
+recurring.addEventListener('change', toggleDynamicOptions);
+toggleDynamicOptions();
 
 //daily
 toggleDailyFields();
@@ -54,6 +60,11 @@ function toggleRecurringFields() {
 function toggleDynamicEvent() {
     dynamicEventBox.style.display =
         dynamic.checked ? 'block' : 'none';
+}
+
+function toggleDynamicOptions() {
+    dynamicOptionsBox.style.display =
+        oneOff.checked ? 'block' : 'none';
 }
 
 function toggleDailyFields() {
@@ -180,3 +191,4 @@ function refreshNumbers() {
         );
     });
 }
+

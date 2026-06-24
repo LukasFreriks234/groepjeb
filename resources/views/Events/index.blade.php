@@ -59,9 +59,10 @@
                             </p>
 
                             <p class="functionCategory">
-                                {{ $event->recurring_id ? 'Recurring' : 'One-off' }}
                                 @if($event->dynamic)
-                                    / Dynamic
+                                    Dynamic
+                                @else
+                                    {{ $event->recurring_id ? 'Recurring' : 'One-off' }}
                                 @endif
                             </p>
                         </div>

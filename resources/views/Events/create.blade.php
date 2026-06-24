@@ -431,6 +431,7 @@
                     </div>
                 </div>
 
+            <div id="dynamicOptionsBox">
                 <h2 tabindex="0">Dynamic event</h2>
 
                 <p id="dynamic-help" class="sr-only">
@@ -495,6 +496,7 @@
                         :value="old('speed', 1)"
                         min="1"
                     />
+                </div>
                 </div>
 
                 <button type="submit">Create event</button>

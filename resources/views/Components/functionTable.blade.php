@@ -136,7 +136,7 @@
                     <p class="functionName">{{ $event->name }}</p>
 
                     <p class="functionCategory">
-                        {{ $eventTypeLabel }} / Dynamic
+                        Dynamic
                     </p>
                 </div>
 
