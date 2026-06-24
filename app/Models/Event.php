@@ -13,7 +13,7 @@ class Event extends Model
         'recurrence_pattern',
         'days_of_week',
         'recurring_id',
-        'start_date',
+        'next_date',
         'end_date',
         'time',
         'length',
@@ -24,7 +24,7 @@ class Event extends Model
 
     protected $casts = [
         'days_of_week' => 'array',
-        'start_date' => 'datetime',
+        'next_date' => 'datetime',
         'end_date' => 'datetime',
         'dynamic' => 'boolean',
     ];

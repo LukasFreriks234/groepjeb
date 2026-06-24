@@ -294,7 +294,7 @@ class GridCellController extends Controller
 
         $durationInSimulationMinutes = match ($event->length_unit) {
             'hours' => $eventLength * 60,
-            'days'  => $eventLength * 60 * 24,
+            'days' => $eventLength * 60 * 24,
             'weeks' => $eventLength * 60 * 24 * 7,
             default => $eventLength * 60,
         };
@@ -368,7 +368,7 @@ class GridCellController extends Controller
         return response()->json([
             'success' => true,
             'expiredEvents' => $expired,
-            'effectTotals'  => $totals['effectTotals'],
+            'effectTotals' => $totals['effectTotals'],
             'qualityOfLife' => $totals['qualityOfLife'],
         ]);
     }

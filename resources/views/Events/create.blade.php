@@ -148,14 +148,6 @@
                             name="startTime"
                             value="{{ old('startTime') }}"
                         >
-
-                        <label for="startDate" class="label">Start date</label>
-                        <input
-                            type="date"
-                            id="startDate"
-                            name="startDate"
-                            value="{{ old('startDate') }}"
-                        >
                     </div>
 
                     <p class="information">

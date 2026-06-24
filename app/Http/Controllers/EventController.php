@@ -241,4 +241,62 @@ class EventController extends Controller
 
         return $relativeFolder . '/' . $imageName;
     }
+
+
+    public function saveNextDate(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|integer|exists:events,id',
+            'next_date' => 'required|date',
+        ]);
+
+        DB::table('events')
+            ->where('id', $request->event_id)
+            ->update([
+                'next_date' => $request->next_date,
+                'updated_at' => now(),
+            ]);
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function checkRecurring(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|integer|exists:events,id',
+            'current_datetime' => 'required|date',
+            'minutes_per_tick' => 'required|integer',
+        ]);
+
+        $event = DB::table('events')
+            ->where('id', $request->event_id)
+            ->first();
+
+        // if (!$event || !$event->next_date) {
+        //     return response()->json(['triggered' => false]);
+        // }
+
+        $current = new \DateTime($request->current_datetime, new \DateTimeZone('UTC'));
+        $current->setTimezone(new \DateTimeZone('Europe/Amsterdam'));
+
+        $previous = clone $current;
+        $previous->modify('-' . $request->minutes_per_tick . ' minutes');
+
+        $nextDate = new \DateTime($event->next_date . ' ' . $event->time);
+
+        $triggered = ($previous < $nextDate && $current >= $nextDate);
+
+        return response()->json([
+            'triggered' => $triggered,
+            'event_id' => $event->id,
+            'current' => $current->format('Y-m-d H:i:s'),
+            'previous' => $previous->format('Y-m-d H:i:s'),
+            'next' => $nextDate->format('Y-m-d H:i:s'),
+        ]);
+    }
+
 }
+
+
