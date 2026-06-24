@@ -1452,7 +1452,9 @@ function getEffectClass(value) {
     return "neutralEffect";
 }
 
-window.updateEffectTable = function (effectTotals, qualityOfLife) {
+window.updateEffectTable = function (effectPre, qualityPre) {
+    let effectTotals = dynamicEffects(effectPre, qualityPre)[0];
+    let qualityOfLife = dynamicEffects(effectPre, qualityPre)[1];
     Object.keys(effectTotals).forEach(function (category) {
         const element = document.querySelector(`[data-effect-category="${category}"]`);
 

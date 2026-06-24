@@ -107,3 +107,24 @@ function getNeighbors(dataDict, dataQL, CellId){
 
     return [{"Environmental Quality":EQ+dataDict["Environmental Quality"],"Mobility":MO+dataDict["Mobility"],"Recreation":RE+dataDict["Recreation"],"Safety":SA+dataDict["Safety"],"Services":SE+dataDict["Services"]},QL+dataQL];
 }
+
+function dynamicEffects(dataDict, dataQL){
+    let EQ = 0;
+    let MO = 0;
+    let RE = 0;
+    let SA = 0;
+    let SE = 0;
+    
+    let dynamicEvents = document.querySelectorAll(`.gridEventDynamicImage[style="visibility: hidden;"]`);
+    dynamicEvents.forEach((event) =>{
+        EQ-=parseInt(event.getAttribute("environmental-quality"));
+        MO-=parseInt(event.getAttribute("mobility"));
+        RE-=parseInt(event.getAttribute("recreation"));
+        SA-=parseInt(event.getAttribute("safety"));
+        SE-=parseInt(event.getAttribute("services"));
+    })
+
+    let QL=EQ+MO+RE+SA+SE;
+
+    return [{"Environmental Quality":EQ+dataDict["Environmental Quality"],"Mobility":MO+dataDict["Mobility"],"Recreation":RE+dataDict["Recreation"],"Safety":SA+dataDict["Safety"],"Services":SE+dataDict["Services"]},QL+dataQL];
+}
