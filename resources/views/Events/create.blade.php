@@ -155,6 +155,13 @@
                                 value="{{ old('startDate') }}"
                             >
                         </label>
+                        <label for="startTime" class="label">Start time</label>
+                        <input
+                            type="time"
+                            id="startTime"
+                            name="startTime"
+                            value="{{ old('startTime') }}"
+                        >
                     </div>
 
                     <p class="sr-only">

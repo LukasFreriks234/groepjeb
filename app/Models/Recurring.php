@@ -17,12 +17,12 @@ class Recurring extends Model
 
     public function weekly()
     {
-        return $this->hasOne(Weekly::class);
+        return $this->hasMany(Weekly::class, 'recurring_id');
     }
 
     public function monthly()
     {
-        return $this->hasOne(Monthly::class);
+        return $this->hasMany(Monthly::class, 'recurring_id');
     }
 
     public function events()
