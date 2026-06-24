@@ -1700,3 +1700,19 @@ document.addEventListener('DOMContentLoaded', () => {
             'Keyboard instructions: use Tab or Shift Tab to move through the event list. Press Enter or Space on an event to select it. Then move to a grid cell and press Enter or Space to place it.';
     });
 });
+
+const metropolisGrid = document.querySelector('.metropolisGrid');
+const gridInstructions = document.getElementById('gridKeyboardInstructions');
+const gridAnnouncement = document.getElementById('gridInstructionAnnouncement');
+
+let gridInstructionsRead = false;
+
+metropolisGrid?.addEventListener('focusin', () => {
+    if (gridInstructionsRead) {
+        return;
+    }
+
+    gridInstructionsRead = true;
+    
+    gridAnnouncement.textContent = gridInstructions.textContent.trim();
+});

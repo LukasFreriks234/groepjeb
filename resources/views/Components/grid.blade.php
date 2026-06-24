@@ -17,6 +17,12 @@
             </a>
         @endif
 
+        <div id="gridInstructionAnnouncement"
+        class="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"></div>
+
         <h2>City area</h2>
 
         <p id="gridKeyboardInstructions" class="sr-only">
@@ -69,9 +75,6 @@
                     role="button"
                     tabindex="0"
                     aria-label="{{ $cellLabel }}"
-                    @if($loop->first)
-                        aria-describedby="gridKeyboardInstructions"
-                    @endif
                     aria-rowindex="{{ $readableRow }}"
                     aria-colindex="{{ $readableColumn }}"
                 >
