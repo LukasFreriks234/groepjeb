@@ -12,8 +12,6 @@ use App\Models\Event;
 use App\Models\SavedGrid;
 use Illuminate\Support\Facades\DB;
 use App\Models\EventgridCell;
-use DateInterval;
-use DateTime;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class GridCellController extends Controller
@@ -659,35 +657,7 @@ $existing = DB::table('grid_dynamics')
         return $pdf->download('simulatierapport.pdf');
     }
 
-    public function checkRecurring($currentdate)
-    {
-        $recurring = DB::table('recurrings')->select(
-            'frequency',
-            'amount'
-        )->first();
 
-        $event = DB::table('events')->select(
-            'start_date',
-            'time'
-        )->first();
-
-        if ($recurring && $recurring->frequency === 'daily') {
-            $interval = new DateInterval('P' . (int) $recurring->amount . 'D');
-            $date = new DateTime($currentdate . ' ' . $event->time);
-            $nextdate = $date->add($interval)->format('Y-m-d');
-            // $this.dd($nextdate);
-            return $nextdate;
-        } else if ($recurring && $recurring->frequency === 'weekly') {
-            $startdate = $event->start_date;
-            $current = $currentdate->dayName;
-        } else if ($recurring && $recurring->frequency === 'monthly') {
-            // monthly
-        } else if ($recurring && $recurring->frequency === 'yearly') {
-            // yearly
-        } else {
-            return "error";
-        }
-    }
 
 
     // function dd()
@@ -715,7 +685,6 @@ $existing = DB::table('grid_dynamics')
                 'route_order' => 1,
             ]);
 
-            $nextDate = $this->checkRecurring($request->date);
 
             // GridCell::where('grid_cell_id', $gridDynamic->id)->update(['is_available' => 0]);
 

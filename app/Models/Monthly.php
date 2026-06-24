@@ -17,8 +17,8 @@ class Monthly extends Model
         'weekday'
     ];
 
-        public function recurring()
+    public function recurring()
     {
-        return $this->belongsToMany(Recurring::class, 'monthly_recurring', 'monthly_id', 'recurring_id');
+        return $this->belongsTo(Recurring::class, 'recurring_id');
     }
 }

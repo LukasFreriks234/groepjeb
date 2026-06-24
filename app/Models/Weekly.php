@@ -15,8 +15,8 @@ class Weekly extends Model
         'recurring_id'
     ];
 
-    public function recurrings()
+    public function recurring()
     {
-        return $this->belongsToMany(Recurring::class, 'weekly_recurring', 'weekly_id', 'recurring_id');
+        return $this->belongsTo(Recurring::class, 'recurring_id');
     }
 }

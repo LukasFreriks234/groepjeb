@@ -107,7 +107,7 @@
                                 <img
                                     src="{{ asset($event->image_url) }}"
                                     alt="{{ $event->name }}"
-                                    class="gridEventImage draggableGridEvent"
+                                    class="gridEventImage draggableGridEvent {{ $event->recurring_id && !$event->active ? 'event-is-global' : 'event-triggered' }}"
                                     draggable="true"
                                     tabindex="0"
                                     role="button"
