@@ -81,15 +81,13 @@ Route::middleware(['auth', 'role:cityplanner,admin,policymaker'])->group(functio
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/functions/create', [FunctionController::class, 'create'])
-        ->name('functions.create');
-
-    Route::post('/functions/store', [FunctionController::class, 'store'])
-        ->name('functions.store');
-
-    Route::post('/functions/restore', [FunctionController::class, 'restore'])
-        ->name('functions.restore');
-
-    Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])
-        ->name('functions.destroy');
+    Route::get('/functions/create', [FunctionController::class, 'create'])->name('functions.create');
+    Route::post('/functions/store', [FunctionController::class, 'store'])->name('functions.store');
+    Route::post('/functions/restore', [FunctionController::class, 'restore'])->name('functions.restore');
+    Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });
+
+Route::post('/grid/save-next-date', [EventController::class, 'saveNextDate']);
+Route::post('/grid/check-recurring', [EventController::class, 'checkRecurring']);
+Route::post('/grid/check-recurring-activation', [Eventcontroller::class, 'checkRecurringexpired']);
+Route::post('/grid/update-active', [EventController::class, 'updateActive']);

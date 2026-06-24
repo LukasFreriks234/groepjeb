@@ -243,4 +243,130 @@ class EventController extends Controller
 
         return $relativeFolder . '/' . $imageName;
     }
+
+
+    public function saveNextDate(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|integer|exists:events,id',
+            'next_date' => 'required|date',
+        ]);
+
+        DB::table('events')
+            ->where('id', $request->event_id)
+            ->update([
+                'next_date' => $request->next_date,
+                'updated_at' => now(),
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'next_date' => $request->next_date
+        ]);
+    }
+
+    public function checkRecurring(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|integer|exists:events,id',
+            'current_datetime' => 'required|date',
+            'minutes_per_tick' => 'required|integer',
+        ]);
+
+        $event = DB::table('events')
+            ->where('id', $request->event_id)
+            ->first();
+
+        // if (!$event || !$event->next_date) {
+        //     return response()->json(['triggered' => false]);
+        // }
+
+        $current = new \DateTime($request->current_datetime, new \DateTimeZone('UTC'));
+        $current->setTimezone(new \DateTimeZone('Europe/Amsterdam'));
+
+        $previous = clone $current;
+        $previous->modify('-' . $request->minutes_per_tick . ' minutes');
+
+        $nextDate = new \DateTime($event->next_date . ' ' . $event->time);
+
+        $unitMap = [
+            'hours' => 'H',
+            'days' => 'D',
+            'weeks' => 'W',
+        ];
+
+        $endDate = clone $nextDate;
+        $endDate->modify("+{$event->length} {$event->length_unit}");
+
+        DB::table('events')
+            ->where('id', $request->event_id)
+            ->update([
+                'end_date' => $endDate->format('Y-m-d H:i:s')
+            ]);
+
+        $triggered = ($previous < $nextDate && $current >= $nextDate);
+        if ($triggered == true) {
+            DB::table('events')
+                ->where('id', $request->event_id)
+                ->update([
+                    'active' => true,
+                ]);
+        }
+
+        return response()->json([
+            'triggered' => $triggered,
+            'is_recurring' => !is_null($event->recurring_id),
+            'event_id' => $event->id,
+            'current' => $current->format('Y-m-d H:i:s'),
+            'previous' => $previous->format('Y-m-d H:i:s'),
+            'next' => $nextDate->format('Y-m-d H:i:s'),
+        ]);
+    }
+
+    function checkRecurringexpired(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|integer|exists:events,id',
+            'current_datetime' => 'required|date'
+        ]);
+
+        $event = DB::table('events')
+            ->where('id', $request->event_id)
+            ->first();
+
+        $current = new \DateTime($request->current_datetime, new \DateTimeZone('UTC'));
+        $current->setTimezone(new \DateTimeZone('Europe/Amsterdam'));
+        $endDate = new \DateTime($event->end_date);
+
+        if ($current > $endDate) {
+            $untoggle = true;
+            DB::table('events')
+                ->where('id', $request->event_id)
+                ->update([
+                    'active' => false,
+                ]);
+        } else {
+            $untoggle = false;
+        }
+
+
+        return response()->json([
+            'untoggle' => $untoggle,
+            'current' => $current,
+            'endDate' => $endDate
+        ]);
+    }
+
+    function updateActive(Request $request)
+    {
+        DB::table('events')
+            ->where('id', $request->event_id)
+            ->update([
+                'active' => false,
+            ]);
+
+        return;
+    }
 }
+
+
