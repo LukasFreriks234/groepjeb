@@ -27,6 +27,6 @@ class Recurring extends Model
 
     public function events()
     {
-        return $this->belongsToMany(Event::class, 'event_recurring', 'recurring_id', 'event_id');
+        return $this->hasMany(Event::class, 'recurring_id');
     }
 }
