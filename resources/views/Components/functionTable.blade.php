@@ -10,8 +10,8 @@
 <div id="functionsTable" class="tabContent" style="display:block;">
     <div class="filters">
         <div>
-            <label class="sr-only" for="myInput">Searchbar for functions</label>
-            <input type="text" id="myInput" placeholder="Search for functions.." aria-label="searchbar for functions"><br>
+            <label class="sr-only" for="myInput">Search functions</label>
+            <input type="search" id="myInput" placeholder="Type a function name..."><br>
 
             @php
                 $arrCategories = $categories->toArray();
