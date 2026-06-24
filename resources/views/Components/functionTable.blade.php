@@ -125,6 +125,22 @@
                 active="false"
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
             >
+                <div class="functionImage">
+                    <img 
+                        src="{{ asset($event->image_url) }}" 
+                        alt="{{ $event->name }}"
+                        draggable="false"
+                    >
+                </div>
+
+                <div class="functionDescription">
+                    <p class="functionName">{{ $event->name }}</p>
+
+                    <p class="functionCategory">
+                        {{ $eventTypeLabel }} / Dynamic
+                    </p>
+                </div>
+            </li>
             @else
             <li 
                 tabindex="0"
@@ -148,18 +164,18 @@
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }}{{ $isGlobal ? ', currently active as global event' : '' }} to place it in the grid."
             >
                 <div class="functionImage">
-                    @if($isDynamic)
-                    <img 
-                        src="{{ asset($event->image_url) }}" 
-                        alt="{{ $event->name }}"
-                        draggable="false"
-                    >
-                    @else
                     <img 
                         src="{{ asset($event->image_url) }}" 
                         alt="{{ $event->name }}"
                     >
-                    @endif
+                </div>
+
+                <div class="functionDescription">
+                    <p class="functionName">{{ $event->name }}</p>
+
+                    <p class="functionCategory">
+                        {{ $eventTypeLabel }}
+                    </p>
                 </div>
 
                 <label class="switch">
