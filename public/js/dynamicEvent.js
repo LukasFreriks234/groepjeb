@@ -55,3 +55,86 @@ eventButtons.forEach((button) =>{
         eventDict[parseInt(button.getAttribute("data-event-id"))] = simDelta;
     })
 });
+
+let cells = document.querySelectorAll(".gridCell")
+
+function getNeighbors(selectedCell){
+    xC=parseInt(selectedCell.getAttribute("data-x"));
+    yC=parseInt(selectedCell.getAttribute("data-y"));
+    let neighbors;
+    if(xC == 0){
+        if(yC== 0){
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"]`);
+        } else if(yC == 2){
+            neighbors = document.querySelector(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        } else {
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        }
+    }else if(xC == 3){
+        if(yC == 0){
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"]`);
+        } else if(yC == 2){
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        } else {
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        }
+    } else{
+        if(yC == 0){
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"]`);
+        } else if(yC == 2){
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        } else {
+            neighbors = document.querySelectorAll(`.gridCell[data-x="${xC}"][data-y="${yC}"], .gridCell[data-x="${xC+1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC+1}"], .gridCell[data-x="${xC-1}"][data-y="${yC}"], .gridCell[data-x="${xC}"][data-y="${yC-1}"]`);
+        }
+    }
+
+    let EQ = 0;
+    let MO = 0;
+    let RE = 0;
+    let SA = 0;
+    let SE = 0;
+    
+    neighbors.forEach((neighbor) =>{
+        let hiddenEvents = neighbor.querySelectorAll(`.gridEventDynamicImage[style="visibility: hidden;"]`);
+        hiddenEvents.forEach((event) =>{
+            EQ-=parseInt(event.getAttribute("environmental-quality"));
+            MO-=parseInt(event.getAttribute("mobility"));
+            RE-=parseInt(event.getAttribute("recreation"));
+            SA-=parseInt(event.getAttribute("safety"));
+            SE-=parseInt(event.getAttribute("services"));
+        })
+    });
+
+    let QL=EQ+MO+RE+SA+SE;
+
+    EQ+=parseInt(document.querySelector(`[data-tooltip-effect-category="Environmental Quality"]`).textContent);
+    MO+=parseInt(document.querySelector(`[data-tooltip-effect-category="Mobility"]`).textContent);
+    RE+=parseInt(document.querySelector(`[data-tooltip-effect-category="Recreation"]`).textContent);
+    SA+=parseInt(document.querySelector(`[data-tooltip-effect-category="Safety"]`).textContent);
+    SE+=parseInt(document.querySelector(`[data-tooltip-effect-category="Services"]`).textContent);
+    QL+=parseInt(document.querySelector(`#tooltipQualityOfLife`).textContent);
+
+    return [{"Environmental Quality":EQ,"Mobility":MO,"Recreation":RE,"Safety":SA,"Services":SE},QL];
+}
+
+cells.forEach((cell) =>{
+    cell.addEventListener("mousemove", ()=>{
+        setTimeout(()=>{
+            let newEffects=getNeighbors(cell);
+            updateTooltipEffects(newEffects[0],newEffects[1]);
+            },100);
+    });
+        cell.addEventListener("touchstart", ()=>{
+        setTimeout(()=>{
+            let newEffects=getNeighbors(cell);
+            updateTooltipEffects(newEffects[0],newEffects[1]);
+            },100);
+    });
+        cell.addEventListener("focus", ()=>{
+        setTimeout(()=>{
+            let newEffects=getNeighbors(cell);
+            updateTooltipEffects(newEffects[0],newEffects[1]);
+            },100);
+    });
+});
+
