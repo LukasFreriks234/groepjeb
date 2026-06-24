@@ -165,8 +165,8 @@
                         </label>
                     </div>
 
-                    <p class="information">
-                        The system will activate the event on the next possible day according to the information before.
+                    <p class="sr-only">
+                    The system will activate the event on the next possible day according to the information before.
                     </p>
 
                     <div class="label">
@@ -178,12 +178,12 @@
                             value="{{ old('endDate') }}"
                         >
 
-                        <p class="informationEnddate">
-                            After this date the event will no longer activate.
+                        <p class="sr-only">
+                        After this date the event will no longer activate.
                         </p>
 
-                        <p class="information">
-                            Want it to never end? Keep this field empty.
+                        <p class="sr-only">
+                        Want it to never end? Keep this field empty.
                         </p>
                     </div>
 
