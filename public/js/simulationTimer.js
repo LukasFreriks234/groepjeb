@@ -566,6 +566,7 @@
             }
         })
 
+        // only to turn on event
         setTimeout(() => {
             window.addEventListener("simulation:tick", () => {
                 const gridImages = document.querySelectorAll('.gridEventImage');
@@ -577,40 +578,68 @@
                 gridImages.forEach((img) => {
                     const eventId = img.dataset.eventId;
 
-                    fetch('/grid/check-recurring', {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({
-                            event_id: eventId,
-                            current_datetime: currentDateTime,
-                            minutes_per_tick: minutesPerTick
+                    if (img.classList.contains('event-is-global')) {
+                        fetch('/grid/check-recurring', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                event_id: eventId,
+                                current_datetime: currentDateTime,
+                                minutes_per_tick: minutesPerTick
+                            })
                         })
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.triggered) {
-                                console.log("event triggered", eventId);
-                                // event triggered
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.triggered) {
+                                    console.log("event triggered", eventId);
+                                    // event triggered
 
-                                img.classList.remove('event-is-global');
-                                img.classList.add('event-triggered');
-                            } else {
-                                if (!data.is_recurring) {
-                                    return
+                                    img.classList.remove('event-is-global');
+                                    img.classList.add('event-triggered');
+                                } else {
+                                    if (!data.is_recurring) {
+                                        return
+                                    }
+                                    else {
+                                        img.classList.add('event-is-global');
+                                        img.classList.remove('event-triggered');
+                                    }
                                 }
-                                else {
-                                    img.classList.add('event-is-global');
-                                    img.classList.remove('event-triggered');
-                                }
-                            }
+                            });
+                    }
+                    else {
+                        const images = document.querySelectorAll('.event-triggered')
+                        images.forEach((image) => {
+                            fetch('/grid/check-recurring-activation', {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                                },
+                                body: JSON.stringify({
+                                    event_id: image.dataset.eventId,
+                                    current_datetime: currentDateTime,
+                                })
+                            })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.untoggle == true) {
+                                        console.log('isdone')
+                                        calculateNextDate(eventItem);
+                                        img.classList.add('event-is-global');
+                                        img.classList.remove('event-triggered');
+                                    }
+                                });
+                        })
+                    }
 
-                        });
                 });
             });
         }, 100);
+
     })
 
     // const nextDate = eventItem.nextDate;
@@ -619,7 +648,6 @@
 
     const currentDateTime = new Date(`${dateText} ${timeText}`);
 
-    console.log(currentDateTime);
 })();
 
 function calculateNextDate(eventItem) {

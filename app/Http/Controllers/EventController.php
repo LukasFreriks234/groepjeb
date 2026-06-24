@@ -286,6 +286,21 @@ class EventController extends Controller
 
         $nextDate = new \DateTime($event->next_date . ' ' . $event->time);
 
+        $unitMap = [
+            'hours' => 'H',
+            'days' => 'D',
+            'weeks' => 'W',
+        ];
+
+        $endDate = clone $nextDate;
+        $endDate->modify("+{$event->length} {$event->length_unit}");
+
+        DB::table('events')
+            ->where('id', $request->event_id)
+            ->update([
+                'end_date' => $endDate->format('Y-m-d H:i:s')
+            ]);
+
         $triggered = ($previous < $nextDate && $current >= $nextDate);
 
         return response()->json([
@@ -298,6 +313,35 @@ class EventController extends Controller
         ]);
     }
 
+    function checkRecurringexpired(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|integer|exists:events,id',
+            'current_datetime' => 'required|date'
+        ]);
+
+        $event = DB::table('events')
+            ->where('id', $request->event_id)
+            ->first();
+
+        $current = new \DateTime($request->current_datetime, new \DateTimeZone('UTC'));
+        $current->setTimezone(new \DateTimeZone('Europe/Amsterdam'));
+        $endDate = new \DateTime($event->end_date);
+
+        if ($current > $endDate) {
+            $untoggle = true;
+        } else {
+            $untoggle = false;
+        }
+
+
+        return response()->json([
+            'untoggle' => $untoggle,
+            'current' => $current,
+            'endDate' => $endDate
+        ]);
+
+    }
 }
 
 

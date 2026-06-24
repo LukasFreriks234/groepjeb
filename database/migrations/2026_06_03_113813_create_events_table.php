@@ -21,6 +21,7 @@ return new class extends Migration {
                 ->cascadeOnUpdate();
             $table->date('next_date')->nullable();
             $table->Time('time')->nullable();
+            $table->dateTime('end_date')->nullable();
             $table->integer('length');
             $table->enum('length_unit', ['hours', 'days', 'weeks']);
             $table->boolean('dynamic')->default(false);
