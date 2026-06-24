@@ -145,14 +145,6 @@
                 <h2 tabindex="0">Date and Time</h2>
 
                     <div class="dateTime">
-                        <label>
-                            Start time
-                            <input
-                                type="time"
-                                id="startTime"
-                                name="startTime"
-                            >
-                        </label>
 
                         <label>
                             Start date
