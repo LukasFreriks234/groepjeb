@@ -72,8 +72,8 @@ class SavedGridController extends Controller
                 if ($row->item_type === 'event' && $row->event_id) {
                     DB::table('event_grid_cells')->insert([
                         'event_id' => $row->event_id,
-                        'grid_cell_id' => $row->grid_cell_id,
-                        'route_order' => $row->route_order,
+                        'grid_dynamics_id' => $row->grid_cell_id,
+                        'route_order' => $row->route_order ?? 0,
                         'expires_at' => null,
                         'created_at' => now(),
                         'updated_at' => now(),
