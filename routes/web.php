@@ -66,3 +66,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/functions/restore', [FunctionController::class, 'restore'])->name('functions.restore');
     Route::delete('/functions/{id}', [FunctionController::class, 'destroy'])->name('functions.destroy');
 });
+
+Route::post('/grid/save-next-date', [EventController::class, 'saveNextDate']);
+Route::post('/grid/check-recurring', [EventController::class, 'checkRecurring']);

@@ -145,24 +145,13 @@
                 <h2 tabindex="0">Date and Time</h2>
 
                     <div class="dateTime">
-                        <label>
-                            Start time
-                            <input
-                                type="time"
-                                id="startTime"
-                                name="startTime"
-                            >
-                        </label>
-
-                        <label>
-                            Start date
-                            <input
-                                type="date"
-                                id="startDate"
-                                name="startDate"
-                                value="{{ old('startDate') }}"
-                            >
-                        </label>
+                        <label for="startTime" class="label">Start time</label>
+                        <input
+                            type="time"
+                            id="startTime"
+                            name="startTime"
+                            value="{{ old('startTime') }}"
+                        >
                     </div>
 
                     <p class="information">

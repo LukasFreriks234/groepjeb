@@ -219,4 +219,87 @@ class EventController extends Controller
 
         return trim($normalized, '_');
     }
+
+    private function saveUploadedFunctionImage(Request $request)
+    {
+        $imageName = $request->file('image')->hashName();
+
+        $relativeFolder = 'images/events';
+        $imageFolder = public_path($relativeFolder);
+
+        if (!is_dir($imageFolder)) {
+            mkdir($imageFolder, 0777, true);
+        }
+
+        if (!is_writable($imageFolder)) {
+            chmod($imageFolder, 0777);
+        }
+
+        if (!is_writable($imageFolder)) {
+            abort(500, 'De map public/images/events is not writable. Move the project outside OneDrive or check the folder permissions.');
+        }
+
+        $request->file('image')->move($imageFolder, $imageName);
+
+        return $relativeFolder . '/' . $imageName;
+    }
+
+
+    public function saveNextDate(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|integer|exists:events,id',
+            'next_date' => 'required|date',
+        ]);
+
+        DB::table('events')
+            ->where('id', $request->event_id)
+            ->update([
+                'next_date' => $request->next_date,
+                'updated_at' => now(),
+            ]);
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function checkRecurring(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|integer|exists:events,id',
+            'current_datetime' => 'required|date',
+            'minutes_per_tick' => 'required|integer',
+        ]);
+
+        $event = DB::table('events')
+            ->where('id', $request->event_id)
+            ->first();
+
+        // if (!$event || !$event->next_date) {
+        //     return response()->json(['triggered' => false]);
+        // }
+
+        $current = new \DateTime($request->current_datetime, new \DateTimeZone('UTC'));
+        $current->setTimezone(new \DateTimeZone('Europe/Amsterdam'));
+
+        $previous = clone $current;
+        $previous->modify('-' . $request->minutes_per_tick . ' minutes');
+
+        $nextDate = new \DateTime($event->next_date . ' ' . $event->time);
+
+        $triggered = ($previous < $nextDate && $current >= $nextDate);
+
+        return response()->json([
+            'triggered' => $triggered,
+            'is_recurring' => !is_null($event->recurring_id),
+            'event_id' => $event->id,
+            'current' => $current->format('Y-m-d H:i:s'),
+            'previous' => $previous->format('Y-m-d H:i:s'),
+            'next' => $nextDate->format('Y-m-d H:i:s'),
+        ]);
+    }
+
 }
+
+
