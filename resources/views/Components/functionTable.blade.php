@@ -47,7 +47,7 @@
         function to select it. Then move to a grid cell and press Enter or Space to place it.
     </p>
 
-    <ul id="functionsList" tabindex="-1" aria-label="functions" aria-describedby="functionKeyboardDragInstructions">
+    <ul id="functionsList" tabindex="-1" aria-label="functions">
         @foreach($arrFunctions as $function)
             <li tabindex="0" id="function{{ $function['id'] }}" class="functionItem keyboardDraggableFunction"
                 draggable="true" data-function-id="{{ $function['id'] }}" data-category="{{ $function['category'] }}"

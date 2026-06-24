@@ -1670,3 +1670,33 @@ function announceKeyboardStatus(message, delay = 100) {
         status.textContent = message;
     }, delay);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const announcement = document.getElementById('dragInstructionAnnouncement');
+
+    const instructionsRead = {
+        functions: false,
+        events: false
+    };
+
+    const functionList = document.getElementById('functionsList');
+    const eventList = document.getElementById('eventsList');
+
+    functionList?.addEventListener('focusin', () => {
+        if (instructionsRead.functions) return;
+
+        instructionsRead.functions = true;
+
+        announcement.textContent =
+            'Keyboard instructions: use Tab or Shift Tab to move through the function list. Press Enter or Space on a function to select it. Then move to a grid cell and press Enter or Space to place it.';
+    });
+
+    eventList?.addEventListener('focusin', () => {
+        if (instructionsRead.events) return;
+
+        instructionsRead.events = true;
+
+        announcement.textContent =
+            'Keyboard instructions: use Tab or Shift Tab to move through the event list. Press Enter or Space on an event to select it. Then move to a grid cell and press Enter or Space to place it.';
+    });
+});
