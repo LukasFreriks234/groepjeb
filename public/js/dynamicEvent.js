@@ -58,9 +58,10 @@ eventButtons.forEach((button) =>{
 
 let cells = document.querySelectorAll(".gridCell")
 
-function getNeighbors(selectedCell){
-    xC=parseInt(selectedCell.getAttribute("data-x"));
-    yC=parseInt(selectedCell.getAttribute("data-y"));
+function getNeighbors(dataDict, dataQL, CellId){
+    let selectedCell = document.querySelector(`.gridCell[data-id="${CellId}"]`)
+    let xC=parseInt(selectedCell.getAttribute("data-x"));
+    let yC=parseInt(selectedCell.getAttribute("data-y"));
     let neighbors;
     if(xC == 0){
         if(yC== 0){
@@ -107,34 +108,5 @@ function getNeighbors(selectedCell){
 
     let QL=EQ+MO+RE+SA+SE;
 
-    EQ+=parseInt(document.querySelector(`[data-tooltip-effect-category="Environmental Quality"]`).textContent);
-    MO+=parseInt(document.querySelector(`[data-tooltip-effect-category="Mobility"]`).textContent);
-    RE+=parseInt(document.querySelector(`[data-tooltip-effect-category="Recreation"]`).textContent);
-    SA+=parseInt(document.querySelector(`[data-tooltip-effect-category="Safety"]`).textContent);
-    SE+=parseInt(document.querySelector(`[data-tooltip-effect-category="Services"]`).textContent);
-    QL+=parseInt(document.querySelector(`#tooltipQualityOfLife`).textContent);
-
-    return [{"Environmental Quality":EQ,"Mobility":MO,"Recreation":RE,"Safety":SA,"Services":SE},QL];
+    return [{"Environmental Quality":EQ+dataDict["Environmental Quality"],"Mobility":MO+dataDict["Mobility"],"Recreation":RE+dataDict["Recreation"],"Safety":SA+dataDict["Safety"],"Services":SE+dataDict["Services"]},QL+dataQL];
 }
-
-cells.forEach((cell) =>{
-    cell.addEventListener("mousemove", ()=>{
-        setTimeout(()=>{
-            let newEffects=getNeighbors(cell);
-            updateTooltipEffects(newEffects[0],newEffects[1]);
-            },100);
-    });
-        cell.addEventListener("touchstart", ()=>{
-        setTimeout(()=>{
-            let newEffects=getNeighbors(cell);
-            updateTooltipEffects(newEffects[0],newEffects[1]);
-            },100);
-    });
-        cell.addEventListener("focus", ()=>{
-        setTimeout(()=>{
-            let newEffects=getNeighbors(cell);
-            updateTooltipEffects(newEffects[0],newEffects[1]);
-            },100);
-    });
-});
-
