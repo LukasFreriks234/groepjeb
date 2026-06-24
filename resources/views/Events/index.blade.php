@@ -44,12 +44,12 @@
 
         <ul id="functionsList">
             @forelse($events as $event)
-                <li class="functionItem eventItem">
+                <li class="functionItem eventItem" tabindex="0">
                     <div class="functionNameImage">
                         <div class="functionImage">
                             <img
                                 src="{{ asset($event->image_url) }}"
-                                alt="{{ $event->name }}"
+                                alt=""
                             >
                         </div>
 
