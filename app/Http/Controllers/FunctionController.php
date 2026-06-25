@@ -108,7 +108,6 @@ class FunctionController extends Controller
             'Mobility' => $request->Mobility,
         ]);
 
-        Notification::send(Auth::user(), new FunctionCreated($function));
 
         return redirect()->route('functions.index');
     }

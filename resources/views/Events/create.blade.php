@@ -145,6 +145,16 @@
                 <h2 tabindex="0">Date and Time</h2>
 
                     <div class="dateTime">
+
+                        <label>
+                            Start date
+                            <input
+                                type="date"
+                                id="startDate"
+                                name="startDate"
+                                value="{{ old('startDate') }}"
+                            >
+                        </label>
                         <label for="startTime" class="label">Start time</label>
                         <input
                             type="time"
@@ -154,8 +164,8 @@
                         >
                     </div>
 
-                    <p class="information">
-                        The system will activate the event on the next possible day according to the information before.
+                    <p class="sr-only">
+                    The system will activate the event on the next possible day according to the information before.
                     </p>
 
                     <div class="label">
@@ -167,12 +177,12 @@
                             value="{{ old('endDate') }}"
                         >
 
-                        <p class="informationEnddate">
-                            After this date the event will no longer activate.
+                        <p class="sr-only">
+                        After this date the event will no longer activate.
                         </p>
 
-                        <p class="information">
-                            Want it to never end? Keep this field empty.
+                        <p class="sr-only">
+                        Want it to never end? Keep this field empty.
                         </p>
                     </div>
 
@@ -421,6 +431,7 @@
                     </div>
                 </div>
 
+            <div id="dynamicOptionsBox">
                 <h2 tabindex="0">Dynamic event</h2>
 
                 <p id="dynamic-help" class="sr-only">
@@ -485,6 +496,7 @@
                         :value="old('speed', 1)"
                         min="1"
                     />
+                </div>
                 </div>
 
                 <button type="submit">Create event</button>

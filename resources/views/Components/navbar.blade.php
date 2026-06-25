@@ -12,6 +12,16 @@
 
         <li>
             <a
+                href="{{ route('saved-grids.index') }}"
+                class="navbar-button"
+                @if(request()->routeIs('saved-grids.index')) aria-current="page" @endif
+            >
+                Saved grids
+            </a>
+        </li>
+
+        <li>
+            <a
                 href="{{ route('functions.index') }}"
                 class="navbar-button"
                 @if(request()->routeIs('functions.*', 'overview.groups', 'groups.*', 'events.*')) aria-current="page" @endif
@@ -27,6 +37,7 @@
                 aria-live="polite"
                 aria-atomic="true"
             >
+                <span class="navbar-clock-label">Time</span>
                 <div class="navbar-speed-control">
                     <label class="navbar-speed-label" for="simulation-speed">Speed:</label>
                     <div class="navbar-speed-row">

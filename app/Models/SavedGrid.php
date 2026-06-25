@@ -9,6 +9,7 @@ class SavedGrid extends Model
     protected $table = 'saved_grid';
 
     protected $fillable = [
+        'name',
         'grid_cell_id',
         'item_type',
         'function_id',

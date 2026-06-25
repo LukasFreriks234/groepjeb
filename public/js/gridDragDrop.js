@@ -1452,9 +1452,9 @@ function getEffectClass(value) {
     return "neutralEffect";
 }
 
-window.updateEffectTable = function (effectOvershoout, qualityOfLifeOvershoot) {
-    let effectTotals =  dynamicEffects(effectOvershoout, qualityOfLifeOvershoot)[0];
-    let qualityOfLife =  dynamicEffects(effectOvershoout, qualityOfLifeOvershoot)[1];
+window.updateEffectTable = function (effectPre, qualityPre) {
+    let effectTotals = dynamicEffects(effectPre, qualityPre)[0];
+    let qualityOfLife = dynamicEffects(effectPre, qualityPre)[1];
     Object.keys(effectTotals).forEach(function (category) {
         const element = document.querySelector(`[data-effect-category="${category}"]`);
 
@@ -1674,6 +1674,51 @@ function announceKeyboardStatus(message, delay = 100) {
     }, delay);
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const announcement = document.getElementById('dragInstructionAnnouncement');
+
+    const instructionsRead = {
+        functions: false,
+        events: false
+    };
+
+    const functionList = document.getElementById('functionsList');
+    const eventList = document.getElementById('eventsList');
+
+    functionList?.addEventListener('focusin', () => {
+        if (instructionsRead.functions) return;
+
+        instructionsRead.functions = true;
+
+        announcement.textContent =
+            'Keyboard instructions: use Tab or Shift Tab to move through the function list. Press Enter or Space on a function to select it. Then move to a grid cell and press Enter or Space to place it.';
+    });
+
+    eventList?.addEventListener('focusin', () => {
+        if (instructionsRead.events) return;
+
+        instructionsRead.events = true;
+
+        announcement.textContent =
+            'Keyboard instructions: use Tab or Shift Tab to move through the event list. Press Enter or Space on an event to select it. Then move to a grid cell and press Enter or Space to place it.';
+    });
+});
+
+const metropolisGrid = document.querySelector('.metropolisGrid');
+const gridInstructions = document.getElementById('gridKeyboardInstructions');
+const gridAnnouncement = document.getElementById('gridInstructionAnnouncement');
+
+let gridInstructionsRead = false;
+
+metropolisGrid?.addEventListener('focusin', () => {
+    if (gridInstructionsRead) {
+        return;
+    }
+
+    gridInstructionsRead = true;
+    
+    gridAnnouncement.textContent = gridInstructions.textContent.trim();
+});
 
 
 

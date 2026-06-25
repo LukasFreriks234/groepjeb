@@ -123,6 +123,17 @@ body {
     cursor: pointer;
 }
 
+.backButton,
+.backButton:visited,
+.backButton:hover,
+.backButton:active {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    text-decoration: none;
+}
+
 .editButton {
     width: 70px;
     height: 30px;
@@ -181,4 +192,13 @@ body {
 .overviewTab.active {
     border: 3px solid black;
     background: rgb(103, 143, 156);
+}
+
+.createFunctionLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    color: black;
+    text-decoration: none;
 }

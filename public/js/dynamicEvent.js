@@ -3,7 +3,7 @@ const timerSpeed = 5000;
 const events = document.querySelectorAll(`.gridEventImage[dynamic-event="1"]`);
 let allIDs = [];
 events.forEach((event) =>{
-    event.classList.remove("draggableGridEvent", "gridEventImage");
+    event.classList.remove("draggableGridEvent", "gridEventImage", "event-triggered");
     event.classList.add("gridEventDynamicImage");
     event.setAttribute("draggable", "false");
     event.setAttribute("data-drag-enabled", "false");
@@ -33,8 +33,7 @@ function setDynamicProgress(minTimer){
     });
 }
 
-let eventButtons = document.querySelectorAll(".dynamicEventItem");
-
+let eventButtons = document.querySelectorAll(".dynamicEventItem > .switch > input");
 const startDate = new Date("Jan 1, 2026");
 
 eventButtons.forEach((button) =>{
@@ -45,10 +44,8 @@ eventButtons.forEach((button) =>{
             let simDelta;
         if(button.getAttribute("active") == "false"){
             button.setAttribute("active", "true");
-            button.style.backgroundColor = 'aquamarine';
             simDelta = (simDate-startDate)/60000+simMinutes*1440+simSpeed;
         } else{
-            button.style.backgroundColor = 'lightblue';
             button.setAttribute("active", "false");
             simDelta = NaN;
         }

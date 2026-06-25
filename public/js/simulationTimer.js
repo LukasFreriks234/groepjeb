@@ -534,408 +534,84 @@
 
 
 
-    const recurringEvents = document.querySelectorAll('[data-type="recurring"]');
+    const recurringEvents = Array.from(document.querySelectorAll('[data-type="recurring"]'));
+    let recurringUpdateInProgress = false;
 
-    recurringEvents.forEach((eventItem) => {
-        eventItem.classList.add('recurring');
-        eventItem.addEventListener('click', () => {
-            const nextDate = calculateNextDate(eventItem);
-            const dateText = document.querySelector(".navbar-date-display-value").textContent.trim();
-            const timeText = document.querySelector(".navbar-clock-time").textContent.trim();
-            const currentDateTime = new Date(`${dateText} ${timeText}`);
-            const msPerTick = minutesPerTick * 60 * 1000;
-            const previousTime = new Date(currentDateTime - msPerTick);
-            if (previousTime < nextDate && currentDateTime >= nextDate) {
-                // event triggered
-                console.log("event triggered", nextDate);
-                eventItem.classList.remove('event-is-global');
-            }
-            else {
-                setTimeout(() => {
-                    const gridImages = document.querySelectorAll('.gridEventImage');
+    function formatSimulationDateTime() {
+        const date = getCurrentDate();
+        const pad = (number) => String(number).padStart(2, '0');
 
-                    gridImages.forEach((img) => {
-                        const idGrid = img.dataset.eventId;
-                        const idEvent = eventItem.dataset.eventId;
-                        if (idGrid === idEvent) {
-                            img.classList.add("event-is-global");
-                        }
+        return `${date.year}-${pad(date.month + 1)}-${pad(date.day)} ${formatTime(elapsedMinutes)}:00`;
+    }
+
+    function csrfToken() {
+        return document.querySelector('meta[name="csrf-token"]')?.content;
+    }
+
+    function reflectRecurringState(eventId, isActive) {
+        document
+            .querySelectorAll(`.gridEventImage[data-event-id="${eventId}"]`)
+            .forEach((image) => {
+                image.classList.toggle('event-is-global', !isActive);
+                image.classList.toggle('event-triggered', isActive);
+                image.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+            });
+
+        document
+            .querySelectorAll(`#eventsList [data-event-id="${eventId}"]`)
+            .forEach((eventItem) => {
+                eventItem.dataset.recurringActive = isActive ? '1' : '0';
+                eventItem.classList.toggle('event-is-global', !isActive);
+            });
+    }
+
+    async function syncRecurringEvents() {
+        if (recurringUpdateInProgress || recurringEvents.length === 0 || !csrfToken()) {
+            return;
+        }
+
+        recurringUpdateInProgress = true;
+
+        try {
+            const currentDateTime = formatSimulationDateTime();
+
+            const responses = await Promise.all(
+                recurringEvents.map(async (eventItem) => {
+                    const response = await fetch('/grid/check-recurring', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken(),
+                        },
+                        body: JSON.stringify({
+                            event_id: eventItem.dataset.eventId,
+                            current_datetime: currentDateTime,
+                            minutes_per_tick: minutesPerTick,
+                        }),
                     });
-                }, 500);
 
-            }
-        })
-
-        // only to turn on event
-        setTimeout(() => {
-            window.addEventListener("simulation:tick", () => {
-                const gridImages = document.querySelectorAll('.gridEventImage');
-
-                const dateText = document.querySelector(".navbar-date-display-value").textContent.trim();
-                const timeText = document.querySelector(".navbar-clock-time").textContent.trim();
-                const currentDateTime = new Date(`${dateText} ${timeText}`);
-
-                gridImages.forEach((img) => {
-                    const eventId = img.dataset.eventId;
-
-                    if (img.classList.contains('event-is-global')) {
-                        fetch('/grid/check-recurring', {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                            },
-                            body: JSON.stringify({
-                                event_id: eventId,
-                                current_datetime: currentDateTime,
-                                minutes_per_tick: minutesPerTick
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.triggered) {
-                                    console.log("event triggered", eventId);
-                                    // event triggered
-
-                                    img.classList.remove('event-is-global');
-                                    img.classList.add('event-triggered');
-                                } else {
-                                    if (!data.is_recurring) {
-                                        return
-                                    }
-                                    else {
-                                        img.classList.add('event-is-global');
-                                        img.classList.remove('event-triggered');
-                                    }
-                                }
-                            });
-                    }
-                    else {
-                        const images = document.querySelectorAll('.event-triggered')
-                        images.forEach((image) => {
-                            fetch('/grid/check-recurring-activation', {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                                },
-                                body: JSON.stringify({
-                                    event_id: image.dataset.eventId,
-                                    current_datetime: currentDateTime,
-                                })
-                            })
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data.untoggle == true) {
-                                        console.log('isdone')
-                                        calculateNextDate(eventItem);
-                                        img.classList.add('event-is-global');
-                                        img.classList.remove('event-triggered');
-                                    }
-                                });
-                        })
+                    if (!response.ok) {
+                        throw new Error(`Could not update recurring event ${eventItem.dataset.eventId}`);
                     }
 
-                });
+                    return response.json();
+                })
+            );
+
+            responses.forEach((data) => {
+                if (data.is_recurring) {
+                    reflectRecurringState(data.event_id, Boolean(data.active));
+                }
             });
-        }, 100);
+        } catch (error) {
+            // The next simulation tick retries automatically. Logging is kept
+            // for developers without interrupting the clock for the user.
+            console.error('Recurring event update failed:', error);
+        } finally {
+            recurringUpdateInProgress = false;
+        }
+    }
 
-    })
-
-    // const nextDate = eventItem.nextDate;
-    const dateText = document.querySelector(".navbar-date-display-value").textContent.trim();
-    const timeText = document.querySelector(".navbar-clock-time").textContent.trim();
-
-    const currentDateTime = new Date(`${dateText} ${timeText}`);
-
+    window.addEventListener('simulation:tick', syncRecurringEvents);
+    syncRecurringEvents();
 })();
-
-function calculateNextDate(eventItem) {
-    if (eventItem.getAttribute('active') === 'true') {
-        const startDate = new Date(document.querySelector(".navbar-date-display-value").textContent);
-        const frequency = eventItem.dataset.frequency;
-        const amount = Number(eventItem.dataset.amount);
-        console.log(frequency, amount);
-        const startTime = eventItem.dataset.startTime;
-        const eventId = eventItem.dataset.eventId;
-
-        if (frequency == 'daily') {
-            const nextDate = new Date(startDate);
-            nextDate.setDate(nextDate.getDate() + amount);
-
-            const newDateTime = new Date(nextDate);
-            const [hours, minutes, seconds] = startTime.split(':').map(Number);
-
-            newDateTime.setHours(hours, minutes, seconds);
-
-            const formattedDate = toMysqlDatetime(newDateTime);
-
-            fetch("/grid/save-next-date", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    event_id: eventId,
-                    next_date: formattedDate
-                })
-            });
-        }
-
-        else if (frequency == 'weekly') {
-            const weekdays = JSON.parse(eventItem.dataset.weekly || "[]")
-                .map(d => d.toLowerCase());
-
-            const weekdayMap = {
-                sunday: 0,
-                monday: 1,
-                tuesday: 2,
-                wednesday: 3,
-                thursday: 4,
-                friday: 5,
-                saturday: 6
-            };
-
-            const currentDay = startDate.getDay();
-
-            let minDiff = Infinity;
-
-            for (const dayName of weekdays) {
-                const targetDay = weekdayMap[dayName];
-
-                if (targetDay === undefined) continue;
-
-                let diff = targetDay - currentDay;
-
-                if (diff < 0) diff += 7;
-
-                if (diff < minDiff) {
-                    minDiff = diff;
-                }
-            }
-
-            const nextDate = new Date(startDate);
-            nextDate.setDate(startDate.getDate() + minDiff + ((amount - 1) * 7));
-
-            const newDateTime = new Date(nextDate);
-            const [hours, minutes, seconds] = startTime.split(':').map(Number);
-
-            newDateTime.setHours(hours, minutes, seconds);
-            const formattedDate = toMysqlDatetime(newDateTime);
-            fetch("/grid/save-next-date", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    event_id: eventId,
-                    next_date: formattedDate
-                })
-            });
-        }
-
-        else if (frequency == "monthly") {
-            const days = JSON.parse(eventItem.dataset.dateNumber || "[]")
-                .map(Number)
-                .filter(n => Number.isFinite(n) && n > 0);
-
-            if (days.length == 0) {
-                const ordinals = JSON.parse(eventItem.dataset.ordinalNumber || "[]");
-                const weekdays = JSON.parse(eventItem.dataset.weekday || "[]");
-
-                const rules = ordinals
-                    .map((o, i) => ({
-                        ordinal: o,
-                        weekday: weekdays[i]
-                    }))
-                    .filter(r => r.ordinal && r.weekday);
-
-                const weekdayMap = {
-                    sunday: 0,
-                    monday: 1,
-                    tuesday: 2,
-                    wednesday: 3,
-                    thursday: 4,
-                    friday: 5,
-                    saturday: 6
-                };
-
-                const ordinalMap = {
-                    first: 0,
-                    second: 1,
-                    third: 2,
-                    fourth: 3,
-                    fifth: 4
-                };
-
-                function getWeekdayMatches(year, month, weekday) {
-                    const result = [];
-                    const date = new Date(year, month, 1);
-
-                    while (date.getMonth() === month) {
-                        if (date.getDay() === weekdayMap[weekday]) {
-                            result.push(new Date(date));
-                        }
-                        date.setDate(date.getDate() + 1);
-                    }
-
-                    return result;
-                }
-
-                const start = new Date(startDate);
-                const year = start.getFullYear();
-                const month = start.getMonth();
-
-                let nextDate = null;
-
-                for (const rule of rules) {
-
-                    let targetMonth = month;
-                    let targetYear = year;
-
-                    const matches = getWeekdayMatches(targetYear, targetMonth, rule.weekday);
-
-                    let target;
-
-                    if (rule.ordinal === "last") {
-                        target = matches.at(-1);
-                    }
-                    else if (rule.ordinal === "next to last") {
-                        target = matches.at(-2);
-                    }
-                    else {
-                        target = matches[ordinalMap[rule.ordinal]];
-                    }
-
-                    if (target && target < start) {
-
-                        const future = new Date(year, month + amount, 1);
-
-                        const nextMatches = getWeekdayMatches(
-                            future.getFullYear(),
-                            future.getMonth(),
-                            rule.weekday
-                        );
-
-                        if (rule.ordinal === "last") {
-                            target = nextMatches.at(-1);
-                        }
-                        else if (rule.ordinal === "next to last") {
-                            target = nextMatches.at(-2);
-                        }
-                        else {
-                            target = nextMatches[ordinalMap[rule.ordinal]];
-                        }
-                    }
-
-                    if (!nextDate || (target && target < nextDate)) {
-                        nextDate = target;
-                    }
-                }
-                const newDateTime = new Date(nextDate);
-                const [hours, minutes, seconds] = startTime.split(':').map(Number);
-
-                newDateTime.setHours(hours, minutes, seconds);
-
-                const formattedDate = toMysqlDatetime(newDateTime);
-
-                fetch("/grid/save-next-date", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        event_id: eventId,
-                        next_date: formattedDate
-                    })
-                });
-            }
-            else {
-
-                const currentDay = startDate.getDate();
-
-                let bestDiff = Infinity;
-                let bestDay = null;
-
-                for (const day of days) {
-                    let diff = day - currentDay;
-
-                    if (diff >= 0 && diff < bestDiff) {
-                        bestDiff = diff;
-                        bestDay = day;
-                    }
-                }
-
-                const nextDate = new Date(startDate);
-
-                if (bestDay !== null) {
-                    nextDate.setDate(bestDay);
-                } else {
-                    nextDate.setMonth(nextDate.getMonth() + amount);
-
-                    nextDate.setDate(Math.min(...days));
-                }
-
-                const newDateTime = new Date(nextDate);
-                const [hours, minutes, seconds] = startTime.split(':').map(Number);
-
-                newDateTime.setHours(hours, minutes, seconds);
-
-                const formattedDate = toMysqlDatetime(newDateTime);
-
-                fetch("/grid/save-next-date", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        event_id: eventId,
-                        next_date: formattedDate
-                    })
-                });
-            }
-        }
-
-        else if (frequency == 'yearly') {
-            const nextDate = new Date(startDate);
-
-            nextDate.setFullYear(startDate.getFullYear() + amount);
-
-            const newDateTime = new Date(nextDate);
-            const [hours, minutes, seconds] = startTime.split(':').map(Number);
-
-            newDateTime.setHours(hours, minutes, seconds);
-
-            fetch("/grid/save-next-date", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    event_id: eventId,
-                    next_date: newDateTime
-                })
-            });
-        }
-    }
-
-    function toMysqlDatetime(date) {
-        const d = new Date(date);
-
-        const pad = (n) => String(n).padStart(2, '0');
-
-        return (
-            d.getFullYear() + '-' +
-            pad(d.getMonth() + 1) + '-' +
-            pad(d.getDate()) + ' ' +
-            pad(d.getHours()) + ':' +
-            pad(d.getMinutes()) + ':' +
-            pad(d.getSeconds())
-        );
-    }
-}

@@ -9,10 +9,8 @@ class Event extends Model
     protected $fillable = [
         'name',
         'image_url',
-        'type',
-        'recurrence_pattern',
-        'days_of_week',
         'recurring_id',
+        'start_date',
         'next_date',
         'end_date',
         'time',
@@ -20,14 +18,17 @@ class Event extends Model
         'length_unit',
         'dynamic',
         'is_global',
+        'active',
+        'speed',
     ];
 
     protected $casts = [
-        'days_of_week' => 'array',
-        'next_date' => 'datetime',
+        'start_date' => 'date',
+        'next_date' => 'date',
         'end_date' => 'datetime',
         'dynamic' => 'boolean',
         'is_global' => 'boolean',
+        'active' => 'boolean',
     ];
 
     public function categories()
@@ -62,7 +63,7 @@ class Event extends Model
         return $this->belongsTo(Recurring::class);
     }
 
-    public function getTypeAttribute()
+    public function getTypeAttribute(): string
     {
         return $this->recurring_id === null ? 'Oneoff' : 'Recurring';
     }

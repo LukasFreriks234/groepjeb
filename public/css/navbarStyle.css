@@ -457,3 +457,94 @@ body {
 button.navbar-button {
     appearance: none;
 }
+
+@media (max-width: 900px) {
+    .navbar {
+        padding: 12px;
+    }
+
+    .navbar-menu {
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .navbar-menu > li:not(.navbar-clock-item):not(.navbar-logout-item) {
+        flex: 1 1 calc(50% - 10px);
+    }
+
+    .navbar-clock-item {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .navbar-logout-item {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .navbar-button,
+    .logout-form .navbar-button {
+        width: 100%;
+        min-height: 44px;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .navbar-clock {
+        width: 100%;
+        box-sizing: border-box;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .navbar-clock-divider {
+        display: none;
+    }
+
+    .navbar-speed-control {
+        flex: 1 1 100%;
+    }
+
+    .navbar-speed-row {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .navbar-speed-input,
+    .navbar-speed-button,
+    .navbar-pause-button {
+        min-height: 44px;
+    }
+
+    .navbar-pause-button {
+        min-width: 44px;
+    }
+
+    .navbar-date-popup {
+        left: auto;
+        right: 0;
+        transform: none;
+        max-width: calc(100vw - 24px);
+    }
+}
+
+@media (max-width: 500px) {
+    .navbar-menu > li:not(.navbar-clock-item):not(.navbar-logout-item) {
+        flex: 1 1 100%;
+    }
+
+    .navbar-clock-ring {
+        width: 60px;
+        height: 60px;
+    }
+
+    .navbar-date-display {
+        min-width: 0;
+    }
+
+    .navbar-date-display-value {
+        font-size: 12px;
+    }
+}

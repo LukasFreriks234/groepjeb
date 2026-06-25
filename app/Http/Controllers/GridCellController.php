@@ -9,17 +9,16 @@ use App\Models\Functions;
 use App\Models\Category;
 use App\Models\Effects;
 use App\Models\Event;
+use App\Models\SavedGrid;
 use Illuminate\Support\Facades\DB;
 use App\Models\EventgridCell;
-use Datetime;
-use DateInterval;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class GridCellController extends Controller
 {
     private function cellsWithRelations()
     {
-        return GridCell::with(['cityFunction']);
+return GridCell::with(['cityFunction', 'mainRoad']);
     }
 
     private function gridDynamicIdForCell(GridCell $cell)
@@ -32,6 +31,22 @@ class GridCellController extends Controller
             return $dynamicId;
         }
 
+$existing = DB::table('grid_dynamics')
+            ->where('x_coordinate', $cell->x_coordinate)
+            ->where('y_coordinate', $cell->y_coordinate)
+            ->whereNull('grid_cell_id')
+            ->first();
+
+        if ($existing) {
+            DB::table('grid_dynamics')
+                ->where('id', $existing->id)
+                ->update([
+                    'grid_cell_id' => $cell->id,
+                    'updated_at' => now(),
+                ]);
+
+            return $existing->id;
+        }
         return DB::table('grid_dynamics')->insertGetId([
             'x_coordinate' => $cell->x_coordinate,
             'y_coordinate' => $cell->y_coordinate,
@@ -66,7 +81,12 @@ class GridCellController extends Controller
 
         $eventRows = DB::table('event_grid_cells')
             ->whereIn('grid_dynamics_id', $dynamicRows->pluck('id'))
-            ->get(['event_id', 'grid_dynamics_id', 'route_order', 'expires_at']);
+            ->get([
+                'event_id',
+                'grid_dynamics_id',
+                'route_order',
+                'expires_at',
+            ]);
 
         if ($eventRows->isEmpty()) {
             $cells->each(function ($cell) {
@@ -178,6 +198,59 @@ class GridCellController extends Controller
             'qualityOfLife',
             'eventGridCells'
         ));
+    }
+
+    public function saveGrid(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $cells = $this->cellsWithRelations()->get();
+        $timestamp = now()->toDateTimeString();
+        $rows = [];
+
+        foreach ($cells as $cell) {
+            if ($cell->cityFunction) {
+                $rows[] = [
+                    'name' => $validated['name'],
+                    'grid_cell_id' => $cell->id,
+                    'item_type' => 'function',
+                    'function_id' => $cell->cityFunction->id,
+                    'event_id' => null,
+                    'recurring_id' => null,
+                    'occurs_at' => null,
+                    'route_order' => null,
+                    'created_at' => $timestamp,
+                    'updated_at' => $timestamp,
+                ];
+            }
+
+            foreach ($cell->events as $event) {
+                $rows[] = [
+                    'name' => $validated['name'],
+                    'grid_cell_id' => $cell->id,
+                    'item_type' => 'event',
+                    'function_id' => null,
+                    'event_id' => $event->id,
+                    'recurring_id' => $event->recurring_id,
+                    'occurs_at' => null,
+                    'route_order' => $event->pivot?->route_order,
+                    'created_at' => $timestamp,
+                    'updated_at' => $timestamp,
+                ];
+            }
+        }
+
+        if (empty($rows)) {
+            return back()
+                ->withErrors(['name' => 'There is nothing on the grid to save yet.'])
+                ->withInput();
+        }
+
+        SavedGrid::insert($rows);
+
+        return back()->with('status', sprintf('Saved grid "%s".', $validated['name']));
     }
 
     public function assignFunction(Request $request)
@@ -293,7 +366,11 @@ class GridCellController extends Controller
             default => $eventLength * 60,
         };
 
-        $durationInRealSeconds = max(1, $durationInSimulationMinutes / $simulationMinutesPerRealSecond);
+        $durationInRealSeconds = max(
+            1,
+            $durationInSimulationMinutes / $simulationMinutesPerRealSecond
+        );
+
         $expiresAt = now()->addSeconds($durationInRealSeconds);
 
         $existingRow = DB::table('event_grid_cells')
@@ -353,11 +430,15 @@ class GridCellController extends Controller
                 ->whereIn('id', $expired->pluck('id'))
                 ->delete();
 
-            $expiredCellIds = $expired->pluck('grid_cell_id')->filter()->unique();
+            $expiredCellIds = $expired->pluck('grid_cell_id')
+                ->filter()
+                ->unique();
 
-            GridCell::whereIn('id', $expiredCellIds)->get()->each(function ($cell) {
-                $this->updateCellAvailability($cell);
-            });
+            GridCell::whereIn('id', $expiredCellIds)
+                ->get()
+                ->each(function ($cell) {
+                    $this->updateCellAvailability($cell);
+                });
         }
 
         $totals = $this->calculateTotals();
@@ -538,7 +619,11 @@ class GridCellController extends Controller
 
         $categories = Category::all();
 
-        $effectTotals = Effects::calculateEffectTotals($cellsToCalculate, $categories);
+        $effectTotals = Effects::calculateEffectTotals(
+            $cellsToCalculate,
+            $categories
+        );
+
         $qualityOfLife = array_sum($effectTotals);
 
         return response()->json([
@@ -572,35 +657,7 @@ class GridCellController extends Controller
         return $pdf->download('simulatierapport.pdf');
     }
 
-    public function checkRecurring($currentdate)
-    {
-        $recurring = DB::table('recurrings')->select(
-            'frequency',
-            'amount'
-        )->first();
 
-        $event = DB::table('events')->select(
-            'start_date',
-            'time'
-        )->first();
-
-        if ($recurring && $recurring->frequency === 'daily') {
-            $interval = new DateInterval('P' . (int) $recurring->amount . 'D');
-            $date = new DateTime($currentdate . ' ' . $event->time);
-            $nextdate = $date->add($interval)->format('Y-m-d');
-            // $this.dd($nextdate);
-            return $nextdate;
-        } else if ($recurring && $recurring->frequency === 'weekly') {
-            $startdate = $event->start_date;
-            $current = $currentdate->dayName;
-        } else if ($recurring && $recurring->frequency === 'monthly') {
-            // monthly
-        } else if ($recurring && $recurring->frequency === 'yearly') {
-            // yearly
-        } else {
-            return "error";
-        }
-    }
 
 
     // function dd()
@@ -628,7 +685,6 @@ class GridCellController extends Controller
                 'route_order' => 1,
             ]);
 
-            $nextDate = $this->checkRecurring($request->date);
 
             // GridCell::where('grid_cell_id', $gridDynamic->id)->update(['is_available' => 0]);
 
@@ -649,8 +705,6 @@ class GridCellController extends Controller
 
         EventgridCell::where('event_id', $request->event_id)
             ->delete();
-
-        EventgridCell::where('event_id', $request->event_id)->delete();
 
         return response()->json([
             'success' => true,

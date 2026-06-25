@@ -16,6 +16,63 @@
     cursor: pointer;
 }
 
+.gridSavePanel {
+    margin-top: 10px;
+    margin-bottom: 16px;
+}
+
+.gridSaveForm {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gridSaveForm input {
+    width: 220px;
+    min-width: 0;
+}
+
+.gridSaveForm label {
+    font-weight: bold;
+}
+
+.gridSaveForm input {
+    min-width: 220px;
+    padding: 10px 12px;
+    border: 2px solid black;
+    background: white;
+    color: black;
+    font: inherit;
+}
+
+.gridSaveForm button {
+    padding: 10px 16px;
+    border: 2px solid black;
+    background: black;
+    color: white;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.gridSaveForm button:hover,
+.gridSaveForm button:focus {
+    background: #333;
+}
+
+.gridSaveMessage,
+.gridSaveError {
+    font-weight: bold;
+}
+
+.gridSaveMessage {
+    color: #006400;
+}
+
+.gridSaveError {
+    color: #b00020;
+}
+
 .citySection {
     width: 100%;
     max-width: 100%;
@@ -43,14 +100,49 @@
     min-height: 0;
 }
 
+/* Mainroads */
+.main-road-mode .main-road-icon {
+    display: block;
+}
+
+.main-road-icon {
+    display: none;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 20px;
+    height: 20px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.main-road-icon img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
+    max-width: 20px;
+    max-height: 20px;
+}
+
+.route-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(118, 117, 117, 0.45);
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* Alleen outline, geen kleurverandering */
 .gridCell:focus,
 .gridCell:focus-visible {
     outline: 3px solid black;
     outline-offset: -3px;
 }
 
-.gridCell img,
-.gridCell svg {
+.gridCell > img,
+.gridCell > svg {
     object-fit: contain;
     display: block;
 }
@@ -207,7 +299,8 @@
     z-index: 1000;
 }
 
-.gridEventImage, .gridEventDynamicImage {
+.gridEventImage,
+.gridEventDynamicImage {
     width: 28px;
     height: 28px;
     object-fit: contain;
@@ -223,13 +316,15 @@
     touch-action: none;
 }
 
-.gridEventImage:focus, .gridEventDynamicImage:focus
-.gridEventImage:focus-visible, .gridEventDynamicImage:focus-visible {
+.gridEventImage:focus,
+.gridEventDynamicImage:focus,
+.gridEventImage:focus-visible,
+.gridEventDynamicImage:focus-visible {
     outline: 3px solid black;
     outline-offset: 3px;
 }
 
-.gridEventImage:active{
+.gridEventImage:active {
     cursor: grabbing;
 }
 
@@ -237,6 +332,12 @@
 .draggableGridEvent.keyboardSelected {
     outline: 3px solid yellow;
     outline-offset: 2px;
+}
+
+fieldset {
+border: none;
+padding: 0;
+margin: 0;
 }
 
 @media (hover: none), (max-width: 768px) {
@@ -309,7 +410,11 @@
     border-radius: 0;
     padding: 8px 12px;
     margin-bottom: 10px;
-    background: linear-gradient(180deg, var(--global-zone-bg-start, #f0f8ff) 0%, var(--global-zone-bg-end, #e0f0ff) 100%);
+    background: linear-gradient(
+        180deg,
+        var(--global-zone-bg-start, #f0f8ff) 0%,
+        var(--global-zone-bg-end, #e0f0ff) 100%
+    );
     transition: border-color 60s linear, background 60s linear;
     min-height: 40px;
 }

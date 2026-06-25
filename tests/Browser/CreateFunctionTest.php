@@ -19,10 +19,10 @@ class CreateFunctionTest extends DuskTestCase
             ->press('Login')
 
             ->waitForLocation('/grid')
-            ->clickLink('Functions')
+            ->clickLink('Overview')
             ->waitForLocation('/overview')
 
-            ->press('Create function')
+            ->clickLink('Create function')
             ->assertSee('Create Function')
 
             ->attach('image', public_path('images/GasStation.png'))

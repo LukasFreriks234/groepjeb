@@ -2,7 +2,7 @@
     <button class="tabButton active" data-target="functionsTable">
         Functions
     </button>
-    <button class="tabButton" data-target="eventsTable">
+    <button id="tabButtonEvent" class="tabButton" data-target="eventsTable">
         Events
     </button>
 </div>
@@ -10,7 +10,8 @@
 <div id="functionsTable" class="tabContent" style="display:block;">
     <div class="filters">
         <div>
-            <input type="text" id="myInput" placeholder="Search for functions.." aria-label="Search functions"><br>
+            <label class="sr-only" for="myInput">Search functions</label>
+            <input type="search" id="myInput" placeholder="Type a function name..."><br>
 
             @php
                 $arrCategories = $categories->toArray();
@@ -19,6 +20,8 @@
                 $i = 1;
             @endphp
 
+            <fieldset>
+                <legend>Filters:</legend>
             @foreach($arrCategories as $category)
                 <input type="checkbox" id="category{{ $i }}" class="functionFilter" name="category{{ $i }}"
                     value="{{ $category['category'] }}">
@@ -28,6 +31,7 @@
                     $i++;
                 @endphp
             @endforeach
+            </fieldset>
         </div>
     </div>
 
@@ -43,7 +47,7 @@
         function to select it. Then move to a grid cell and press Enter or Space to place it.
     </p>
 
-    <ul id="functionsList" tabindex="-1" aria-label="functions" aria-describedby="functionKeyboardDragInstructions">
+    <ul id="functionsList" tabindex="-1" aria-label="functions">
         @foreach($arrFunctions as $function)
             <li tabindex="0" id="function{{ $function['id'] }}" class="functionItem keyboardDraggableFunction"
                 draggable="true" data-function-id="{{ $function['id'] }}" data-category="{{ $function['category'] }}"
@@ -104,7 +108,7 @@
             <li 
                 tabindex="0"
                 id="event{{ $event->id }}" 
-                class="functionItem{{ $isGlobal ? ' event-is-global' : '' }}"
+                class="dynamicEventItem"
                 data-event-id="{{ $event->id }}"
                 data-event-name="{{ $event->name }}"
                 data-type="{{ $eventType }}"
@@ -118,9 +122,31 @@
                 data-weekday='@json($event->recurring?->monthly?->pluck('weekday') ?? [])'
                 data-start-time="{{ $event->time }}"
                 role="button"
-                active="false"
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }} to place it in the grid."
             >
+                <div class="functionImage">
+                    <img 
+                        src="{{ asset($event->image_url) }}" 
+                        alt="{{ $event->name }}"
+                        draggable="false"
+                    >
+                </div>
+
+                <div class="functionDescription">
+                    <p class="functionName">{{ $event->name }}</p>
+
+                    <p class="functionCategory">
+                        Dynamic
+                    </p>
+                </div>
+
+                
+                <label class="switch">
+                    <input type="checkbox" active="false" data-event-id="{{ $event->id }}" aria-label="Activate {{ $event->name }}">
+                    <span class="slider round"></span>
+                </label>
+
+            </li>
             @else
             <li 
                 tabindex="0"
@@ -131,6 +157,7 @@
                 data-event-name="{{ $event->name }}"
                 data-type="{{ $eventType }}"
                 data-dynamic="{{ $isDynamic }}"
+                data-global="{{ $isGlobal ? '1' : '0' }}"
                 data-image="{{ $event->image_url }}"
                 data-frequency="{{ $event->recurring?->frequency }}"
                 data-amount="{{ $event->recurring?->amount }}"
@@ -143,18 +170,18 @@
                 aria-label="Select event {{ $event->name }} of type {{ $eventTypeLabel }}{{ $event->dynamic ? ' and dynamic' : '' }}{{ $isGlobal ? ', currently active as global event' : '' }} to place it in the grid."
             >
                 <div class="functionImage">
-                    @if($isDynamic)
-                    <img 
-                        src="{{ asset($event->image_url) }}" 
-                        alt="{{ $event->name }}"
-                        draggable="false"
-                    >
-                    @else
                     <img 
                         src="{{ asset($event->image_url) }}" 
                         alt="{{ $event->name }}"
                     >
-                    @endif
+                </div>
+
+                <div class="functionDescription">
+                    <p class="functionName">{{ $event->name }}</p>
+
+                    <p class="functionCategory">
+                        {{ $eventTypeLabel }}
+                    </p>
                 </div>
 
                 <label class="switch">

@@ -1,4 +1,4 @@
-@props(['cells', 'categories','eventGridCells'])
+@props(['cells', 'categories', 'eventGridCells'])
 
 @php
     $columns = $cells->max('x_coordinate') + 1;
@@ -17,23 +17,26 @@
             </a>
         @endif
 
+        <div id="gridInstructionAnnouncement"
+        class="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"></div>
+
         <h2>City area</h2>
 
         <p id="gridKeyboardInstructions" class="sr-only">
             Keyboard instructions: use Tab or Shift Tab to move to the grid. Inside the grid, use the arrow keys to move between cells. Press Enter or Space on a filled cell to select the function. Press Enter or Space on another cell to move or swap it. Events can be placed on cells that already contain a matching function. Use the remove button to remove a function or event from a filled cell.
-        </p>   
+        </p>
 
-        <div 
-            class="metropolisGrid" 
+        <div
+            class="metropolisGrid"
             role="group"
-            tabindex="0"
-            aria-describedby="gridKeyboardInstructions"
-            aria-label="The grid exist out of {{ $columns }} columns, {{ $rows }} rows"
+            aria-label="The grid exists out of {{ $columns }} columns, {{ $rows }} rows"
         >
-        
-        @php
-        $arrEventGridCells = $eventGridCells->sortBy('route_order');
-        @endphp
+            @php
+                $arrEventGridCells = $eventGridCells->sortBy('route_order');
+            @endphp
 
             @foreach($cells as $cell)
                 @php
@@ -65,7 +68,7 @@
                 @endphp
 
                 <div
-                    class="gridCell {{ $cell->is_available ? 'available' : 'occupied' }}"
+                    class="gridCell {{ $cell->is_available ? 'available' : 'occupied' }} {{ $cell->mainRoad ? 'main-road' : '' }}"
                     data-id="{{ $cell->id }}"
                     data-x="{{ $cell->x_coordinate }}"
                     data-y="{{ $cell->y_coordinate }}"
@@ -93,17 +96,18 @@
                     @if($hasEvents)
                         <div class="gridEvents">
                             @foreach($cell->events as $event)
-                                @foreach ($arrEventGridCells as $gridCell)
+                                @foreach($arrEventGridCells as $gridCell)
                                     @if($gridCell->grid_dynamics_id == $cell->id && $gridCell->event_id == $event->id)
                                         @php
-                                        $order = $gridCell->route_order;
+                                            $order = $gridCell->route_order;
                                         @endphp
                                     @endif
                                 @endforeach
+
                                 <img
                                     src="{{ asset($event->image_url) }}"
                                     alt="{{ $event->name }}"
-                                    class="gridEventImage draggableGridEvent"
+                                    class="gridEventImage draggableGridEvent {{ $event->recurring_id && !$event->active ? 'event-is-global' : 'event-triggered' }}"
                                     draggable="true"
                                     tabindex="0"
                                     role="button"
@@ -121,6 +125,15 @@
                                     services="{{ $event->effects[4]->effect }}"
                                 >
                             @endforeach
+                        </div>
+                    @endif
+
+                    @if($cell->mainRoad)
+                        <div class="main-road-icon" aria-hidden="true">
+                            <img
+                                src="{{ asset('images/mainroad.png') }}"
+                                alt=""
+                            >
                         </div>
                     @endif
                 </div>
@@ -141,7 +154,7 @@
         aria-atomic="true"
     ></div>
 
-    <ul id="tooltipEffectsList" >
+    <ul id="tooltipEffectsList">
         @foreach($categories as $category)
             <li>
                 {{ $category->category }}:

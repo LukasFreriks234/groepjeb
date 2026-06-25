@@ -1,0 +1,79 @@
+.savedGridOverview {
+    display: block;
+}
+
+.overviewSubtitle {
+    margin-top: 8px;
+    color: #5f6d73;
+}
+
+.savedGridStatus {
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    border: 1px solid #8fb6c2;
+    background: #eaf6f9;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.savedGridTable {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid #bdbdbd;
+}
+
+.savedGridTable th,
+.savedGridTable td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e3e3e3;
+}
+
+.savedGridTable thead th {
+    background: #d9edf3;
+    font-weight: bold;
+}
+
+.savedGridTable tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.emptyState {
+    padding: 18px 20px;
+    border: 1px solid #bdbdbd;
+    background: #f9fbfc;
+    border-radius: 12px;
+    color: #5f6d73;
+}
+
+.loadButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid #bdbdbd;
+    border-radius: 999px;
+    background: white;
+    color: black;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.loadButton:hover,
+.loadButton:focus {
+    background: #f3f3f3;
+    border-color: #999;
+}
+
+@media (max-width: 768px) {
+    .savedGridTable {
+        display: block;
+        overflow-x: auto;
+    }
+}
